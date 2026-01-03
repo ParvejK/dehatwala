@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #192a56;
+  --secondary-color: #273c75;
+  --accent-color: #f5f6fa;
+  --neutral-color: #fdf0d5;
+  --base-100-color: #fbfbff;
+  --info-color: #0092d8;
+  --success-color: #6ab04c;
+  --warning-color: #fca200;
+  --error-color: #c1121f;
+  --white: #ffffff;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: var(--secondary-color) !important;
+}
+
+.clip-rect {
+  clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
+}
+
+/* Blog Pages */
+
+.blog-content {
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 28px;
+    margin-bottom: 20px;
+  }
+
+  p {
+    font-size: 15px;
+    line-height: 28px;
+    font-weight: 400;
+    margin-bottom: 20px;
+  }
+}
+
+/* SWiper */
+
+.serviceDetailCarousel {
+  .swiper-slide {
+    min-height: 340px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--white);
+  }
+  .swiper-button-prev,
+  .swiper-button-next {
+    color: var(--white);
+  }
+}
+
+/* Date Picker */
+.react-datepicker__input-container {
+  border: 1px solid theme(colors.gray.200);
+  padding: 8px 16px;
+  border-radius: 6px;
+  input {
+    outline: none;
+    box-shadow: none;
+    background-color: transparent;
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.react-datepicker__close-icon::after {
+  background-color: theme(colors.red.600);
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  @apply !text-secondary;
+}
+
+.rc-time-picker {
+  @apply w-full;
+}
+
+.rc-time-picker-input {
+  @apply h-[48px] w-full pl-4 pr-4 input input-bordered;
+}
+
+/* JOB CARD */
+
+.font-job {
+  p,
+  span,
+  div {
+    font-size: 13px !important;
+    font-weight: 300 !important;
+  }
+}
