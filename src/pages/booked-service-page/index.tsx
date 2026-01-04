@@ -163,7 +163,6 @@ const BookedServicePage = () => {
         // service.instant_service_obj ? JSON.stringify(service.instant_service_obj, null, 2) : "N/A",
       ],
     })) || [];
-
   return (
     <div className="mt-10 mb-[100px] min-h-[50vh]">
       <Container>

@@ -38,10 +38,14 @@ function ServiceLetterPage() {
   const [isButtonOpen, setIsButtonOpen] = useState(true);
 
   //Google Gio Locatoon
-    const [coords, setCoords] = useState({ lat: '', lon: '' });
+  const [coords, setCoords] = useState({ lat: '', lon: '' });
   const [loading, setLoading] = useState(false);
 
-    const fetchLocation = () => {
+  // add balloon state
+  const [showBalloons, setShowBalloons] = useState(false);
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+
+  const fetchLocation = () => {
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser.');
       return;
@@ -301,6 +305,7 @@ function ServiceLetterPage() {
   }, [token, navigate]);
 
   const onSubmit = async (data: FormData) => {
+    setIsPaymentLoading(true);
     const isCouponApplied = discountPercentage > 0;
     const totalAmountToSend = isCouponApplied ? TotalCouponPrice : totalPrice;
 
@@ -335,6 +340,7 @@ function ServiceLetterPage() {
       });
     } catch (error) {
       console.error("Error in onSubmit:", error);
+      setIsPaymentLoading(false);
     }
   };
 
@@ -367,26 +373,32 @@ function ServiceLetterPage() {
 
             if (result.ok) {
               await result.json();
-              toast.success("Booking saved successfully!");
+              // show balloons for full-page celebration, then navigate/reset after animation
+              setShowBalloons(true);
               setTimeout(() => {
+                setShowBalloons(false);
+                setIsPaymentLoading(false);
+                toast.success("Booking saved successfully!");
+                if (mode === "day") {
+                  resetDayState();
+                } else {
+                  resetHourState();
+                }
                 navigate("/booked-services");
-              }, 400);
-              if (mode === "day") {
-                resetDayState();
-              } else {
-                resetHourState();
-              }
+              }, 3500);
             } else {
               // console.error("Failed to save booking:", result.status, result.statusText);
               // toast.error("Failed to save booking.",);
-              const errorData = await result.json(); // Parse error response
-              const errorMessage = errorData?.message || result.statusText; // Default to statusText if message is not available
+              setIsPaymentLoading(false);
+              const errorData = await result.json();
+              const errorMessage = errorData?.message || result.statusText;
               console.error("Failed to save booking:", result.status, result.statusText);
               toast.error(`Failed to save booking: ${errorMessage}`);
             }
           } catch (error) {
             console.error("Error while saving booking:", error);
             toast.error("An error occurred while saving the booking.");
+            setIsPaymentLoading(false);
           }
         }
       },
@@ -419,23 +431,29 @@ function ServiceLetterPage() {
   const mutation = useMutation({
     mutationFn: savePayAfterService,
     onSuccess: () => {
-      toast.success("Booking saved successfully!");
+      // show balloons, then hide + toast + reset + navigate after animation
+      setShowBalloons(true);
       setTimeout(() => {
+        setShowBalloons(false);
+        setIsPaymentLoading(false);
+        toast.success("Booking saved successfully!");
+        if (mode === "day") {
+          resetDayState();
+        } else {
+          resetHourState();
+        }
         navigate("/booked-services");
-      }, 400);
-      if (mode === "day") {
-        resetDayState();
-      } else {
-        resetHourState();
-      }
+      }, 3500);
     },
     onError: (error: unknown) => {
       console.error("Error:", error);
       toast.error("Failed to save booking.");
+      setIsPaymentLoading(false);
     },
   });
 
   const handleCODSubmit = (data: FormData) => {
+    setIsPaymentLoading(true);
     const isCouponApplied = discountPercentage > 0;
     const totalAmountToSend = isCouponApplied
       ? TotalCODPrice
@@ -698,24 +716,113 @@ function ServiceLetterPage() {
                 <button
                   onClick={handleSubmit(onSubmit)}
                   type="submit"
-                  disabled={!active}
+                  disabled={!active || isPaymentLoading}
                   className="btn btn-primary flex-1 mt-4"
                 >
-                  Proceed to pay
+                  {isPaymentLoading ? (
+                    <>
+                      <span className="loading loading-spinner loading-sm mr-2"></span>
+                      Processing...
+                    </>
+                  ) : (
+                    "Proceed to pay"
+                  )}
                 </button>
               ) : (
                 <button
                   onClick={handleSubmit(handleCODSubmit)}
-                  disabled={mutation.isPending}
+                  disabled={isPaymentLoading}
                   type="submit"
                   className="btn btn-primary flex-1 mt-4"
                 >
-                  Pay with cash after service
+                  {isPaymentLoading ? (
+                    <>
+                      <span className="loading loading-spinner loading-sm mr-2"></span>
+                      Processing...
+                    </>
+                  ) : (
+                    "Pay with cash after service"
+                  )}
                 </button>
               )}
             </div>
           </div>
         </div>
+
+        {/* Balloon animation overlay */}
+        {showBalloons && (
+          <div aria-hidden className="pointer-events-none fixed inset-0 z-[9999]">
+            <div className="balloon-stage" style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
+              {Array.from({ length: 40 }).map((_, i) => {
+                const left = ((i * 7 + (i % 5) * 11) % 100); // spread across width
+                const size = 28 + (i % 6) * 6;
+                const duration = 3.2 + (i % 5) * 0.6; // seconds
+                const delay = (i * 0.08) % 1.6; // seconds
+                return (
+                  <div
+                    key={i}
+                    className={`balloon b${(i % 6) + 1}`}
+                    style={
+                      {
+                        position: "absolute",
+                        top: `-20vh`, // start well above viewport
+                        left: `${left}%`,
+                        width: `${size}px`,
+                        height: `${Math.round(size * 1.3)}px`,
+                        borderRadius: "50% 50% 50% 50%",
+                        animationDelay: `${delay}s`,
+                        animationDuration: `${duration}s`,
+                        opacity: 0.98,
+                      } as React.CSSProperties
+                    }
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Balloon styles */}
+        <style>{`
+          .balloon-stage { pointer-events: none; }
+
+          .balloon {
+            box-shadow: inset -6px -8px rgba(0,0,0,0.06);
+            transform-origin: center;
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+            animation-iteration-count: 1;
+            will-change: transform, opacity;
+          }
+
+          .b1 { background: #FF7A7A; }
+          .b2 { background: #FFD27F; }
+          .b3 { background: #86E2A8; }
+          .b4 { background: #8EC3FF; }
+          .b5 { background: #C08CFF; }
+          .b6 { background: #FFB3E6; }
+
+          @keyframes fall {
+            0% {
+              transform: translateY(0) translateX(0) rotate(0deg);
+              opacity: 1;
+            }
+            25% {
+              transform: translateY(30vh) translateX(-14px) rotate(-8deg);
+            }
+            50% {
+              transform: translateY(65vh) translateX(12px) rotate(8deg);
+            }
+            75% {
+              transform: translateY(100vh) translateX(-8px) rotate(-4deg);
+            }
+            100% {
+              transform: translateY(140vh) translateX(0) rotate(0deg);
+              opacity: 0;
+            }
+          }
+        `}</style>
       </Container>
     </div>
   );

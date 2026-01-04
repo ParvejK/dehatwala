@@ -7,7 +7,6 @@ interface TableRow {
   bookedServiceId: number;
   instantService: InstantServiceObj;
   rowData: (string | number)[];
-  // rowData: (string | number | InstantServiceObj)[];
 }
 
 interface TableProps {
@@ -20,6 +19,12 @@ const Table: React.FC<TableProps> = ({ headers, rows }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10; // Number of rows to display per page
 
+  const [showReschedulePopup, setShowReschedulePopup] = useState(false);
+  const [showCancelPopup, setShowCancelPopup] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+
   // Calculate the range of rows for the current page
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -30,6 +35,73 @@ const Table: React.FC<TableProps> = ({ headers, rows }) => {
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+    }
+  };
+
+  const openReschedulePopup = (bookedServiceId: number) => {
+    setSelectedBookingId(bookedServiceId);
+    setSelectedDate("");
+    setShowReschedulePopup(true);
+  };
+
+  const openCancelPopup = (bookedServiceId: number) => {
+    setSelectedBookingId(bookedServiceId);
+    setShowCancelPopup(true);
+  };
+
+  const handleReschedule = async () => {
+    if (!selectedDate) {
+      alert("Please select a future date");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/update-book-date", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookingId: selectedBookingId,
+          newDate: selectedDate,
+        }),
+      });
+      if (response.ok) {
+        alert("Service rescheduled successfully");
+        setShowReschedulePopup(false);
+        setSelectedBookingId(null);
+        setSelectedDate("");
+      } else {
+        alert("Failed to reschedule service");
+      }
+    } catch (error) {
+      console.error("Reschedule error:", error);
+      alert("Error rescheduling service");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelService = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/cancel-service", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookingId: selectedBookingId,
+        }),
+      });
+      if (response.ok) {
+        alert("Service cancelled successfully");
+        setShowCancelPopup(false);
+        setSelectedBookingId(null);
+      } else {
+        alert("Failed to cancel service");
+      }
+    } catch (error) {
+      console.error("Cancel error:", error);
+      alert("Error cancelling service");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,35 +132,44 @@ const Table: React.FC<TableProps> = ({ headers, rows }) => {
                   ))}
 
                   <td>
-                    <button
-                      className="btn btn-xs btn-primary min-w-[100px]"
-                      onClick={() =>
-                        redirect(
-                          `/service-reviews/${btoa(row.bookedServiceId.toString())}/${btoa(row.serviceId.toString())}`
-                        )
-                      }
-                    >
-                      Add Reviews
-                    </button>
+                    <div className="flex gap-2 flex-wrap">
+                      <button
+                        className="btn btn-xs btn-primary min-w-[100px]"
+                        onClick={() =>
+                          redirect(
+                            `/service-reviews/${btoa(row.bookedServiceId.toString())}/${btoa(row.serviceId.toString())}`
+                          )
+                        }
+                      >
+                        Add Reviews
+                      </button>
+                      <button
+                        className="btn btn-xs btn-info min-w-[100px]"
+                        onClick={() => openReschedulePopup(row.bookedServiceId)}
+                        disabled={isLoading}
+                      >
+                        Re-Schedule
+                      </button>
+                      <button
+                        className="btn btn-xs btn-error min-w-[100px]"
+                        onClick={() => openCancelPopup(row.bookedServiceId)}
+                        disabled={isLoading}
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </td>
                   <td className="max-w-[300px]">
-                    {JSON.stringify(row.instantService)}
-                    {/* <ul>
-                      <li>Mason Day Count: {row.instantService.MasonDayCount}</li>
-                      <li>Helper Day Count: {row.instantService.helperDayCount}</li>
-                      <li>Mason Rate: {row.instantService.MasonRate}</li>
-                      <li>Helper Rate: {row.instantService.helperRate}</li>
-                      <li>Mason Overtime Count: {row.instantService.MasonOvertimeCount}</li>
-                      <li>Helper Overtime Count: {row.instantService.helperOvertimeCount}</li>
-                      <li>Mason Overtime Rate: {row.instantService.MasonOvertimeRate}</li>
-                      <li>Helper Overtime Rate: {row.instantService.helperOvertimeRate}</li>
-                      <li>Total Mason Day Rate: {row.instantService.totalMasonDayRate}</li>
-                      <li>Total Helper Day Rate: {row.instantService.totalHelperDayRate}</li>
-                      <li>Total Mason Overtime Rate: {row.instantService.totalMasonOvertimeRate}</li>
-                      <li>Total Helper Overtime Rate: {row.instantService.totalHelperOvertimeRate}</li>
-                      <li>Total Day Price: {row.instantService.totalDayPrice}</li>
-                      <li>Tip Value: {row.instantService.tipValue}</li>
-                    </ul> */}
+                    <td>
+                      <ul>
+                        {Object.entries(row.instantService).map(([key, value]) => (
+                          <li key={key}>
+                            <strong>{key}:</strong> {value}
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+
                   </td>
                 </tr>
               ))}
@@ -122,6 +203,63 @@ const Table: React.FC<TableProps> = ({ headers, rows }) => {
             </button>
           </div>
         </>
+      )}
+
+      {/* Re-Schedule Popup */}
+      {showReschedulePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Re-Schedule Service</h2>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="input input-bordered w-full mb-4"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={handleReschedule}
+                className="flex-1 btn btn-primary"
+                disabled={isLoading}
+              >
+                {isLoading ? "Updating..." : "Confirm"}
+              </button>
+              <button
+                onClick={() => setShowReschedulePopup(false)}
+                className="flex-1 btn btn-secondary"
+                disabled={isLoading}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Confirmation Popup */}
+      {showCancelPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Cancel Service</h2>
+            <p className="mb-6 text-gray-600">Are you sure you want to cancel this service?</p>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCancelService}
+                className="flex-1 btn btn-error"
+                disabled={isLoading}
+              >
+                {isLoading ? "Cancelling..." : "Yes, Cancel"}
+              </button>
+              <button
+                onClick={() => setShowCancelPopup(false)}
+                className="flex-1 btn btn-secondary"
+                disabled={isLoading}
+              >
+                No, Keep it
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
