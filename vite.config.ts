@@ -6,5 +6,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 7000,
+    middlewareMode: false,
+  },
+  build: {
+    sourcemap: true,
+  },
+  define: {
+    "process.env": {},
   },
 });

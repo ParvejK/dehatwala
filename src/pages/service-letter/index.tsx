@@ -38,7 +38,7 @@ function ServiceLetterPage() {
   const [isButtonOpen, setIsButtonOpen] = useState(true);
 
   //Google Gio Locatoon
-  const [coords, setCoords] = useState({ lat: '', lon: '' });
+  // const [coords, setCoords] = useState({ lat: '', lon: '' });
   const [loading, setLoading] = useState(false);
 
   // add balloon state
@@ -56,7 +56,7 @@ function ServiceLetterPage() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        setCoords({ lat: latitude, lon: longitude });
+        // setCoords({ lat: latitude, lon: longitude });
 
         try {
           const response = await fetch(
@@ -754,10 +754,10 @@ function ServiceLetterPage() {
           <div aria-hidden className="pointer-events-none fixed inset-0 z-[9999]">
             <div className="balloon-stage" style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
               {Array.from({ length: 40 }).map((_, i) => {
-                const left = ((i * 7 + (i % 5) * 11) % 100); // spread across width
+                const left = ((i * 7 + (i % 5) * 11) % 100);
                 const size = 28 + (i % 6) * 6;
-                const duration = 3.2 + (i % 5) * 0.6; // seconds
-                const delay = (i * 0.08) % 1.6; // seconds
+                const duration = 3.2 + (i % 5) * 0.6;
+                const delay = (i * 0.08) % 1.6;
                 return (
                   <div
                     key={i}
@@ -765,7 +765,7 @@ function ServiceLetterPage() {
                     style={
                       {
                         position: "absolute",
-                        top: `-20vh`, // start well above viewport
+                        top: `-20vh`,
                         left: `${left}%`,
                         width: `${size}px`,
                         height: `${Math.round(size * 1.3)}px`,

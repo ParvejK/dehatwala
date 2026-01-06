@@ -1,5 +1,5 @@
 import axios from "axios";
-import { employeeFormData } from "../schema/permanent-service/schema";
+import { EmployeeFormData } from "../schema/permanent-service/schema";
 import { FormJoinUsType } from "../schema/step-form";
 import {
   BlogProps,
@@ -77,7 +77,7 @@ export const fetchPermanentService = (serviceId: number) =>
  * Post User Data
  */
 
-export const postEmployeeData = async (data: employeeFormData) => {
+export const postEmployeeData = async (data: EmployeeFormData) => {
   const response = await axios.post(`${API_URL}/save-query-permanent-service`, data);
   return response.data;
 };

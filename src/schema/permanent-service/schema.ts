@@ -13,8 +13,13 @@ export const employeeSchema = z.object({
   state_id: z.string().min(1, "State is required"),
   city_id: z.string().min(1, "City is required"),
   address: z.string().min(1, { message: "Address is required" }),
-  Mason: z.number().min(1, { message: "Mason count is required" }),
-  helper: z.number().min(1, { message: "Helper count is required" }),
+  pincode: z
+    .string()
+    .min(5, { message: "Pincode must be at least 5 characters" })
+    .max(10, { message: "Pincode must not exceed 10 characters" }),
+
+  Mason: z.number().min(0, { message: "Mason count must be at least 0" }),
+  helper: z.number().min(0, { message: "Helper count must be at least 0" }),
 
   service_id: z.number().optional(),
   permanent_service_id: z.number().optional(),
@@ -23,13 +28,12 @@ export const employeeSchema = z.object({
   faculties: z.array(z.string()).optional(),
 
   year: z.number().optional(),
-  month: z.number().min(0, { message: "Month is required" }),
-  day: z.number().min(0, { message: "Day is required" }),
+  month: z.number().min(1).max(12, { message: "Month must be between 1 and 12" }),
+  day: z.number().min(1).max(31, { message: "Day must be between 1 and 31" }),
   employee_position: z.string().min(1, { message: "Employee position is required" }),
 
   upload_photos: z
     .array(z.instanceof(File))
-    .min(1, "At least one photo is required")
     .max(10, "Maximum 10 photos allowed")
     .optional(),
 
@@ -41,4 +45,4 @@ export const employeeSchema = z.object({
   }),
 });
 
-export type employeeFormData = z.infer<typeof employeeSchema>;
+export type EmployeeFormData = z.infer<typeof employeeSchema>;

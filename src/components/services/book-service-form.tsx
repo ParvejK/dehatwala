@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { getCities, getStates, postEmployeeData } from "../../react-query/apis";
-import { employeeFormData, employeeSchema } from "../../schema/permanent-service/schema";
+import { EmployeeFormData, employeeSchema } from "../../schema/permanent-service/schema";
 import { useEffect, useState } from "react";
 import { ApiErrorResponse, CitiesResponse, StateProps } from "../../types";
 import { X } from "lucide-react";
@@ -45,7 +45,7 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
     watch,
     control,
     formState: { errors },
-  } = useForm<employeeFormData>({
+  } = useForm<EmployeeFormData>({
     resolver: zodResolver(employeeSchema),
     defaultValues: {
       faculties: [],
@@ -90,7 +90,7 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
     }
   };
 
-  const onSubmit = (data: employeeFormData) => {
+  const onSubmit = (data: EmployeeFormData) => {
     const formData = new FormData();
 
     formData.append("service_id", serviceId.toString());
@@ -111,7 +111,7 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
     });
 
     // Submit the formData using mutation
-    mutation.mutate(formData as unknown as employeeFormData);
+    mutation.mutate(formData as unknown as EmployeeFormData);
   };
 
   const removeFile = (index: number) => {
@@ -265,8 +265,8 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
                 placeholder="Type here"
                 className="input input-bordered w-full font-medium text-sm"
               />
-              {errors.pincode && (
-                <p className="text-xs text-red-600 font-normal mt-2">{errors.pincode.message}</p>
+              {errors?.pincode && (
+                <p className="text-xs text-red-600 font-normal mt-2">{errors?.pincode?.message}</p>
               )}
             </div>
             </div>

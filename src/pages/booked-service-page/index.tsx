@@ -125,7 +125,7 @@ const BookedServicePage = () => {
     );
   if (error instanceof Error) return <p>Error: {error.message}</p>;
 
-  // Table
+  // Table headers
   const headers = [
     "#ID",
     "Service Detail",
@@ -162,6 +162,7 @@ const BookedServicePage = () => {
         `₹${service.total_amount.toFixed(2)}`,
       ],
     })) || [];
+
   return (
     <div className="mt-10 mb-[100px] min-h-[50vh]">
       <Container>
