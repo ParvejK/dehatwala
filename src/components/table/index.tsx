@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NoDataFound from "../no-data-found";
+import { API_URL } from "../../react-query/constants";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 interface TableRow {
   serviceId: number;
@@ -12,9 +15,12 @@ interface TableRow {
 interface TableProps {
   headers: string[];
   rows: TableRow[];
+  userId: number;
+  token: string;
+  refetch: () => void;
 }
 
-const Table: React.FC<TableProps> = ({ headers, rows }) => {
+const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) => {
   const redirect = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10; // Number of rows to display per page
@@ -51,30 +57,42 @@ const Table: React.FC<TableProps> = ({ headers, rows }) => {
 
   const handleReschedule = async () => {
     if (!selectedDate) {
-      alert("Please select a future date");
+      toast.error("Please select a future date");
       return;
     }
     setIsLoading(true);
     try {
-      const response = await fetch("/api/update-book-date", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const response = await axios.post(
+        `${API_URL}/reschedule-booked-service`,
+        {
+          user_id: userId,
           bookingId: selectedBookingId,
           newDate: selectedDate,
-        }),
-      });
-      if (response.ok) {
-        alert("Service rescheduled successfully");
+          timeSlot: "Morning",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Service rescheduled successfully");
         setShowReschedulePopup(false);
         setSelectedBookingId(null);
         setSelectedDate("");
+        refetch(); // Refresh table data
       } else {
-        alert("Failed to reschedule service");
+        toast.error("Failed to reschedule service");
       }
     } catch (error) {
       console.error("Reschedule error:", error);
-      alert("Error rescheduling service");
+      toast.error(
+        axios.isAxiosError(error)
+          ? error.response?.data?.message || "Error rescheduling service"
+          : "Error rescheduling service"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -83,23 +101,33 @@ const Table: React.FC<TableProps> = ({ headers, rows }) => {
   const handleCancelService = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/cancel-service", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const response = await axios.post(
+        `${API_URL}/cancel-booked-service`,
+        {
+          user_id: userId,
           bookingId: selectedBookingId,
-        }),
-      });
-      if (response.ok) {
-        alert("Service cancelled successfully");
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Service cancelled successfully");
         setShowCancelPopup(false);
         setSelectedBookingId(null);
+        refetch(); // Refresh table data
       } else {
-        alert("Failed to cancel service");
+        toast.error("Failed to cancel service");
       }
     } catch (error) {
       console.error("Cancel error:", error);
-      alert("Error cancelling service");
+      toast.error(
+        axios.isAxiosError(error)
+          ? error.response?.data?.message || "Error cancelling service"
+          : "Error cancelling service"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -160,16 +188,13 @@ const Table: React.FC<TableProps> = ({ headers, rows }) => {
                     </div>
                   </td>
                   <td className="max-w-[300px]">
-                    <td>
-                      <ul>
-                        {Object.entries(row.instantService).map(([key, value]) => (
-                          <li key={key}>
-                            <strong>{key}:</strong> {value}
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-
+                    <ul>
+                      {Object.entries(row.instantService || {}).map(([key, value]) => (
+                        <li key={key}>
+                          <strong>{key}:</strong> {value}
+                        </li>
+                      ))}
+                    </ul>
                   </td>
                 </tr>
               ))}
@@ -215,6 +240,7 @@ const Table: React.FC<TableProps> = ({ headers, rows }) => {
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               className="input input-bordered w-full mb-4"
+              min={new Date().toISOString().split("T")[0]}
             />
             <div className="flex gap-2">
               <button

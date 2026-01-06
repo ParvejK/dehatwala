@@ -108,7 +108,7 @@ const BookedServicePage = () => {
     }
   }, [token, userId, navigate]);
 
-  const { data, isLoading, error } = useBookedService(userId, token || "");
+  const { data, isLoading, error, refetch } = useBookedService(userId, token || "");
 
   if (isLoading)
     return (
@@ -160,14 +160,13 @@ const BookedServicePage = () => {
         `₹${service.tip.toFixed(2)}`,
         service.transaction_id || "N/A",
         `₹${service.total_amount.toFixed(2)}`,
-        // service.instant_service_obj ? JSON.stringify(service.instant_service_obj, null, 2) : "N/A",
       ],
     })) || [];
   return (
     <div className="mt-10 mb-[100px] min-h-[50vh]">
       <Container>
         <h2 className="text-xl md:text-2xl font-semibold mb-10">Booked Services</h2>
-        <Table headers={headers} rows={rows} />
+        <Table headers={headers} rows={rows} userId={userId} token={token} refetch={refetch} />
       </Container>
     </div>
   );
