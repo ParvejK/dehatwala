@@ -412,10 +412,28 @@ interface CheckAvailabilityPayload {
   pincode: string;
 }
 
+interface ServiceArea {
+  id: number;
+  country_id: number;
+  state_id: number;
+  city_id: number;
+  name: string;
+  address_line1?: string | null;
+  address_line2?: string | null;
+  landmark?: string | null;
+  pincode?: string | null;
+  latitude?: number | string | null;
+  longitude?: number | string | null;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 interface CheckAvailabilityResponse {
   success: boolean;
   available: boolean;
   message?: string;
+  service_area?: ServiceArea;
 }
 
 interface PolicyType {

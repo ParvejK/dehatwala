@@ -194,6 +194,7 @@ function ServiceLetterPage() {
     mode: z.enum(["day", "hour"]).optional(),
     pick_and_drop: z.enum(["0", "1"]).optional(),
     display_title: z.string().optional(),
+    service_area_id: z.union([z.string(), z.number()]).optional(),
     tip: z.number().optional(),
     coupon_code: z.string().optional(),
     coupon_discounted: z.number().optional(),
@@ -242,6 +243,8 @@ function ServiceLetterPage() {
 
   const isUnavailable =
     isAvailabilityReady && availabilityData !== undefined && availabilityData.available === false;
+  const serviceAreaId = availabilityData?.service_area?.id;
+  const hasServiceAreaId = serviceAreaId !== undefined && serviceAreaId !== null;
 
   // Build a clean instant_service_obj payload with only schema fields,
   // so we don't ship the whole zustand store state to the backend.
@@ -405,6 +408,7 @@ function ServiceLetterPage() {
       mode: mode as "day" | "hour",
       pick_and_drop: "0" as "0" | "1",
       display_title: (localStorage.getItem("service-title") || "").trim(),
+      service_area_id: serviceAreaId,
       tip: tip,
       total_amount: totalAmountToSend,
       // total_amount: totalPrice,
@@ -558,6 +562,7 @@ function ServiceLetterPage() {
       mode: mode as "day" | "hour",
       pick_and_drop: "0" as "0" | "1",
       display_title: (localStorage.getItem("service-title") || "").trim(),
+      service_area_id: serviceAreaId,
       tip: tip,
       total_amount: totalAmountToSend,
       coupon_code: isCouponApplied ? appliedCouponCode : "",
@@ -881,7 +886,7 @@ function ServiceLetterPage() {
                 <button
                   onClick={handleSubmit(onSubmit)}
                   type="submit"
-                  disabled={!active || isPaymentLoading || isUnavailable}
+                  disabled={!active || isPaymentLoading || isUnavailable || !hasServiceAreaId}
                   className="btn btn-primary flex-1 mt-4"
                 >
                   {isPaymentLoading ? (
@@ -896,7 +901,7 @@ function ServiceLetterPage() {
               ) : (
                 <button
                   onClick={handleSubmit(handleCODSubmit)}
-                  disabled={isPaymentLoading || isUnavailable}
+                  disabled={isPaymentLoading || isUnavailable || !hasServiceAreaId}
                   type="submit"
                   className="btn btn-primary flex-1 mt-4"
                 >
