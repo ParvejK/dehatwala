@@ -44,9 +44,9 @@ const ContactUsPage = () => {
   return (
     <div>
       <SmallBanner
-        bgImage="/images/road.jpg"
+        bgImage="/images/contact-banner.png"
         title="Contact Us"
-        content="Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order."
+        content="We'd love to hear from you — call, email, or drop by our office anytime."
       />
       <Container className="my-10">
         <div className="flex flex-col md:flex-row gap-10 max-w-[1000px] mx-auto mb-[100px]">

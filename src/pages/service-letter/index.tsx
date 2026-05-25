@@ -47,7 +47,7 @@ function ServiceLetterPage() {
 
   const fetchLocation = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
+      toast.error("Geolocation is not supported by your browser.");
       return;
     }
 
@@ -56,25 +56,37 @@ function ServiceLetterPage() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        // setCoords({ lat: latitude, lon: longitude });
 
         try {
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            `https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=${latitude}&lon=${longitude}`,
+            { headers: { "Accept-Language": "en" } }
           );
           const data = await response.json();
-          console.log(data.display_name || 'Address not found.');
-        } catch (error) {
-          console.error('Error:', error);
-          console.log('Unable to fetch address.');
-        }
 
+          if (data?.display_name) {
+            setValue("address", data.display_name, { shouldValidate: true, shouldDirty: true });
+          }
+          if (data?.address?.postcode) {
+            setValue("pincode", String(data.address.postcode), { shouldValidate: true, shouldDirty: true });
+          }
+          toast.success("Location fetched.");
+        } catch (error) {
+          console.error("Reverse geocoding error:", error);
+          toast.error("Unable to fetch address.");
+        } finally {
+          setLoading(false);
+        }
+      },
+      (err) => {
+        const msg =
+          err.code === err.PERMISSION_DENIED
+            ? "Location permission denied. Please allow access in your browser."
+            : "Unable to retrieve your location.";
+        toast.error(msg);
         setLoading(false);
       },
-      () => {
-        alert('Unable to retrieve your location.');
-        setLoading(false);
-      }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   };
 
@@ -198,6 +210,7 @@ function ServiceLetterPage() {
     register,
     watch,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import NoDataFound from "../no-data-found";
 
 interface TableRow {
-  rowData: (string | number)[];
+  rowData: React.ReactNode[];
 }
 
 interface TableProps {

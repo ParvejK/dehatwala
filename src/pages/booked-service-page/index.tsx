@@ -146,6 +146,9 @@ const BookedServicePage = () => {
     data?.booked_services.map((service) => ({
       bookedServiceId: service.id,
       serviceId: service.service_id,
+      bookDate: service.book_date,
+      timeSlot: service.time_slot,
+      serviceTitle: service.service_title,
       instantService: service.instant_service_obj,
       rowData: [
         service.id,

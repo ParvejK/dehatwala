@@ -78,6 +78,7 @@ export default function InstantServiceReviewForm() {
     onSuccess: () => {
       reset();
       toast.success("Review submitted successfully!");
+      navigate("/service-reviews");
     },
     onError: (error: unknown) => {
       // Check if the error is an AxiosError and has a response

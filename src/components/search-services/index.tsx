@@ -70,38 +70,49 @@ const SearchServices = () => {
 
   return (
     <div className="bg-accent p-3">
-      <div className="flex justify-center items-center">
-        <form onSubmit={handleSearch}>
-          <div className="md:flex md:items-center md:border rounded-md md:rounded-full px-2 py-1 bg-white overflow-hidden">
-            <div>
-              <select
-                className="w-full md:min-w-[300px] py-4 px-6 outline-none"
-                id="category_id"
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                required
-              >
-                <option value="" disabled>
-                  search service
+      <div className="flex justify-center items-center px-4">
+        <form onSubmit={handleSearch} className="w-full max-w-3xl">
+          <div className="flex flex-col md:flex-row md:items-stretch bg-white rounded-2xl md:rounded-full border border-gray-200 shadow-sm overflow-hidden divide-y md:divide-y-0 md:divide-x divide-gray-200">
+            <select
+              className="flex-1 min-w-0 py-3 md:py-4 px-5 outline-none bg-white text-sm md:text-base text-gray-700 cursor-pointer"
+              id="category_id"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Select a category
+              </option>
+              {data.categories.map((service) => (
+                <option key={service.id} value={service.id}>
+                  {service.name}
                 </option>
-                {data.categories.map((service) => (
-                  <option key={service.id} value={service.id}>
-                    {service.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center">
+              ))}
+            </select>
+
+            <div className="flex-1 min-w-0 flex items-center md:gap-2 px-2 md:px-3 py-2">
               <input
                 type="text"
                 id="kyword"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="Enter keyword"
-                className="w-full md:min-w-[300px] py-4 px-6 outline-none md:border-l md:border-accent"
+                placeholder="Search by service title..."
+                className="flex-1 min-w-0 py-2 md:py-3 px-3 outline-none text-sm md:text-base placeholder:text-gray-400"
               />
-              <button type="submit" disabled={isPending} className="btn btn-secondary text-white rounded-full">
-                <IoIosSearch size={28} />
+              <button
+                type="submit"
+                disabled={isPending}
+                aria-label="Search"
+                className="btn btn-secondary text-white rounded-full px-4 md:px-5 min-h-0 h-10 md:h-12 flex items-center gap-1 disabled:opacity-60"
+              >
+                {isPending ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  <>
+                    <IoIosSearch size={22} />
+                    <span className="hidden md:inline text-sm">Search</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

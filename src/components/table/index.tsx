@@ -8,6 +8,9 @@ import toast from "react-hot-toast";
 interface TableRow {
   serviceId: number;
   bookedServiceId: number;
+  bookDate?: string;
+  timeSlot?: string;
+  serviceTitle?: string;
   instantService: InstantServiceObj;
   rowData: (string | number)[];
 }
@@ -29,6 +32,10 @@ const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) 
   const [showCancelPopup, setShowCancelPopup] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedServiceTitle, setSelectedServiceTitle] = useState<string>("");
+  const [originalDate, setOriginalDate] = useState<string>("");
+  const [originalTime, setOriginalTime] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   // Calculate the range of rows for the current page
@@ -44,20 +51,71 @@ const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) 
     }
   };
 
-  const openReschedulePopup = (bookedServiceId: number) => {
+  // Normalize various API date formats to the yyyy-MM-dd that <input type="date"> expects
+  const toDateInputValue = (raw?: string) => {
+    if (!raw) return "";
+    const trimmed = raw.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+    const d = new Date(trimmed);
+    if (isNaN(d.getTime())) return "";
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  // Normalize various time formats ("HH:MM", "HH:MM:SS", "9:30 AM") to "HH:MM"
+  const toTimeInputValue = (raw?: string) => {
+    if (!raw) return "";
+    const trimmed = raw.trim();
+    const m24 = trimmed.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+    if (m24) {
+      const h = String(Math.min(23, parseInt(m24[1], 10))).padStart(2, "0");
+      return `${h}:${m24[2]}`;
+    }
+    const m12 = trimmed.match(/^(\d{1,2}):(\d{2})\s*([AaPp][Mm])$/);
+    if (m12) {
+      let h = parseInt(m12[1], 10) % 12;
+      if (m12[3].toLowerCase() === "pm") h += 12;
+      return `${String(h).padStart(2, "0")}:${m12[2]}`;
+    }
+    return "";
+  };
+
+  const openReschedulePopup = (
+    bookedServiceId: number,
+    bookDate?: string,
+    timeSlot?: string,
+    serviceTitle?: string
+  ) => {
+    const date = toDateInputValue(bookDate);
+    const time = toTimeInputValue(timeSlot);
     setSelectedBookingId(bookedServiceId);
-    setSelectedDate("");
+    setSelectedDate(date);
+    setSelectedTime(time);
+    setOriginalDate(date);
+    setOriginalTime(time);
+    setSelectedServiceTitle(serviceTitle || "");
     setShowReschedulePopup(true);
   };
 
-  const openCancelPopup = (bookedServiceId: number) => {
+  const openCancelPopup = (bookedServiceId: number, serviceTitle?: string) => {
     setSelectedBookingId(bookedServiceId);
+    setSelectedServiceTitle(serviceTitle || "");
     setShowCancelPopup(true);
   };
 
   const handleReschedule = async () => {
     if (!selectedDate) {
       toast.error("Please select a future date");
+      return;
+    }
+    if (!selectedTime) {
+      toast.error("Please select an arrival time");
+      return;
+    }
+    if (selectedDate === originalDate && selectedTime === originalTime) {
+      toast("No changes to update.", { icon: "ℹ️" });
       return;
     }
     setIsLoading(true);
@@ -68,7 +126,7 @@ const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) 
           user_id: userId,
           bookingId: selectedBookingId,
           newDate: selectedDate,
-          timeSlot: "Morning",
+          timeSlot: selectedTime,
         },
         {
           headers: {
@@ -82,6 +140,7 @@ const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) 
         setShowReschedulePopup(false);
         setSelectedBookingId(null);
         setSelectedDate("");
+        setSelectedTime("");
         refetch(); // Refresh table data
       } else {
         toast.error("Failed to reschedule service");
@@ -153,40 +212,59 @@ const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) 
             </thead>
             {/* Table Body */}
             <tbody>
-              {currentRows.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {row.rowData.map((cell, cellIndex) => (
-                    <td key={cellIndex}>{cell}</td>
-                  ))}
+              {currentRows.map((row, rowIndex) => {
+                // Booking is "over" when its scheduled date is strictly before today (date-only compare)
+                const isBookingOver = (() => {
+                  if (!row.bookDate) return false;
+                  const booked = new Date(row.bookDate);
+                  if (isNaN(booked.getTime())) return false;
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  booked.setHours(0, 0, 0, 0);
+                  return booked.getTime() < today.getTime();
+                })();
+                return (
+                  <tr key={rowIndex}>
+                    {row.rowData.map((cell, cellIndex) => (
+                      <td key={cellIndex}>{cell}</td>
+                    ))}
 
-                  <td>
-                    <div className="flex gap-2 flex-wrap">
-                      <button
-                        className="btn btn-xs btn-primary min-w-[100px]"
-                        onClick={() =>
-                          redirect(
-                            `/service-reviews/${btoa(row.bookedServiceId.toString())}/${btoa(row.serviceId.toString())}`
-                          )
-                        }
-                      >
-                        Add Reviews
-                      </button>
-                      <button
-                        className="btn btn-xs btn-info min-w-[100px]"
-                        onClick={() => openReschedulePopup(row.bookedServiceId)}
-                        disabled={isLoading}
-                      >
-                        Re-Schedule
-                      </button>
-                      <button
-                        className="btn btn-xs btn-error min-w-[100px]"
-                        onClick={() => openCancelPopup(row.bookedServiceId)}
-                        disabled={isLoading}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </td>
+                    <td>
+                      <div className="flex gap-2 flex-wrap">
+                        {isBookingOver && (
+                          <button
+                            className="btn btn-xs btn-primary min-w-[100px]"
+                            onClick={() =>
+                              redirect(
+                                `/service-reviews/${btoa(row.bookedServiceId.toString())}/${btoa(
+                                  row.serviceId.toString()
+                                )}`
+                              )
+                            }
+                          >
+                            Add Reviews
+                          </button>
+                        )}
+                        <button
+                          className="btn btn-xs btn-info min-w-[100px]"
+                          onClick={() =>
+                            openReschedulePopup(row.bookedServiceId, row.bookDate, row.timeSlot, row.serviceTitle)
+                          }
+                          disabled={isLoading || isBookingOver}
+                          title={isBookingOver ? "Booking date has passed" : undefined}
+                        >
+                          Re-Schedule
+                        </button>
+                        <button
+                          className="btn btn-xs btn-error min-w-[100px]"
+                          onClick={() => openCancelPopup(row.bookedServiceId, row.serviceTitle)}
+                          disabled={isLoading || isBookingOver}
+                          title={isBookingOver ? "Booking date has passed" : undefined}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </td>
                   <td className="max-w-[320px] align-top">
                     {(() => {
                       const raw = row.instantService as unknown;
@@ -245,7 +323,8 @@ const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) 
                     })()}
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
 
@@ -280,30 +359,83 @@ const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) 
 
       {/* Re-Schedule Popup */}
       {showReschedulePopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Re-Schedule Service</h2>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="input input-bordered w-full mb-4"
-              min={new Date().toISOString().split("T")[0]}
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={handleReschedule}
-                className="flex-1 btn btn-primary"
-                disabled={isLoading}
-              >
-                {isLoading ? "Updating..." : "Confirm"}
-              </button>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-[fadeIn_0.15s_ease-out]">
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-gray-100 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Re-Schedule Service</h2>
+                <p className="text-xs text-gray-500 mt-0.5">Update the date and arrival time</p>
+              </div>
               <button
                 onClick={() => setShowReschedulePopup(false)}
-                className="flex-1 btn btn-secondary"
+                disabled={isLoading}
+                aria-label="Close"
+                className="text-gray-400 hover:text-gray-700 transition disabled:opacity-50"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-5">
+              {selectedServiceTitle && (
+                <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 text-xs font-medium px-3 py-2 rounded-md">
+                  <span className="opacity-70">Service</span>
+                  <span className="font-semibold">{selectedServiceTitle}</span>
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="reschedule_date" className="block text-sm font-medium text-gray-700 mb-1">
+                  Date
+                </label>
+                <input
+                  id="reschedule_date"
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="input input-bordered w-full"
+                  min={new Date().toISOString().split("T")[0]}
+                />
+                <p className="text-xs text-gray-500 mt-1">(worker will reach on this date)</p>
+              </div>
+
+              <div>
+                <label htmlFor="reschedule_time" className="block text-sm font-medium text-gray-700 mb-1">
+                  Prefer Arrival Time
+                </label>
+                <input
+                  id="reschedule_time"
+                  type="time"
+                  value={selectedTime}
+                  onChange={(e) => setSelectedTime(e.target.value)}
+                  className="input input-bordered w-full"
+                />
+                <p className="text-xs text-gray-500 mt-1">(Select time slot when worker should start)</p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2">
+              <button
+                onClick={() => setShowReschedulePopup(false)}
+                className="btn btn-sm btn-ghost"
                 disabled={isLoading}
               >
                 Close
+              </button>
+              <button onClick={handleReschedule} className="btn btn-sm btn-primary min-w-[120px]" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <span className="loading loading-spinner loading-xs" />
+                    Updating...
+                  </>
+                ) : (
+                  "Confirm"
+                )}
               </button>
             </div>
           </div>
@@ -312,24 +444,71 @@ const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) 
 
       {/* Cancel Confirmation Popup */}
       {showCancelPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Cancel Service</h2>
-            <p className="mb-6 text-gray-600">Are you sure you want to cancel this service?</p>
-            <div className="flex gap-2">
-              <button
-                onClick={handleCancelService}
-                className="flex-1 btn btn-error"
-                disabled={isLoading}
-              >
-                {isLoading ? "Cancelling..." : "Yes, Cancel"}
-              </button>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-[fadeIn_0.15s_ease-out]">
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-gray-100 flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">Cancel Service</h2>
+                  <p className="text-xs text-gray-500 mt-0.5">This action cannot be undone</p>
+                </div>
+              </div>
               <button
                 onClick={() => setShowCancelPopup(false)}
-                className="flex-1 btn btn-secondary"
+                disabled={isLoading}
+                aria-label="Close"
+                className="text-gray-400 hover:text-gray-700 transition disabled:opacity-50"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-3">
+              {selectedServiceTitle && (
+                <div className="flex items-center gap-2 bg-red-50 border border-red-100 text-red-700 text-xs font-medium px-3 py-2 rounded-md">
+                  <span className="opacity-70">Service</span>
+                  <span className="font-semibold">{selectedServiceTitle}</span>
+                </div>
+              )}
+              <p className="text-sm text-gray-600">Are you sure you want to cancel this service?</p>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2">
+              <button
+                onClick={() => setShowCancelPopup(false)}
+                className="btn btn-sm btn-ghost"
                 disabled={isLoading}
               >
                 No, Keep it
+              </button>
+              <button
+                onClick={handleCancelService}
+                className="btn btn-sm btn-error min-w-[120px]"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <span className="loading loading-spinner loading-xs" />
+                    Cancelling...
+                  </>
+                ) : (
+                  "Yes, Cancel"
+                )}
               </button>
             </div>
           </div>

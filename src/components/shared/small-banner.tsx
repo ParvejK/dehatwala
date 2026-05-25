@@ -6,7 +6,7 @@ interface Props {
   bgImage?: string;
 }
 
-const SmallBanner: FC<Props> = ({ title, content, bgImage = "/images/cutting.jpg" }) => {
+const SmallBanner: FC<Props> = ({ title, content, bgImage = "/images/blog-banner.png" }) => {
   return (
     <header
       style={{ backgroundImage: `url(${bgImage})` }}
