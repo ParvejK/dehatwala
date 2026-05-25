@@ -37,7 +37,7 @@ export default function JobCategoriesPage() {
         <JobCategoryCarousel sliders={sliderData.data.sliders} />
       </div>
       <div className="mx-auto max-w-[500px] h-[60px] mb-0 md:mb-10 rounded-md flex justify-center items-center">
-        <h2 className="text-base md:text-2xl font-bold text-center">Choose Job by Categories</h2>
+        <h2 className="text-base md:text-2xl font-bold text-black text-center">Choose Job by Categories</h2>
       </div>
       <div className="container mx-auto px-0 md:px-4 mb-[100px]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

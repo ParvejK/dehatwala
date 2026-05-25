@@ -21,7 +21,7 @@ export default function DetailedJobListingPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="flex justify-center items-center h-[160px] md:h-[200px] bg-accent mb-10 rounded-md">
-        <h2 className="text-lg md:text-2xl font-bold text-center">Jobs by Categories</h2>
+        <h2 className="text-lg md:text-2xl font-bold text-black text-center">Jobs by Categories</h2>
       </div>
       <div className="container mx-auto px-0 md:px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

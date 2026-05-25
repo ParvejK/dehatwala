@@ -17,6 +17,7 @@ const HourService = () => {
   } = useHourRateStore();
 
   const [instantService, setInstantService] = useState<InstantService | null>(null);
+  const [serviceTitle, setServiceTitle] = useState<string>("");
 
   useEffect(() => {
     const prices = localStorage.getItem("day-prices");
@@ -25,16 +26,22 @@ const HourService = () => {
     } else {
       navigate("/error-page", { replace: true }); // Redirect if no data
     }
+    setServiceTitle(localStorage.getItem("service-title") || "");
   }, [navigate]);
 
   if (!instantService) {
     return null; // Prevent rendering if data is not loaded
   }
 
+  const masonLabel =
+    instantService.worker_1_label?.trim() || (serviceTitle ? `${serviceTitle} Mason` : "Mason");
+  const helperLabel =
+    instantService.worker_2_label?.trim() || (serviceTitle ? `${serviceTitle} Helper` : "Helper");
+
   return (
     <div className="mt-8 border p-4 rounded-md">
       <div className="flex justify-between items-center my-6">
-        <div className="font-semibold">Mason</div>
+        <div className="font-semibold">{masonLabel}</div>
         <div>{instantService.per_day_meason_rate || 200}/hour</div>
         <div className="flex items-center w-[180px]">
           <button className="w-[50px] font-semibold" onClick={decrementMasonHour}>
@@ -60,7 +67,7 @@ const HourService = () => {
         </div>
       </div>
       <div className="flex justify-between items-center my-6">
-        <div className="font-semibold">Helper</div>
+        <div className="font-semibold">{helperLabel}</div>
         <div>{instantService.per_hour_helper_rate || 200}/hour</div>
         <div className="flex items-center w-[180px]">
           <button className="w-[50px] font-semibold" onClick={decrementHelperHour}>

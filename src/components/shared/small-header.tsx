@@ -29,7 +29,7 @@ const SmallHeader = () => {
             <FaConnectdevelop size={18} />
             <span>Join us and Earn money</span>
           </Link>
-          <Link to="#" className="text-xs tracking-wide flex gap-2">
+          <Link to="/about-us" className="text-xs tracking-wide flex gap-2">
             <HelpCircle size={18} />
             <span>Help</span>
           </Link>

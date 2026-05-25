@@ -6,7 +6,7 @@ interface HeadingProps {
 }
 
 const HeadingPrimary = ({ children, className }: HeadingProps) => {
-  return <h2 className={twMerge("text-[26px] font-bold mb-2 capitalize", className)}>{children}</h2>;
+  return <h2 className={twMerge("text-[26px] font-bold text-black mb-2 capitalize", className)}>{children}</h2>;
 };
 
 export default HeadingPrimary;

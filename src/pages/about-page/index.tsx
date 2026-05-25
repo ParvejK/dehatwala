@@ -1,5 +1,5 @@
 import Container from "../../components/shared/container";
-import Testimonials from "../../components/shared/testimonials";
+import TopCompanies from "../../components/shared/top-companies";
 import TextCard from "../../components/shared/text-card";
 
 const AboutData = [
@@ -61,7 +61,7 @@ const AboutPage = () => {
               <img src="/images/road.jpg" alt="Construction site" className="rounded-lg shadow-lg" />
             </div>
             <div className="prose max-w-none space-y-4">
-              <h2 className="text-2xl md:text-3xl font-semibold mb-4">Who We Are</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">Who We Are</h2>
               <p>
                 We are India's First Online Construction Manpower Service provider at doorstep and construction sites.
               </p>
@@ -93,7 +93,7 @@ const AboutPage = () => {
               <img src="/images/road.jpg" alt="Construction site" className="rounded-lg shadow-lg" />
             </div>
             <div className="prose max-w-none space-y-4">
-              <h2 className="text-2xl md:text-3xl font-semibold">Our vision &amp; mission</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-black">Our vision &amp; mission</h2>
               <p>
                 Our vision is to simplify,this hiring Process by Providing Single Platform that could minimize the Gap
                 Between Construction company and construction labourers and empowering them with the right job as per
@@ -119,7 +119,7 @@ const AboutPage = () => {
               <img src="/images/road.jpg" alt="Construction site" className="rounded-lg shadow-lg" />
             </div>
             <div className="prose max-w-none space-y-4">
-              <h2 className="text-2xl md:text-3xl font-semibold">Why We are the best choice</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-black">Why We are the best choice</h2>
               <p>
                 India has nearly 70 million construction workers, and more than 30% workers are migrant and nomadic.
               </p>
@@ -151,7 +151,7 @@ const AboutPage = () => {
         {/* WHY US */}
         <div className="pb-16">
           <div className="mt-[100px]">
-            <h2 className="text-2xl font-semibold my-5 text-center">Why Choose us</h2>
+            <h2 className="text-2xl font-bold text-black my-5 text-center">Why Choose us</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {AboutData.map((data) => (
@@ -160,7 +160,7 @@ const AboutPage = () => {
           </div>
         </div>
         <div>
-          <Testimonials />
+          <TopCompanies />
         </div>
       </Container>
     </div>

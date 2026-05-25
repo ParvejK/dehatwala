@@ -23,13 +23,20 @@ const DayService = () => {
   } = useDayRateStore();
 
   const [instantService, setInstantService] = useState<InstantService | null>(null);
+  const [serviceTitle, setServiceTitle] = useState<string>("");
 
   useEffect(() => {
     const prices = localStorage.getItem("day-prices");
     if (prices) {
       setInstantService(JSON.parse(prices));
     }
+    setServiceTitle(localStorage.getItem("service-title") || "");
   }, []);
+
+  const masonLabel =
+    instantService?.worker_1_label?.trim() || (serviceTitle ? `${serviceTitle} Mason` : "Mason");
+  const helperLabel =
+    instantService?.worker_2_label?.trim() || (serviceTitle ? `${serviceTitle} Helper` : "Helper");
 
   // Show a message if no data is found in local storage
   if (!instantService) {
@@ -44,7 +51,7 @@ const DayService = () => {
     <div className="mt-8 border p-4 rounded-md">
       {/* Mason Section */}
       <div className="flex flex-col md:flex-row gap-2 justify-between items-center my-6">
-        <div className="font-semibold">Mason</div>
+        <div className="font-semibold">{masonLabel}</div>
         <div>{instantService.per_day_meason_rate || 800}/day</div>
         <div className="flex items-center w-[180px]">
           <button className="w-[50px] font-semibold" onClick={decrementMasonDay}>
@@ -72,7 +79,7 @@ const DayService = () => {
 
       {/* Helper Section */}
       <div className="flex flex-col md:flex-row gap-2 justify-between items-center my-6">
-        <div className="font-semibold">Helper</div>
+        <div className="font-semibold">{helperLabel}</div>
         <div>{instantService.per_day_helper_rate || 600}/day</div>
         <div className="flex items-center w-[180px]">
           <button className="w-[50px] font-semibold" onClick={decrementHelperDay}>
@@ -106,7 +113,7 @@ const DayService = () => {
 
         {/* Mason Overtime */}
         <div className="flex flex-col md:flex-row gap-2 justify-between items-center my-6">
-          <div className="font-semibold">Mason</div>
+          <div className="font-semibold">{masonLabel}</div>
           <div>{instantService.overtime_meason_rate || 200}/hour</div>
           <div className="flex items-center w-[180px]">
             <button className="w-[50px] font-semibold" onClick={decrementMasonOvertime}>
@@ -134,7 +141,7 @@ const DayService = () => {
 
         {/* Helper Overtime */}
         <div className="flex flex-col md:flex-row gap-2 justify-between items-center my-6">
-          <div className="font-semibold">Helper</div>
+          <div className="font-semibold">{helperLabel}</div>
           <div>{instantService.overtime_helper_rate || 150}/hour</div>
           <div className="flex items-center w-[180px]">
             <button className="w-[50px] font-semibold" onClick={decrementHelperOvertime}>
@@ -199,7 +206,7 @@ export default DayService;
 //   return (
 //     <div className="mt-8 border p-4 rounded-md">
 //       <div className="flex justify-between items-center my-6">
-//         <div className="font-semibold">Mason</div>
+//         <div className="font-semibold">{masonLabel}</div>
 //         <div>{instantService.per_day_meason_rate || 800}/day</div>
 //         <div className="flex items-center w-[180px]">
 //           <button className="w-[50px] font-semibold" onClick={decrementMasonDay}>
@@ -224,7 +231,7 @@ export default DayService;
 //         </div>
 //       </div>
 //       <div className="flex justify-between items-center my-6">
-//         <div className="font-semibold">Helper</div>
+//         <div className="font-semibold">{helperLabel}</div>
 //         <div>{instantService.per_day_helper_rate || 600}/day</div>
 //         <div className="flex items-center w-[180px]">
 //           <button className="w-[50px] font-semibold" onClick={decrementHelperDay}>
@@ -252,10 +259,10 @@ export default DayService;
 //         <hr className="my-10" />
 //         <div>
 //           <h3 className="font-semibold">Over Time</h3>
-//           <p>After 5 pm if you want these messo helpers to work overtime then then per hours rs will e chared.</p>
+//           <p>After 5 pm if you want these messo helpers to work overtime then then per hours rs will e Charged.</p>
 //         </div>
 //         <div className="flex justify-between items-center my-6">
-//           <div className="font-semibold">Mason</div>
+//           <div className="font-semibold">{masonLabel}</div>
 //           <div>{instantService.overtime_meason_rate || 200}/day</div>
 //           <div className="flex items-center w-[180px]">
 //             <button className="w-[50px] font-semibold" onClick={decrementMasonOvertime}>
@@ -280,7 +287,7 @@ export default DayService;
 //           </div>
 //         </div>
 //         <div className="flex justify-between items-center my-6">
-//           <div className="font-semibold">Helper</div>
+//           <div className="font-semibold">{helperLabel}</div>
 //           <div>{instantService.overtime_helper_rate || 150}/day</div>
 //           <div className="flex items-center w-[180px]">
 //             <button className="w-[50px] font-semibold" onClick={decrementHelperOvertime}>

@@ -18,7 +18,7 @@ const Footer = () => {
               />
             </Link>
             <p className="text-primary/60 text-sm">
-              Empowering local businesses across regions with Dehatwala.
+              Smart Manpower solutions for modern construction industry
             </p>
           </div>
           <div>
@@ -52,6 +52,11 @@ const Footer = () => {
               <li className="mb-4">
                 <Link to="https://www.facebook.com/share/1V7jqB3BXD/?mibextid=wwXIfr" className="hover:underline">
                   Facebook
+                </Link>
+              </li>
+              <li className="mb-4">
+                <Link to="https://www.instagram.com/dehatwala1?igsh=MTBtb2t4dHdxZWpzOA==" className="hover:underline">
+                  Instagram
                 </Link>
               </li>
               <li className="mb-4">

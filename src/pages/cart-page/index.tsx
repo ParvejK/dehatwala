@@ -1,4 +1,3 @@
-import { IndianRupee } from "lucide-react";
 import Container from "../../components/shared/container";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import CartPrices from "../../components/shared/cart-prices";
@@ -15,10 +14,9 @@ const CartPage = () => {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("service");
 
-  // Retrieve the query parameters &
-  // Get and decode the `id` parameter
+  // Retrieve the query parameters & get/decode the `slug` parameter
   const queryParams = new URLSearchParams(location.search);
-  const id = decodeURIComponent(queryParams.get("id") || "");
+  const slug = decodeURIComponent(queryParams.get("slug") || "");
 
   // Handle quick tip selection and apply directly
   const handleTipSelect = (value: number) => {
@@ -29,7 +27,7 @@ const CartPage = () => {
     }
   };
 
-  const { data, status } = useInstantServices(parseInt(id));
+  const { data, status } = useInstantServices(slug);
   if (status === "error") {
     return <p>Something went wrong..</p>;
   }
@@ -50,22 +48,27 @@ const CartPage = () => {
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center gap-2">
-                <input type="checkbox" defaultChecked className="checkbox" />
-                <p className="flex items-center text-[16px] gap-2">
-                  Pick & drop services free
-                  <s className="flex items-center text-[21px] italic">
-                    <IndianRupee size={18} />
-                    500
-                  </s>
+              <div className="mt-6">
+                <h3 className="text-[17px] font-semibold">Cancellation &amp; Reschedule</h3>
+                <ul className="mt-2 space-y-1 text-sm leading-6 list-disc pl-5">
+                  <li>Cancel 30 mins+ before &rarr; 1 Hour charge (if worker reached site)</li>
+                  <li>Cancel within 30 mins &rarr; Free</li>
+                  <li>Reschedule 30 mins+ before &rarr; Free (1 time only)</li>
+                  <li>Reschedule within 30 mins &rarr; Not allowed</li>
+                </ul>
+                <p className="mt-2 text-sm italic text-gray-600">
+                  All worker charges go directly to our labour partners.
                 </p>
               </div>
 
               <div className="mt-6">
-                <h3 className="text-[17px] font-medium">Note</h3>
-                <p className="text-xs leading-5 font-normal">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                </p>
+                <h3 className="text-[17px] font-semibold">Important Points</h3>
+                <ul className="mt-2 space-y-1 text-sm leading-6 list-disc pl-5">
+                  <li>Worker arrival time at site (GPS + timestamp) will be final proof.</li>
+                  <li>No overtime if customer cancels before 30 minutes of scheduled time.</li>
+                  <li>Waiting time starts from the scheduled service start time.</li>
+                  <li>Maximum overtime limit per booking = 4 Hours (after that service may be considered cancelled).</li>
+                </ul>
               </div>
             </div>
           )}

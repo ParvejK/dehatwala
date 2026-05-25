@@ -7,8 +7,8 @@ import PermanentServiceLoading from "../../components/services/loader/permanent-
 import DOMPurify from "dompurify";
 
 const PermanentServices = () => {
-  const { id } = useParams();
-  const { data, status } = usePermanentServices(parseInt(id));
+  const { slug } = useParams();
+  const { data, status } = usePermanentServices(slug || "");
 
   if (status === "error") {
     return <div className="min-h-screen flex justify-center items-center">Something went wrong try again</div>;
@@ -30,7 +30,7 @@ const PermanentServices = () => {
             <li>Permanent Services</li>
           </ul>
         </div>
-        <h2 className="text-[24px] font-semibold mt-4">Permanent Services</h2>
+        <h2 className="text-[24px] font-bold text-black mt-4">Permanent Services</h2>
         <ServicesCarouselCard data={data.slider_slogans} />
         <div className="text-[24px] font-semibold mb-6">
           <BookServicesForm
@@ -39,7 +39,7 @@ const PermanentServices = () => {
           />
         </div>
         <div className="mt-10">
-          <h3 className="text-base font-semibold md:text-lg">Notes</h3>
+          <h3 className="text-base font-semibold md:text-lg">How Permanent Service Works</h3>
           <div className="space-y-3">
             <div
               className="bg-gray-100 rounded-md px-3 py-2"
@@ -59,7 +59,7 @@ const PermanentServices = () => {
             />
           </div>
         </div>
-        <div className="bg-accent p-6 rounded-md mt-10">
+        {/* <div className="bg-accent p-6 rounded-md mt-10">
           <h2 className="text-xl md:text-[38px] font-semibold text-center mb-6">Customercare services</h2>
           <h2 className="text-base md:text-[24px] font-medium text-center">+00-8676767676767</h2>
           <div className="md:flex md:justify-center md:gap-5 space-y-3 md:space-y-0 mt-10">
@@ -76,7 +76,7 @@ const PermanentServices = () => {
               <p className="text-xs font-medium">+91-898989898999</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </Container>
     </div>
   );

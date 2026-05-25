@@ -79,24 +79,14 @@ const ServicesDetailsPage = () => {
       <Container className="mb-[80px]">
         <div className="md:px-6 space-y-6 mb-6">
           <div className="mt-8">
-            <h2 className="text-2xl font-semibold">{service.title}</h2>
-            <div className="mt-2 flex items-center gap-5">
-              <span className="text-sm text-primary font-normal">
-                {new Date(service.created_at).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-              <span className="bg-accent text-primary text-xs px-3 py-1 rounded-md ml-2">{service.category_name}</span>
-            </div>
+            <h2 className="text-2xl font-bold text-black">{service.title}</h2>
             <p className="mt-2">{service.short_description}</p>
           </div>
         </div>
         <div className="md:flex md:gap-6">
           <div className="flex-1 px-0 md:px-6 space-y-6">
             <div>
-              <h2 className="font-semibold text-lg">Description</h2>
+              <h2 className="font-bold text-lg text-black">Description</h2>
               <div
                 className="mt-4 md:mt-10"
                 dangerouslySetInnerHTML={{
@@ -160,7 +150,7 @@ const ServicesDetailsPage = () => {
               <hr className="mb-6" />
             </div>
             <div>
-              <h2 className="font-semibold text-lg mb-6 mt-[60px]">Customer Reviews</h2>
+              <h2 className="font-bold text-lg text-black mb-6 mt-[60px]">Customer Reviews</h2>
               <hr className="mb-6" />
               <div className="space-y-6">
                 <UserRatingCard reviews={service.reviews} />
@@ -169,14 +159,14 @@ const ServicesDetailsPage = () => {
             <div>
               <div className="md:flex md:justify-between mt-[100px] space-y-6 md:space-y-0">
                 <button
-                  onClick={() => redirect(`/permanent-service/${service.id}`)}
+                  onClick={() => redirect(`/service/permanent/${service.slug}`)}
                   className="btn btn-primary w-full md:w-auto capitalize"
                   disabled={service.is_permanent_service != 1}
                 >
                   Get permanent Service
                 </button>
                 <button
-                  onClick={() => redirect(`/instant-service/${service.id}`)}
+                  onClick={() => redirect(`/service/instant/${service.slug}`)}
                   className="btn btn-primary w-full md:w-auto capitalize"
                   disabled={service.is_instant_service != 1}
                 >

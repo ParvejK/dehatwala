@@ -59,15 +59,15 @@ const router = createBrowserRouter([
         element: <BlogDetailPage />,
       },
       {
-        path: "/instant-service/:id",
+        path: "/service/instant/:slug",
         element: <InstantServices />,
       },
       {
-        path: "/permanent-service/:id",
+        path: "/service/permanent/:slug",
         element: <PermanentServices />,
       },
       {
-        path: "/services-detail/:slug",
+        path: "/services/detail/:slug",
         element: <ServicesDetailsPage />,
       },
       {

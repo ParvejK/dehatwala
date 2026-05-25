@@ -166,7 +166,7 @@ const BookedServicePage = () => {
   return (
     <div className="mt-10 mb-[100px] min-h-[50vh]">
       <Container>
-        <h2 className="text-xl md:text-2xl font-semibold mb-10">Booked Services</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-black mb-10">Booked Services</h2>
         <Table headers={headers} rows={rows} userId={userId} token={token} refetch={refetch} />
       </Container>
     </div>

@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { API_URL } from "../../react-query/constants";
 import toast from "react-hot-toast";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 const contactSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -48,10 +49,10 @@ const ContactUsPage = () => {
         content="Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order."
       />
       <Container className="my-10">
-        <div className="flex flex-col md:flex-row gap-10 max-w-[800px] mx-auto mb-[100px]">
-          <div className="w-full md:w-[70%]">
+        <div className="flex flex-col md:flex-row gap-10 max-w-[1000px] mx-auto mb-[100px]">
+          <div className="w-full md:w-[60%]">
             <div className="mb-6">
-              <h2 className="text-2xl font-semibold">Drop us a line</h2>
+              <h2 className="text-2xl font-bold text-black">Drop us a line</h2>
             </div>
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <div>
@@ -87,26 +88,66 @@ const ContactUsPage = () => {
               </button>
             </form>
           </div>
-          <div className="w-full md:w-[30%]">
-            <div className="mb-6">
-              <h2 className="text-lg md:text-2xl font-semibold">Find our offices</h2>
-              <address className="space-y-5 text-sm md:font-base">
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-                <ul className="text-sm md:font-base space-y-4">
-                  <li>
-                    <b>Line 1:</b> Your address
+
+          <div className="w-full md:w-[40%]">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary/80 p-6 md:p-8 text-white shadow-xl">
+              <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+              <div className="absolute -bottom-12 -left-12 h-44 w-44 rounded-full bg-white/5 blur-3xl" />
+
+              <div className="relative">
+                <h2 className="text-2xl font-bold mb-1">Find our offices</h2>
+                <p className="text-sm text-white/80 mb-6">
+                  We'd love to hear from you. Reach out anytime.
+                </p>
+
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3 rounded-xl bg-white/10 backdrop-blur-sm p-3 transition hover:bg-white/15">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20">
+                      <MapPin className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-wide text-white/70">Address</p>
+                      <p className="text-sm font-medium leading-snug">
+                        161/56 Joga Bai, Okhla Gafoor Nagar Road, Jamia Nagar, New Delhi-110025.
+                      </p>
+                    </div>
                   </li>
-                  <li>
-                    <b>Line 2:</b> Your address
+
+                  <li className="flex items-start gap-3 rounded-xl bg-white/10 backdrop-blur-sm p-3 transition hover:bg-white/15">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20">
+                      <Phone className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-wide text-white/70">Contact</p>
+                      <a href="tel:+919000878099" className="text-sm font-medium hover:underline">
+                        +91-90008780999
+                      </a>
+                    </div>
                   </li>
-                  <li>
-                    <b>Contact:</b> +91-90008780999
+
+                  <li className="flex items-start gap-3 rounded-xl bg-white/10 backdrop-blur-sm p-3 transition hover:bg-white/15">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20">
+                      <Mail className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-wide text-white/70">Email</p>
+                      <a href="mailto:info@dehatwala.com" className="text-sm font-medium hover:underline break-all">
+                        info@dehatwala.com
+                      </a>
+                    </div>
                   </li>
-                  <li>
-                    <b>Email:</b> email@mail.com
+
+                  <li className="flex items-start gap-3 rounded-xl bg-white/10 backdrop-blur-sm p-3 transition hover:bg-white/15">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20">
+                      <Clock className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-wide text-white/70">Working Hours</p>
+                      <p className="text-sm font-medium">Mon - Sat: 9:00 AM - 7:00 PM</p>
+                    </div>
                   </li>
                 </ul>
-              </address>
+              </div>
             </div>
           </div>
         </div>

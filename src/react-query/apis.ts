@@ -25,6 +25,10 @@ import {
   SliderProps,
   StateProps,
   SubCategoryProps,
+  TopCompaniesApiResponse,
+  LabourTestimonialsApiResponse,
+  CheckAvailabilityPayload,
+  CheckAvailabilityResponse,
 } from "../types";
 import { API_URL } from "./constants";
 
@@ -66,11 +70,11 @@ export const fetchJobCarousel = () => axios.get<JobSliderProps>(`${API_URL}/job-
  * Get Slider data.
  */
 
-export const fetchInstantService = (serviceId: number) =>
-  axios.get<InstantApiResponse>(`${API_URL}/get-instant-service/${serviceId}`).then((res) => res.data);
+export const fetchInstantService = (slug: string) =>
+  axios.get<InstantApiResponse>(`${API_URL}/get-instant-service/${slug}`).then((res) => res.data);
 
-export const fetchPermanentService = (serviceId: number) =>
-  axios.get<PermanentServiceResponse>(`${API_URL}/get-permanent-service/${serviceId}`).then((res) => res.data);
+export const fetchPermanentService = (slug: string) =>
+  axios.get<PermanentServiceResponse>(`${API_URL}/get-permanent-service/${slug}`).then((res) => res.data);
 
 /**
  * @PermanentService
@@ -175,6 +179,33 @@ export const getClients = async () => {
 
 export const getPartners = async () => {
   const response = await axios.get<PartnersApiResponse>(`${API_URL}/get-partners`);
+  return response.data;
+};
+
+/**
+ * @Apply Top Companies
+ */
+
+export const getTopCompanies = async () => {
+  const response = await axios.get<TopCompaniesApiResponse>(`${API_URL}/get-top-companies`);
+  return response.data;
+};
+
+/**
+ * @Labour Testimonials
+ */
+
+export const getLabourTestimonials = async () => {
+  const response = await axios.get<LabourTestimonialsApiResponse>(`${API_URL}/labour-testimonials`);
+  return response.data;
+};
+
+/**
+ * @CheckAvailability
+ * Check if service is available for the given state / city / pincode
+ */
+export const checkAvailability = async (payload: CheckAvailabilityPayload) => {
+  const response = await axios.post<CheckAvailabilityResponse>(`${API_URL}/check-availability`, payload);
   return response.data;
 };
 

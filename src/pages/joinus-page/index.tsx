@@ -1,5 +1,6 @@
 import JoinCarouselBanner from "../../components/joinus/join-carousel-banner";
 import StepForm from "../../components/joinus/step-form";
+import LabourTestimonials from "../../components/shared/labour-testimonials";
 
 const data = [
   {
@@ -51,6 +52,7 @@ const JoinUs = () => {
           </div>
         </div>
       </div>
+      <LabourTestimonials />
     </div>
   );
 };

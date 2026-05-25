@@ -33,7 +33,7 @@ const PolicyPage = () => {
   return (
     <div>
       <div className="container mx-auto p-14 min-h-[60vh] bg-gray-100 my-[60px] rounded-md">
-        <h1 className="text-center text-3xl font-semibold">{data.page.title}</h1>
+        <h1 className="text-center text-3xl font-bold text-black">{data.page.title}</h1>
         <div>
           <div
             className="mt-10"

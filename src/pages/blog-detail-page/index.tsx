@@ -34,7 +34,7 @@ const BlogDetailPage = () => {
             <div className="blog-content col-span-12 md:col-span-8">
               <div className="space-y-5">
                 <div>
-                  <h2 className="!mb-0">{blog.title}</h2>
+                  <h2 className="!mb-0 text-2xl font-bold text-black">{blog.title}</h2>
                   <span className="text-xs text-primary font-medium">
                     {new Date(blog.created_at).toLocaleDateString("en-US", {
                       year: "numeric",
@@ -59,7 +59,7 @@ const BlogDetailPage = () => {
               </div> */}
             </div>
             <div className="col-span-12 md:col-span-4 space-y-4">
-              <h2 className="text-base md:text-lg font-semibold mb-6">Related Blog</h2>
+              <h2 className="text-base md:text-lg font-bold text-black mb-6">Related Blog</h2>
               <SingleBlogCard blogId={slug} />
             </div>
           </div>

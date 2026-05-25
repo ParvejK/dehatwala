@@ -67,7 +67,7 @@ export default function JobListingsPage() {
       <div className="flex justify-center items-center py-6 bg-accent/40 mb-10 rounded-md">
         <div className="space-y-4">
           <div className="text-center">
-            <h2 className="text-2xl font-medium">Find Your Ideal Jobs</h2>
+            <h2 className="text-2xl font-bold text-black">Find Your Ideal Jobs</h2>
             <p>Search by Location, Industry, Experience, and Salary</p>
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

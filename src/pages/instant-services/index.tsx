@@ -12,7 +12,7 @@ import { useServiceStore } from "../../store/instant-service-store.ts";
 import DOMPurify from "dompurify";
 
 const InstantServices = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   //Need to pass over cart
 
   const setInstantServiceId = useServiceStore((state) => state.setInstantServiceId);
@@ -27,7 +27,7 @@ const InstantServices = () => {
 
   const { totalHourPrice } = useHourRateStore();
 
-  const { data, status } = useInstantServices(parseInt(id));
+  const { data, status } = useInstantServices(slug || "");
   if (status === "error") {
     return <p>Something went wrong..</p>;
   }
@@ -41,6 +41,7 @@ const InstantServices = () => {
   setInstantServiceId(data.instant_service.id);
   setServiceId(data.instant_service.service_id);
   localStorage.setItem("day-prices", JSON.stringify(data.instant_service));
+  localStorage.setItem("service-title", data.service?.title || "");
 
   const { instant_service } = data;
 
@@ -55,10 +56,10 @@ const InstantServices = () => {
             <li>Instant Services</li>
           </ul>
         </div>
-        <h2 className="text-xl md:text-[24px] font-semibold mb-6 mt-6">Instant Services</h2>
+        <h2 className="text-xl md:text-[24px] font-bold text-black mb-6 mt-6">Instant Services</h2>
         <ServicesCarouselCard data={data.slider_slogans} />
         <div className="mt-10">
-          <InstantServicesTab instantServiceData={data.instant_service} />
+          <InstantServicesTab instantServiceData={data.instant_service} serviceTitle={data.service?.title} />
         </div>
         <div className="flex justify-end mt-[50px] bg-accent p-[50px] rounded-md">
           <div className="flex items-center gap-4">
@@ -73,7 +74,7 @@ const InstantServices = () => {
         <div className="flex justify-end mt-[50px] mb-[100px]">
           <button
             className="btn btn-primary min-w-[300px]"
-            onClick={() => navigation(`/cart/?service=${mode === "day" ? "day" : "hour"}&id=${encodeURIComponent(id)}`)}
+            onClick={() => navigation(`/cart/?service=${mode === "day" ? "day" : "hour"}&slug=${encodeURIComponent(slug || "")}`)}
           >
             View Cart
           </button>

@@ -82,7 +82,7 @@ const SearchServices = () => {
                 required
               >
                 <option value="" disabled>
-                  Select a category
+                  search service
                 </option>
                 {data.categories.map((service) => (
                   <option key={service.id} value={service.id}>

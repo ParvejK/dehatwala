@@ -10,6 +10,8 @@ import {
   JobCategoryApiResponse,
   JobDetailApiResponse,
   PartnersApiResponse,
+  TopCompaniesApiResponse,
+  LabourTestimonialsApiResponse,
   PermanentServiceResponse,
   PolicyApiResponse,
   ServiceDetailApiResponse,
@@ -31,6 +33,8 @@ import {
   getClients,
   getFaqs,
   getPartners,
+  getTopCompanies,
+  getLabourTestimonials,
   getPolicies,
   jobs,
   jobsBySlug,
@@ -85,18 +89,20 @@ export function useServiceDetail(slug: string) {
   });
 }
 
-export function useInstantServices(serviceId: number) {
+export function useInstantServices(slug: string) {
   return useQuery<InstantApiResponse, Error>({
-    queryKey: ["instant-services", serviceId],
-    queryFn: async () => fetchInstantService(serviceId),
+    queryKey: ["instant-services", slug],
+    queryFn: async () => fetchInstantService(slug),
+    enabled: !!slug,
     staleTime: 10 * 1000,
   });
 }
 
-export function usePermanentServices(serviceId: number) {
+export function usePermanentServices(slug: string) {
   return useQuery<PermanentServiceResponse, Error>({
-    queryKey: ["permanent-services", serviceId],
-    queryFn: async () => fetchPermanentService(serviceId),
+    queryKey: ["permanent-services", slug],
+    queryFn: async () => fetchPermanentService(slug),
+    enabled: !!slug,
     staleTime: 10 * 1000,
   });
 }
@@ -183,6 +189,24 @@ export function useFetchPartners() {
   return useQuery<PartnersApiResponse, Error>({
     queryKey: ["partners"],
     queryFn: getPartners,
+    staleTime: Infinity,
+  });
+}
+
+// Top Companies
+export function useFetchTopCompanies() {
+  return useQuery<TopCompaniesApiResponse, Error>({
+    queryKey: ["top-companies"],
+    queryFn: getTopCompanies,
+    staleTime: Infinity,
+  });
+}
+
+// Labour Testimonials
+export function useFetchLabourTestimonials() {
+  return useQuery<LabourTestimonialsApiResponse, Error>({
+    queryKey: ["labour-testimonials"],
+    queryFn: getLabourTestimonials,
     staleTime: Infinity,
   });
 }

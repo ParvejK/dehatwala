@@ -55,7 +55,7 @@ const ServiceReviewPage = () => {
   return (
     <div className="mt-10 mb-[100px] min-h-[50vh]">
       <Container>
-        <h2 className="text-xl md:text-2xl font-semibold mb-10">Service Review</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-black mb-10">Service Review</h2>
         <ReviewTable headers={headers} rows={rows} />
       </Container>
     </div>

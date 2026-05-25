@@ -93,24 +93,37 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
   const onSubmit = (data: EmployeeFormData) => {
     const formData = new FormData();
 
+    // Always-present context fields
     formData.append("service_id", serviceId.toString());
     formData.append("permanent_service_id", permanentServiceId.toString());
-    // Add photos to an array in FormData
+    const displayTitle = (localStorage.getItem("service-title") || "").trim();
+    if (displayTitle) formData.append("display_title", displayTitle);
+
+    // Photos array
     selectedFiles.forEach((file) => formData.append("upload_photos[]", file));
 
-    // Add other form fields to FormData
+    // Append every other registered field, skipping empty/optional ones
     Object.entries(data).forEach(([key, value]) => {
-      if (key !== "upload_photos") {
-        if (Array.isArray(value)) {
-          // Append array fields properly
-          value.forEach((item) => formData.append(`${key}[]`, item));
-        } else {
-          formData.append(key, value as string);
-        }
+      if (key === "upload_photos") return;
+      if (value === undefined || value === null || value === "") return;
+
+      if (Array.isArray(value)) {
+        (value as unknown[]).forEach((item) => {
+          if (item !== undefined && item !== null && item !== "") {
+            formData.append(`${key}[]`, String(item));
+          }
+        });
+        return;
       }
+
+      if (typeof value === "boolean") {
+        formData.append(key, value ? "1" : "0");
+        return;
+      }
+
+      formData.append(key, String(value));
     });
 
-    // Submit the formData using mutation
     mutation.mutate(formData as unknown as EmployeeFormData);
   };
 
@@ -153,21 +166,6 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
                 className="input input-bordered w-full font-medium text-sm"
               />
               {errors.email && <p className="text-xs text-red-600 font-normal mt-2">{errors.email.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="" className="font-medium text-sm">
-                Owner Name
-              </label>
-              <input
-                {...register("owner_name")}
-                type="text"
-                disabled={mutation.isPending}
-                placeholder="Type here"
-                className="input input-bordered w-full font-medium text-sm"
-              />
-              {errors.owner_name && (
-                <p className="text-xs text-red-600 font-normal mt-2">{errors.owner_name.message}</p>
-              )}
             </div>
             <div>
               <label htmlFor="" className="font-medium text-sm">
@@ -259,8 +257,10 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
                 Pin Code
               </label>
               <input
-                {...register('pincode', { valueAsNumber: true })}
-                type="number"
+                {...register("pincode")}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 disabled={mutation.isPending}
                 placeholder="Type here"
                 className="input input-bordered w-full font-medium text-sm"
@@ -273,33 +273,72 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
 
             
             <div>
-              <h3 className="text-[16px] font-medium">How many workers do you need?</h3>
+              <h3 className="text-[16px] font-medium">How Many Worker Are you looking for?</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
                 <div>
                   <label htmlFor="" className="font-medium text-sm">
-                    Mason
+                    Skilled Mason
                   </label>
-                  <input
-                    {...register("Mason", { valueAsNumber: true })}
-                    type="number"
-                    disabled={mutation.isPending}
-                    placeholder="ex: 23"
-                    className="input input-bordered w-full font-medium text-sm"
-                  />
+                  <div className="flex gap-2">
+                    <select
+                      {...register("Mason")}
+                      disabled={mutation.isPending}
+                      defaultValue=""
+                      className="select select-bordered w-full font-medium text-sm flex-1"
+                    >
+                      <option value="" disabled>
+                        Select: Skilled Mason
+                      </option>
+                      <option value="tile_brick_plaster_mason">Tile | Brick | Plaster Mason</option>
+                      <option value="shuttering_mason">Shuttering Mason</option>
+                      <option value="bar_bender_fitter">Bar Bender Fitter</option>
+                      <option value="skilled_painter">Skilled Painter</option>
+                      <option value="loading_unloading_workers">Loading Unloading Workers</option>
+                      <option value="material_shifting_workers">Material Shifting Workers</option>
+                    </select>
+                    <input
+                      {...register("mason_quantity", { valueAsNumber: true })}
+                      type="number"
+                      min={1}
+                      disabled={mutation.isPending}
+                      placeholder="Qty"
+                      className="input input-bordered w-24 font-medium text-sm"
+                    />
+                  </div>
                   {errors.Mason && <p className="text-xs text-red-600 font-normal mt-2">{errors.Mason.message}</p>}
+                  {errors.mason_quantity && (
+                    <p className="text-xs text-red-600 font-normal mt-2">{errors.mason_quantity.message}</p>
+                  )}
                 </div>
                 <div>
                   <label htmlFor="" className="font-medium text-sm">
-                    Helper
+                    Unskilled Helper
                   </label>
-                  <input
-                    {...register("helper", { valueAsNumber: true })}
-                    type="number"
-                    disabled={mutation.isPending}
-                    placeholder="ex: 43"
-                    className="input input-bordered w-full font-medium text-sm"
-                  />
+                  <div className="flex gap-2">
+                    <select
+                      {...register("helper")}
+                      disabled={mutation.isPending}
+                      defaultValue=""
+                      className="select select-bordered w-full font-medium text-sm flex-1"
+                    >
+                      <option value="" disabled>
+                        Select: Unskilled Helper
+                      </option>
+                      <option value="general_helper">General Helper</option>
+                    </select>
+                    <input
+                      {...register("helper_quantity", { valueAsNumber: true })}
+                      type="number"
+                      min={1}
+                      disabled={mutation.isPending}
+                      placeholder="Qty"
+                      className="input input-bordered w-24 font-medium text-sm"
+                    />
+                  </div>
                   {errors.helper && <p className="text-xs text-red-600 font-normal mt-2">{errors.helper.message}</p>}
+                  {errors.helper_quantity && (
+                    <p className="text-xs text-red-600 font-normal mt-2">{errors.helper_quantity.message}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -320,7 +359,7 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
           {/* Right Content */}
           <div className="md:space-y-6 md:mt-6">
             <div>
-              <h3 className="text-[16px] font-medium mt-4">For how long do you need the workers? </h3>
+              <h3 className="text-[16px] font-medium mt-4">For How many Days/Months Do you Need the worker</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
                   <label htmlFor="" className="font-medium text-sm">

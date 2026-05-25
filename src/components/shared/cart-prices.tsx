@@ -39,13 +39,23 @@ const CartPrices = ({
 
   const tip = day === "day" ? dayRateStoreData?.state?.tipValue ?? 0 : hourRateStoreData?.state?.tipValue ?? 0;
 
+  // Resolve dynamic worker labels from the cached instant_service payload
+  const cachedInstantService = JSON.parse(localStorage.getItem("day-prices") || "{}");
+  const cachedServiceTitle = (localStorage.getItem("service-title") || "").trim();
+  const masonLabel =
+    (cachedInstantService?.worker_1_label || "").trim() ||
+    (cachedServiceTitle ? `${cachedServiceTitle} Mason` : "Mason");
+  const helperLabel =
+    (cachedInstantService?.worker_2_label || "").trim() ||
+    (cachedServiceTitle ? `${cachedServiceTitle} Helper` : "Helper");
+
   return (
     <div>
       <h3 className="font-semibold">Billing Overview</h3>
       {day === "day" ? (
         <div className="text-right divide-y">
           <p className="flex justify-between items-center text-base gap-4 py-4">
-            Mason
+            {masonLabel}
             <div className="flex items-center gap-4">
               <p className="text-sm text-gray-700">Quantity({`${MasonDayCount}`})</p>
               <strong className="flex items-center gap-1">
@@ -54,7 +64,7 @@ const CartPrices = ({
             </div>
           </p>
           <p className="flex justify-between items-center text-base gap-4 py-4">
-            Helper
+            {helperLabel}
             <div className="flex items-center gap-4">
               <p className="text-sm text-gray-700">Quantity({`${helperDayCount}`})</p>
               <strong className="flex items-center gap-1">
@@ -63,21 +73,15 @@ const CartPrices = ({
             </div>
           </p>
           <p className="flex justify-between items-center text-base gap-4 py-4">
-            Mason Overtime
+            {masonLabel} Overtime
             <strong className="flex items-center gap-1">
               <IndianRupee size={14} /> {totalMasonOvertimeRate}
             </strong>
           </p>
           <p className="flex justify-between items-center text-base gap-4 py-4">
-            Helper Overtime
+            {helperLabel} Overtime
             <strong className="flex items-center gap-1">
               <IndianRupee size={14} /> {totalHelperOvertimeRate}
-            </strong>
-          </p>
-          <p className="flex justify-between items-center text-base gap-4 py-4">
-            Pick & drop services free
-            <strong className="flex items-center gap-1">
-              <IndianRupee size={14} /> <s>500</s>
             </strong>
           </p>
           <p className="flex justify-between items-center text-base gap-4 py-4">
@@ -128,7 +132,7 @@ const CartPrices = ({
       ) : (
         <div className="text-right divide-y">
           <p className="flex justify-between items-center text-base gap-4 py-4">
-            Mason
+            {masonLabel}
             <div className="flex items-center gap-4">
               <p className="text-sm text-gray-700">Quantity({`${MasonHourCount}`})</p>
               <strong className="flex items-center gap-1">
@@ -137,19 +141,13 @@ const CartPrices = ({
             </div>
           </p>
           <p className="flex justify-between items-center text-base gap-4 py-4">
-            Helper
+            {helperLabel}
             <div className="flex items-center gap-4">
               <p className="text-sm text-gray-700">Quantity({`${helperHourCount}`})</p>
               <strong className="flex items-center gap-1">
                 <IndianRupee size={14} /> {totalHelperHourRate}
               </strong>
             </div>
-          </p>
-          <p className="flex justify-between items-center text-base gap-4 py-4">
-            Pick & drop services free
-            <strong className="flex items-center gap-1">
-              <IndianRupee size={14} /> <s>500</s>
-            </strong>
           </p>
           <p className="flex justify-between items-center text-base gap-4 py-4">
             Tip

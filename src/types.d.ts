@@ -157,6 +157,8 @@ interface InstantService {
   id: number;
   service_id: number;
   instant_service_id: number;
+  worker_1_label?: string;
+  worker_2_label?: string;
   per_day_meason_rate: number;
   per_day_helper_rate: number;
   per_day: number;
@@ -168,7 +170,7 @@ interface InstantService {
   overtime_per_hour: number;
   includes_instument: string;
   excludes_instument: string;
-  labour_chowk_id: string[];
+  labour_chowk_id?: string[];
   created_at: string;
   updated_at: string;
 }
@@ -365,6 +367,55 @@ interface Partner {
 
 interface PartnersApiResponse {
   partners: Partner[];
+}
+
+// Top Companies
+interface TopCompany {
+  id: number;
+  user_id: number | null;
+  name: string;
+  url: string | null;
+  logo: string;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface TopCompaniesApiResponse {
+  success: boolean;
+  top_companies: TopCompany[];
+}
+
+// Labour Testimonials
+interface LabourTestimonial {
+  id: number;
+  user_id: number | null;
+  name: string;
+  company: string;
+  designation: string;
+  content: string;
+  labour_image: string;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface LabourTestimonialsApiResponse {
+  success?: boolean;
+  labour_testimonials: LabourTestimonial[];
+}
+
+// Service availability check
+interface CheckAvailabilityPayload {
+  state_id: string | number;
+  city_id: string | number;
+  pincode: string;
+}
+
+interface CheckAvailabilityResponse {
+  success: boolean;
+  available: boolean;
+  message?: string;
 }
 
 interface PolicyType {

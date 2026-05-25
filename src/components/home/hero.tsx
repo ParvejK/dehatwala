@@ -51,14 +51,7 @@ const Hero = () => {
             style={{
               backgroundImage: `url(${VITE_IMAGE_PATH_URL}/slider/${item.slider_img})`,
             }}
-          >
-            <div className="container mx-auto px-4 flex justify-center items-center h-full">
-              <div className="max-w-[650px] text-white text-center">
-                <h1 className="text-5xl font-bold leading-[52px]">{item.title}</h1>
-                <p className="py-6 text-lg">{item.tagline}</p>
-              </div>
-            </div>
-          </SwiperSlide>
+          />
         ))}
       </Swiper>
     </header>
