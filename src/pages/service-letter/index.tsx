@@ -37,7 +37,7 @@ function ServiceLetterPage() {
   const [selectedPayment, setSelectedPayment] = useState("Pay Online");
   const [isButtonOpen, setIsButtonOpen] = useState(true);
 
-  //Google Gio Locatoon
+  //Google Geo Location
   // const [coords, setCoords] = useState({ lat: '', lon: '' });
   const [loading, setLoading] = useState(false);
 
@@ -606,7 +606,7 @@ function ServiceLetterPage() {
                   </div>
                   <div className="mb-2 md:mb-0">
                     <label className="label" htmlFor="time_slot">
-                      <span className="label-text">Prefer Arrival Time</span>
+                      <span className="label-text">Preferred Arrival Time</span>
                     </label>
                     <input
                       id="time_slot"

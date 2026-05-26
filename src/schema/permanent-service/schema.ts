@@ -26,7 +26,7 @@ export const employeeSchema = z.object({
   service_id: z.number().optional(),
   permanent_service_id: z.number().optional(),
 
-  // Faculties as an array of strings (assuming it's a list of facilities offered)
+  // Facilities offered to workers (e.g., food, stay, transport, PPE kit)
   faculties: z.array(z.string()).optional(),
 
   year: z.number().optional(),

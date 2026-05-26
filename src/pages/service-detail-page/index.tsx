@@ -105,7 +105,7 @@ const ServicesDetailsPage = () => {
               </div>
             </div>
             <div className="mt-6">
-              <h3 className="text-base font-semibold md:text-lg mn-2">Instant services notes</h3>
+              <h3 className="text-base font-semibold md:text-lg mn-2">How Instant Service Works?</h3>
               <div className="space-y-3">
                 <div
                   className="bg-gray-100 rounded-md px-3 py-2"
@@ -126,7 +126,7 @@ const ServicesDetailsPage = () => {
               </div>
             </div>
             <div className="mt-6">
-              <h3 className="text-base font-semibold md:text-lg mb-2">Permanent services notes</h3>
+              <h3 className="text-base font-semibold md:text-lg mb-2">How Permanent Service Works?</h3>
               <div className="space-y-3">
                 <div
                   className="bg-gray-100 rounded-md px-3 py-2"

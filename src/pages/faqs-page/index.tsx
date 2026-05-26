@@ -25,11 +25,17 @@ const FaqsPage = () => {
       />
       <Container className="my-[50px]">
         <div className="max-w-[800px] px-6 mx-auto">
-          <h2 className="text-xl md:text-3xl font-bold text-black mb-5 text-center">Have any Questions ?</h2>
+          <h2 className="text-xl md:text-3xl font-bold text-black mb-5 text-center">Have any Questions?</h2>
           <p className="text-sm md:text-base font-normal md:leading-8 text-center">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ipsa error dicta provident explicabo, similique
-            voluptatibus officia! Eligendi ducimus vitae deserunt delectus aperiam dolor, dolorem doloribus ad quo
-            perferendis illo ea?
+            We&rsquo;re here to help! If you can&rsquo;t find the answer you&rsquo;re looking for in our FAQs, feel free
+            to reach out to our dehatwala support team. Whether it&rsquo;s about booking a service, understanding our
+            policies, or anything else &mdash; we&rsquo;re just a message away.
+          </p>
+          <p className="text-sm md:text-base font-normal md:leading-8 text-center mt-3">
+            Our dedicated team responds quickly and is always ready to assist you with a smile.
+          </p>
+          <p className="text-sm md:text-base font-normal md:leading-8 text-center mt-3">
+            Contact us via WhatsApp, Call, or Email &mdash; we&rsquo;ll be happy to help!
           </p>
         </div>
         {isLoading ? (

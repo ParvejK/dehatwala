@@ -405,7 +405,7 @@ const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) 
 
               <div>
                 <label htmlFor="reschedule_time" className="block text-sm font-medium text-gray-700 mb-1">
-                  Prefer Arrival Time
+                  Preferred Arrival Time
                 </label>
                 <input
                   id="reschedule_time"

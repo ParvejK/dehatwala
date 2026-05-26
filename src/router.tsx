@@ -12,6 +12,7 @@ import ServicesDetailsPage from "./pages/service-detail-page";
 import CartPage from "./pages/cart-page";
 import ServiceLetterPage from "./pages/service-letter";
 import JoinUsPage from "./pages/joinus-page";
+import JoinUsSuccessPage from "./pages/joinus-success-page";
 import JobListingsPage from "./pages/job-listings-page";
 import JobCategoriesPage from "./pages/job-categories-page";
 import DetailedJobListingPage from "./pages/detailed-job-listing-page";
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
       {
         path: "/become-a-part-of-dehatwala",
         element: <JoinUsPage />,
+      },
+      {
+        path: "/become-a-part-of-dehatwala/success",
+        element: <JoinUsSuccessPage />,
       },
       {
         path: "/jobs",

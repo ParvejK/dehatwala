@@ -273,7 +273,7 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
 
             
             <div>
-              <h3 className="text-[16px] font-medium">How Many Worker Are you looking for?</h3>
+              <h3 className="text-[16px] font-medium">How many workers are you looking for?</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
                 <div>
                   <label htmlFor="" className="font-medium text-sm">
@@ -359,7 +359,7 @@ const BookServicesForm = ({ serviceId, permanentServiceId }: { serviceId: number
           {/* Right Content */}
           <div className="md:space-y-6 md:mt-6">
             <div>
-              <h3 className="text-[16px] font-medium mt-4">For How many Days/Months Do you Need the worker</h3>
+              <h3 className="text-[16px] font-medium mt-4">For how many days/months do you need the workers?</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
                   <label htmlFor="" className="font-medium text-sm">
