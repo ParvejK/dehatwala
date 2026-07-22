@@ -1,99 +1,88 @@
-import { Link } from "react-router-dom";
+import { ArrowRight, ChevronDown, Headphones, Menu, UserRound, X } from "lucide-react";
+import { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { useAuthStore } from "../../store/auth-store";
-import { twMerge } from "tailwind-merge";
-import { LuUser2 } from "react-icons/lu";
-import LogoutButton from "../auth/logout";
 import { useCategories } from "../../react-query/hooks";
-import NavigationMenu from "../menu";
-import MobileNavigationMenu from "../menu/mobile-menu";
-import { IoMdMenu } from "react-icons/io";
-import Logo from "../../assets/WhiteLogo.png";
+import Logo from "../../assets/DehatwalaLogoDark.png";
+import LogoutButton from "../auth/logout";
 
 const Header = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useAuthStore();
-  const { data, isLoading, isError, error } = useCategories();
+  const { data, isLoading, isError } = useCategories();
+  const closeMenu = () => setMenuOpen(false);
 
-  if (isLoading) {
-    return <p>Loading</p>;
-  }
-  if (isError) {
-    return <p>error</p>;
-  }
-  const { categories } = data;
   return (
-    <div className="navbar bg-base-100 sticky top-0 z-10 shadow-sm">
-      <div className="flex-1 px-4 lg:px-8">
-        {/* <Link to="/" className="text-2xl font-bold text-black">
-          Dehatwala<sup className="text-secondary">™</sup>
-        </Link> */}
-        <Link to="/">
-            <img
-              src={Logo}   // Replace with actual logo path
-              alt="Dehatwala"
-              className="h-10 w-auto"   // Adjust height and width as needed
-            />
-          </Link>
-      </div>
-      <div className="flex-none gap-2">
-        <div className="hidden lg:block">
-          <NavigationMenu categories={categories} isLoading={isLoading} isError={isError} error={error} user={user} />
-        </div>
-        <div className="lg:hidden">
-          <div className="drawer">
-            <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-            <div className="drawer-content">
-              {/* Page content here */}
-              <label htmlFor="my-drawer" className="btn btn-ghost drawer-button">
-                <IoMdMenu size={28} />
-              </label>
-            </div>
-            <div className="drawer-side">
-              <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-              <div className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-                <MobileNavigationMenu
-                  categories={categories}
-                  isLoading={isLoading}
-                  isError={isError}
-                  error={error}
-                  user={user}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        {user && (
-          <div className={twMerge("dropdown dropdown-end", user ? "lg:pl-6" : "pl-0")}>
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-sm btn-ghost btn-circle avatar bg-secondary text-white hover:bg-secondary/90"
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white shadow-[0_8px_30px_rgba(15,42,95,0.06)]">
+      <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-5 px-5 sm:px-8 lg:px-10">
+        <Link
+          to="/"
+          onClick={closeMenu}
+          className="shrink-0 rounded-md focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
+          aria-label="Dehatwala home"
+        >
+          <img src={Logo} alt="Dehatwala" className="h-auto w-[132px] sm:w-[180px] xl:w-[200px]" />
+        </Link>
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
+          {[
+            ["/", "Home"],
+            ["/about-us", "About us"],
+            ["/blog", "Blog"],
+            ["/contact", "Contact"],
+          ].map(([to, label]) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === "/"}
+              className={({ isActive }) =>
+                `rounded-lg px-3 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100 ${
+                  isActive ? "bg-blue-50 text-blue-700" : "text-slate-700 hover:bg-slate-50 hover:text-blue-700"
+                }`
+              }
             >
-              {user ? <span className="text-xs uppercase">{user.name.slice(0, 1)}</span> : <LuUser2 size={18} />}
-            </div>
-            <ul
+              {label}
+            </NavLink>
+          ))}
+          <div className="dropdown dropdown-hover">
+            <button
+              type="button"
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-blue-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
             >
-              <li>
-                <a className="justify-between">
-                  {user ? user.name : "Welcome"}
-                  <span className="badge">New</span>
-                </a>
-              </li>
-              <li>
-                <Link to={`/booked-services`}>Booked service</Link>
-              </li>
-              <li>
-                <Link to={`/service-reviews`}>Service review</Link>
-              </li>
-              <li className="mt-2">
-                <LogoutButton />
-              </li>
+              Categories <ChevronDown size={15} aria-hidden="true" />
+            </button>
+            <ul tabIndex={0} className="dropdown-content menu z-50 mt-0 max-h-80 w-72 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl shadow-blue-950/10">
+              {isLoading && <li><span>Loading categories…</span></li>}
+              {isError && <li><span>Categories unavailable</span></li>}
+              {data?.categories.map((category) => <li key={category.id}><Link className="rounded-lg" to={`/service/${category.slug}`}>{category.name}</Link></li>)}
             </ul>
           </div>
-        )}
+          <a className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-blue-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100" href="/#how-it-works">How it works</a>
+        </nav>
+        <div className="flex items-center gap-2">
+          <a href="tel:+918600999922" aria-label="Call booking support" className="hidden size-10 items-center justify-center rounded-xl border border-slate-200 text-blue-700 transition hover:border-blue-200 hover:bg-blue-50 xl:inline-flex"><Headphones size={18} aria-hidden="true" /></a>
+          <Link to="/#book-a-worker" className="hidden min-h-11 items-center gap-2 rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 sm:inline-flex">Book a worker <ArrowRight size={16} aria-hidden="true" /></Link>
+          {user ? (
+            <div className="dropdown dropdown-end">
+              <button type="button" tabIndex={0} aria-label="Open account menu" className="grid size-10 place-items-center rounded-xl border border-blue-100 bg-blue-50 font-bold text-blue-700 transition hover:bg-blue-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"><span className="uppercase">{user.name.slice(0, 1)}</span></button>
+              <ul tabIndex={0} className="dropdown-content menu z-50 mt-3 w-56 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl shadow-blue-950/10">
+                <li className="menu-title">{user.name}</li><li><Link to="/booked-services">Booked services</Link></li><li><Link to="/service-reviews">Service reviews</Link></li><li><LogoutButton /></li>
+              </ul>
+            </div>
+          ) : <Link to="/sign-in" aria-label="Sign in" className="grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"><UserRound size={19} aria-hidden="true" /></Link>}
+          <button type="button" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-controls="mobile-navigation" aria-label={menuOpen ? "Close navigation" : "Open navigation"} className="grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-800 transition hover:bg-slate-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100 lg:hidden">{menuOpen ? <X size={21} /> : <Menu size={21} />}</button>
+        </div>
       </div>
-    </div>
+      {menuOpen && (
+        <nav id="mobile-navigation" aria-label="Mobile navigation" className="border-t border-slate-200 bg-white px-5 py-5 shadow-xl shadow-blue-950/5 lg:hidden">
+          <div className="mx-auto flex max-w-7xl flex-col gap-1 rounded-2xl bg-slate-50 p-2">
+            {[["/", "Home"], ["/#how-it-works", "How it works"], ["/about-us", "About us"], ["/blog", "Blog"], ["/contact", "Contact"], ["/become-a-part-of-dehatwala", "Become a worker"]].map(([to, label]) => <Link key={to} to={to} onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-blue-50 hover:text-blue-700">{label}</Link>)}
+            <details className="rounded-xl px-3 py-3 open:bg-white"><summary className="cursor-pointer text-sm font-semibold text-slate-800">Categories</summary><div className="mt-3 flex max-h-52 flex-col gap-1 overflow-y-auto border-l border-blue-200 pl-3">{isLoading && <span className="py-2 text-sm text-slate-500">Loading categories…</span>}{isError && <span className="py-2 text-sm text-red-600">Categories unavailable</span>}{data?.categories.map((category) => <Link key={category.id} onClick={closeMenu} to={`/service/${category.slug}`} className="rounded-lg px-2 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">{category.name}</Link>)}</div></details>
+            <Link to="/#book-a-worker" onClick={closeMenu} className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 text-sm font-bold text-white shadow-lg shadow-blue-700/20 sm:hidden">Book a worker <ArrowRight size={16} aria-hidden="true" /></Link>
+          </div>
+        </nav>
+      )}
+    </header>
   );
 };
 

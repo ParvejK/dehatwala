@@ -69,10 +69,10 @@ const SearchServices = () => {
   }
 
   return (
-    <div className="bg-accent p-3">
+    <div className="bg-transparent p-1 md:p-3">
       <div className="flex justify-center items-center px-4">
         <form onSubmit={handleSearch} className="w-full max-w-3xl">
-          <div className="flex flex-col md:flex-row md:items-stretch bg-white rounded-2xl md:rounded-full border border-gray-200 shadow-sm overflow-hidden divide-y md:divide-y-0 md:divide-x divide-gray-200">
+          <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm divide-y divide-slate-200 md:flex-row md:items-stretch md:divide-x md:divide-y-0">
             <select
               className="flex-1 min-w-0 py-3 md:py-4 px-5 outline-none bg-white text-sm md:text-base text-gray-700 cursor-pointer"
               id="category_id"
@@ -103,7 +103,7 @@ const SearchServices = () => {
                 type="submit"
                 disabled={isPending}
                 aria-label="Search"
-                className="btn btn-secondary text-white rounded-full px-4 md:px-5 min-h-0 h-10 md:h-12 flex items-center gap-1 disabled:opacity-60"
+                className="m-1 flex h-11 min-h-0 items-center gap-1 rounded-xl border-0 bg-blue-700 px-5 text-white hover:bg-blue-800 disabled:opacity-60 md:h-12"
               >
                 {isPending ? (
                   <span className="loading loading-spinner loading-sm" />

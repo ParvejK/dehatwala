@@ -13,6 +13,31 @@
   --warning-color: #fca200;
   --error-color: #c1121f;
   --white: #ffffff;
+  --home-color-brand: #1d4ed8;
+  --home-color-brand-deep: #172554;
+  --home-color-ink: #0f172a;
+  --home-color-surface: #ffffff;
+  --home-color-surface-soft: #f5f8ff;
+  --home-color-surface-tint: #edf4ff;
+  --home-color-border: #dbeafe;
+}
+
+@layer components {
+  .home-surface {
+    background-color: var(--home-color-surface);
+  }
+
+  .home-surface-soft {
+    background-color: var(--home-color-surface-soft);
+  }
+
+  .home-surface-tint {
+    background-color: var(--home-color-surface-tint);
+  }
+
+  .home-surface-brand {
+    background-color: var(--home-color-brand-deep);
+  }
 }
 
 body {
@@ -20,6 +45,32 @@ body {
   font-size: 16px;
   font-weight: 300;
   line-height: 1.5;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: #bfdbfe;
+  color: #172554;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 .swiper-pagination-bullet-active {

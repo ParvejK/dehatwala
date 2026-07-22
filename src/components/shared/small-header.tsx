@@ -1,42 +1,31 @@
-import { HelpCircle, PhoneCall } from "lucide-react";
-import { FaConnectdevelop, FaFacebookF, FaInstagram, FaTwitter} from "react-icons/fa";
+import { ArrowUpRight, Phone, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
-import { IoLogoYoutube } from "react-icons/io5";
 
-const SmallHeader = () => {
-  return (
-    <div className="px-5 bg-secondary text-white py-2 min-h-[30px]">
-      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center ">
-        <div className="text-xs tracking-wide flex  space-x-2">
-          <PhoneCall size={18} /> <span className="cursor-pointer">+91-8600999922</span>
-          <div className="flex items-center gap-6 pl-8">
-            <Link to="https://www.facebook.com/share/1V7jqB3BXD/?mibextid=wwXIfr">
-              <FaFacebookF size={14} /> <span className="cursor-pointer" />
-            </Link>
-            <Link to="https://www.instagram.com/dehatwala1?igsh=MTBtb2t4dHdxZWpzOA==">
-              <FaInstagram size={14} /> <span className="cursor-pointer" />
-            </Link>
-            <Link to="https://x.com/dehatwalepvt?s=21">
-              <FaTwitter size={14} /> <span className="cursor-pointer" />
-            </Link>
-            <Link to="https://www.youtube.com/@DehatwalaPvt">
-              <IoLogoYoutube size={14} /> <span className="cursor-pointer" />
-            </Link>
-          </div>
-        </div>
-        <div className="flex justify-between items-center gap-6 mt-4 lg:mt-0">
-          <Link to="/become-a-part-of-dehatwala" className="text-xs tracking-wide flex gap-2">
-            <FaConnectdevelop size={18} />
-            <span>Join us and Earn money</span>
-          </Link>
-          <Link to="/about-us" className="text-xs tracking-wide flex gap-2">
-            <HelpCircle size={18} />
-            <span>Help</span>
-          </Link>
-        </div>
+const SmallHeader = () => (
+  <div className="relative z-50 overflow-hidden bg-blue-950 px-5 text-white">
+    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(37,99,235,0.28),transparent_40%,rgba(245,158,11,0.12))]" />
+    <div className="relative mx-auto flex min-h-9 max-w-7xl items-center justify-between gap-4 text-[11px] font-semibold sm:px-3 lg:px-5">
+      <div className="flex min-w-0 items-center gap-4 sm:gap-6">
+        <a
+          href="tel:+918600999922"
+          className="inline-flex shrink-0 items-center gap-2 text-blue-50 transition hover:text-amber-300 focus:outline-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-amber-300"
+        >
+          <Phone size={13} aria-hidden="true" />
+          <span>+91 86009 99922</span>
+        </a>
+        <span className="hidden items-center gap-1.5 text-blue-200 sm:inline-flex">
+          <ShieldCheck size={13} aria-hidden="true" /> Verified workforce platform
+        </span>
       </div>
+      <Link
+        to="/become-a-part-of-dehatwala"
+        className="inline-flex shrink-0 items-center gap-1.5 text-amber-300 transition hover:text-amber-200 focus:outline-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-amber-300"
+      >
+        <span className="hidden sm:inline">Join Dehatwala · </span>काम पाएं
+        <ArrowUpRight size={13} aria-hidden="true" />
+      </Link>
     </div>
-  );
-};
+  </div>
+);
 
 export default SmallHeader;
