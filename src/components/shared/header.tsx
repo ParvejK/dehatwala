@@ -21,7 +21,7 @@ const Header = () => {
           aria-label="Dehatwala home"
         >
           <img
-            src="/logo/black-blue-logo.png"
+            src="/logo/blue-logo.png"
             alt="Dehatwala"
             className="h-auto w-[132px] sm:w-[180px] xl:w-[200px]"
           />

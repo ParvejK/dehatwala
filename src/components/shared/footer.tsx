@@ -14,7 +14,7 @@ const Footer = () => (
       <div className="grid gap-12 border-b border-white/15 pb-12 lg:grid-cols-[1.3fr_3fr]">
         <div>
           <Link to="/" aria-label="Dehatwala home">
-            <img src="/logo/white-logo.png" alt="Dehatwala" className="h-12 w-auto max-w-full object-contain" />
+            <img src="/logo/white-logo.png" alt="Dehatwala" className="h-auto w-[200px] max-w-full object-contain sm:w-[224px]" />
           </Link>
           <h2 className="mt-5 text-lg font-bold">India’s Trusted Workforce Platform</h2>
           <p className="mt-3 max-w-sm text-sm leading-6 text-blue-100/75">Connecting customers with verified independent blue-collar workers through a smarter workforce platform.</p>
