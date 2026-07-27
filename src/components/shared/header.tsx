@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuthStore } from "../../store/auth-store";
 import { useCategories } from "../../react-query/hooks";
-import Logo from "../../assets/DehatwalaLogoDark.png";
 import LogoutButton from "../auth/logout";
 
 const Header = () => {
@@ -21,7 +20,11 @@ const Header = () => {
           className="shrink-0 rounded-md focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
           aria-label="Dehatwala home"
         >
-          <img src={Logo} alt="Dehatwala" className="h-auto w-[132px] sm:w-[180px] xl:w-[200px]" />
+          <img
+            src="/logo/black-blue-logo.png"
+            alt="Dehatwala"
+            className="h-auto w-[132px] sm:w-[180px] xl:w-[200px]"
+          />
         </Link>
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
           {[

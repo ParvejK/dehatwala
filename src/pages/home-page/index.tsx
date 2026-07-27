@@ -4,8 +4,8 @@ import {
   Banknote,
   BriefcaseBusiness,
   CalendarCheck2,
+  Clock3,
   Headphones,
-  IndianRupee,
   LayoutGrid,
   MapPin,
   MessageCircleMore,
@@ -15,6 +15,8 @@ import {
   UsersRound
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import SearchServices from "../../components/search-services";
 import TawkMessenger from "../../components/shared/TawkMessenger";
 import { benefits, impact, recognition, steps } from "../../constant/home.constant";
@@ -31,17 +33,49 @@ const HomePage = () => {
       <section className="home-surface-soft relative isolate">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_16%,rgba(37,99,235,0.12),transparent_30%),radial-gradient(circle_at_90%_80%,rgba(245,158,11,0.14),transparent_25%)]" />
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-14 sm:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:px-10 lg:pb-24 lg:pt-20">
-          <div>
+          <div className="lg:self-start">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-blue-800 shadow-sm">
-              <Sparkles size={15} aria-hidden="true" /> Trusted workforce, one booking away
+              <Sparkles size={15} aria-hidden="true" /> Trusted workforce. One click away.
             </div>
             <h1 className="max-w-2xl text-4xl font-black leading-[1.05] tracking-tight text-slate-950 sm:text-5xl lg:text-7xl">
               Skilled workers <span className="text-blue-700">on demand.</span> For every site.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
-              Book verified blue-collar workers for construction and maintenance jobs. Quick, reliable and hassle-free.
+              Book verified workers for any job. Fast, reliable, and hassle-free.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-9 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {benefits.map(({ icon: Icon, label }) => (
+                <div key={label} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-blue-100 text-blue-700">
+                    <Icon size={17} aria-hidden="true" />
+                  </span>
+                  {label}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="relative min-h-[420px] lg:min-h-[560px]">
+              <div className="absolute inset-4 rounded-[2.5rem] bg-blue-700 lg:inset-8" />
+              <img
+                src="/images/dehatwala-hero-worker.png"
+                alt="Dehatwala worker in a blue T-shirt and yellow safety helmet"
+                className="absolute inset-0 h-full w-full rounded-[2.5rem] object-cover object-center shadow-2xl [clip-path:polygon(8%_0,100%_0,100%_92%,0_100%,0_10%)]"
+              />
+              <div className="absolute bottom-5 left-5 right-5 grid grid-cols-3 rounded-2xl border border-white/50 bg-white/95 p-4 shadow-xl backdrop-blur sm:left-10 sm:right-10 sm:p-5">
+                {[
+                  ["20+", "Services"],
+                  ["30 min", "Response target"],
+                  ["24/7", "Support"],
+                ].map(([value, label]) => (
+                  <div key={label} className="text-center">
+                    <strong className="block text-lg font-black text-blue-700 sm:text-2xl">{value}</strong>
+                    <span className="text-[10px] font-semibold text-slate-600 sm:text-xs">{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <a
                 href="#book-a-worker"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-700 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
@@ -54,36 +88,6 @@ const HomePage = () => {
               >
                 Become a worker
               </Link>
-            </div>
-            <div className="mt-9 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {benefits.map(({ icon: Icon, label }) => (
-                <div key={label} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-blue-100 text-blue-700">
-                    <Icon size={17} aria-hidden="true" />
-                  </span>
-                  {label}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="relative min-h-[420px] lg:min-h-[560px]">
-            <div className="absolute inset-4 rounded-[2.5rem] bg-blue-700 lg:inset-8" />
-            <img
-              src="/images/hero.jpg"
-              alt="A skilled worker preparing materials at a construction site"
-              className="absolute inset-0 h-full w-full rounded-[2.5rem] object-cover object-center shadow-2xl [clip-path:polygon(8%_0,100%_0,100%_92%,0_100%,0_10%)]"
-            />
-            <div className="absolute bottom-5 left-5 right-5 grid grid-cols-3 rounded-2xl border border-white/50 bg-white/95 p-4 shadow-xl backdrop-blur sm:left-10 sm:right-10 sm:p-5">
-              {[
-                ["20+", "Services"],
-                ["30 min", "Response target"],
-                ["24/7", "Support"],
-              ].map(([value, label]) => (
-                <div key={label} className="text-center">
-                  <strong className="block text-lg font-black text-blue-700 sm:text-2xl">{value}</strong>
-                  <span className="text-[10px] font-semibold text-slate-600 sm:text-xs">{label}</span>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -101,25 +105,25 @@ const HomePage = () => {
             <div className="max-w-2xl text-white">
               <div className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-100">
                 <span className="grid size-7 place-items-center rounded-lg bg-white/15">
-                  <CalendarCheck2 size={16} aria-hidden="true" />
+                  <Sparkles size={16} aria-hidden="true" />
                 </span>
-                Quick booking
+                Quick Booking
               </div>
               <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Book a worker instantly</h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">
-                Choose a category and tell us what you need. We’ll help you find the right skilled worker nearby.
+                Select a service and book a verified worker in minutes.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-white/90 sm:text-sm lg:justify-end">
               <span className="inline-flex items-center gap-2">
-                <BadgeCheck size={17} className="text-amber-300" aria-hidden="true" /> Verified workers
+                <CalendarCheck2 size={17} className="text-amber-300" aria-hidden="true" /> Your Schedule
               </span>
               <span className="inline-flex items-center gap-2">
-                <IndianRupee size={17} className="text-amber-300" aria-hidden="true" /> Clear pricing
+                <MapPin size={17} className="text-amber-300" aria-hidden="true" /> Nearby Workers
               </span>
               <span className="inline-flex items-center gap-2">
-                <Headphones size={17} className="text-amber-300" aria-hidden="true" /> Booking support
+                <Sparkles size={17} className="text-amber-300" aria-hidden="true" /> Fast Booking
               </span>
             </div>
           </div>
@@ -138,13 +142,13 @@ const HomePage = () => {
           <div className="mb-10 flex flex-col gap-7 md:mb-12 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
               <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-blue-700 shadow-sm">
-                <Sparkles size={14} aria-hidden="true" /> Most booked
+                <Sparkles size={14} aria-hidden="true" /> Most Booked Services
               </p>
               <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
-                Services customers <span className="text-blue-700">rely on.</span>
+                Most <span className="text-blue-700">Booked Services</span>
               </h2>
               <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">
-                Popular skilled services chosen for dependable work, verified professionals and simple booking.
+                Top-rated services loved by our customers.
               </p>
             </div>
             <Link
@@ -175,9 +179,8 @@ const HomePage = () => {
           )}
           {servicesQuery.data && (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {servicesQuery.data.services.slice(0, 4).map((service, index) => {
+              {servicesQuery.data.services.slice(0, 4).map((service) => {
                 const serviceUrl = `/services/detail/${service.slug}`;
-                const reviewCount = service.reviews?.length || 0;
 
                 return (
                   <article
@@ -196,12 +199,12 @@ const HomePage = () => {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-transparent" />
                         <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-slate-950/80 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-white backdrop-blur">
-                          <Sparkles size={13} className="text-amber-300" aria-hidden="true" /> Popular #{index + 1}
+                          <Sparkles size={13} className="text-amber-300" aria-hidden="true" /> Popular
                         </span>
-                        <span className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-slate-900 shadow-lg">
+                        {service.rating ? <span className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-slate-900 shadow-lg">
                           <Star size={14} className="text-amber-500" fill="currentColor" aria-hidden="true" />
-                          {service.rating || "New"}
-                        </span>
+                          {service.rating}
+                        </span> : null}
                       </Link>
 
                       <div className="flex flex-1 flex-col p-5">
@@ -220,15 +223,18 @@ const HomePage = () => {
                           {service.short_description}
                         </p>
 
-                        <div className="mt-auto flex items-center gap-2 border-t border-slate-100 pt-4 text-xs font-semibold text-slate-500">
-                          <BadgeCheck size={17} className="text-emerald-600" aria-hidden="true" /> Verified service
-                          <span className="ml-auto">
-                            {reviewCount ? `${reviewCount} ${reviewCount === 1 ? "review" : "reviews"}` : "New service"}
+                        <div className="mt-auto grid gap-2 border-t border-slate-100 pt-4 text-xs font-semibold text-slate-500">
+                          <span className="inline-flex items-center gap-2">
+                            <Sparkles size={17} className="text-blue-600" aria-hidden="true" /> Fast Response
+                          </span>
+                          <span className="inline-flex items-center gap-2">
+                            <Headphones size={17} className="text-blue-600" aria-hidden="true" /> Live Support
                           </span>
                         </div>
+                        <p className="mt-4 text-lg font-black text-blue-700">₹1,200 <span className="text-sm font-bold">/ Day</span></p>
                         <Link
                           to={serviceUrl}
-                          className="mt-4 inline-flex min-h-11 items-center justify-between rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
+                          className="mt-3 inline-flex min-h-11 items-center justify-between rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
                           aria-label={`Book ${service.title}`}
                         >
                           Book now{" "}
@@ -329,7 +335,7 @@ const HomePage = () => {
               ))}
 
               <div className="grid gap-4 sm:grid-cols-2">
-                {categoriesQuery.data.categories.slice(1, 5).map((category, index) => (
+                {categoriesQuery.data.categories.slice(1, 5).map((category) => (
                   <Link
                     key={category.id}
                     to={`/service/${category.slug}`}
@@ -343,9 +349,6 @@ const HomePage = () => {
                           alt=""
                           className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
                         />
-                        <span className="absolute left-3 top-3 grid size-7 place-items-center rounded-full bg-white/90 text-[10px] font-extrabold text-[var(--home-color-brand)] shadow-sm backdrop-blur">
-                          {String(index + 2).padStart(2, "0")}
-                        </span>
                       </div>
                       <div className="flex items-center gap-3 px-2 pb-1 pt-4">
                         <div className="min-w-0 flex-1">
@@ -372,46 +375,76 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section id="how-it-works" className="relative bg-[var(--home-color-surface-soft)] py-20 lg:py-28">
+      <section
+        id="how-it-works"
+        className="relative isolate overflow-hidden bg-[#f8faff] py-16 sm:py-20 lg:py-24"
+      >
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_12%_10%,rgba(37,99,235,0.06),transparent_28%),radial-gradient(circle_at_92%_88%,rgba(37,99,235,0.05),transparent_25%)]" />
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
-            <div className="lg:sticky lg:top-24 lg:self-start">
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--home-color-brand)]">
-                Simple process
-              </p>
-              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--home-color-ink)] sm:text-4xl lg:text-5xl">
-                From booking to done, <span className="text-[var(--home-color-brand)]">step by step.</span>
-              </h2>
-              <p className="mt-5 max-w-lg text-base leading-7 text-slate-600">
-                A clear, supported process that keeps you informed from your first search through secure payment.
-              </p>
-              <a
-                href="#book-a-worker"
-                className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-xl bg-[var(--home-color-brand)] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
-              >
-                Start a booking <ArrowRight size={17} aria-hidden="true" />
-              </a>
-            </div>
+          <div className="max-w-xl">
+            <p className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-blue-700">
+              <UsersRound size={13} aria-hidden="true" /> How Dehatwala Works
+            </p>
+            <h2 className="mt-4 text-3xl font-black tracking-[-0.035em] text-slate-950 sm:text-4xl lg:text-[2.75rem]">
+              How Dehatwala <span className="text-blue-700">Works</span>
+            </h2>
+            <p className="mt-3 max-w-md text-sm leading-6 text-slate-600">
+              A simple booking process from request to completion.
+              <br className="hidden sm:block" /> Book in minutes—we’ll handle the rest.
+            </p>
+            <a
+              href="#book-a-worker"
+              className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
+            >
+              Start a booking <ArrowRight size={16} aria-hidden="true" />
+            </a>
+          </div>
 
-            <ol className="relative space-y-4 before:absolute before:bottom-8 before:left-7 before:top-8 before:w-px before:bg-[var(--home-color-border)] sm:before:left-9">
-              {steps.map(({ icon: Icon, title, copy }, index) => (
-                <li
-                  key={title}
-                  className="group relative flex gap-4 rounded-[1.5rem] border border-[var(--home-color-border)] bg-white p-4 shadow-sm transition hover:border-blue-300 hover:shadow-md sm:gap-6 sm:p-5"
-                >
-                  <span className="relative z-[1] grid size-14 shrink-0 place-items-center rounded-2xl bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)] ring-8 ring-white transition group-hover:bg-[var(--home-color-brand)] group-hover:text-white sm:size-16">
-                    <Icon size={24} aria-hidden="true" />
+          <ol className="relative mt-10 grid gap-4 lg:mt-8 lg:grid-cols-5 lg:gap-6 lg:pt-10 lg:before:absolute lg:before:left-[10%] lg:before:right-[10%] lg:before:top-[0.7rem] lg:before:h-px lg:before:bg-blue-500">
+            {steps.map(({ icon: Icon, title, copy }, index) => (
+              <li
+                key={title}
+                className="group relative flex min-h-36 gap-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_16px_35px_rgba(37,99,235,0.10)] lg:min-h-[15.5rem] lg:flex-col lg:items-center lg:px-4 lg:pb-5 lg:pt-4 lg:text-center"
+              >
+                <span className="absolute -left-1 top-5 z-[2] grid size-7 -translate-x-1/2 place-items-center rounded-full border-2 border-white bg-blue-700 text-xs font-black text-white shadow-md shadow-blue-700/20 lg:-top-[3.1rem] lg:left-1/2 lg:size-8 lg:-translate-x-1/2">
+                  {index + 1}
+                </span>
+                {index < steps.length - 1 ? (
+                  <span className="absolute -bottom-4 left-[0.4rem] top-12 w-px bg-blue-200 lg:hidden" />
+                ) : null}
+                <span className="grid size-14 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-700 transition group-hover:bg-blue-700 group-hover:text-white lg:size-16">
+                  <Icon size={27} strokeWidth={2.2} aria-hidden="true" />
+                </span>
+                <div className="min-w-0 pt-0.5 lg:pt-0">
+                  <span className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-blue-700">
+                    Step {String(index + 1).padStart(2, "0")}
                   </span>
-                  <div className="min-w-0 py-1">
-                    <span className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[var(--home-color-brand)]">
-                      Step {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <h3 className="mt-1 text-lg font-extrabold text-[var(--home-color-ink)] sm:text-xl">{title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+                  <h3 className="mt-1 text-sm font-extrabold text-slate-950 sm:text-base">{title}</h3>
+                  <p className="mt-2 text-xs leading-5 text-slate-500">{copy}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <div className="mt-8 grid overflow-hidden rounded-2xl border border-blue-100 bg-white/75 shadow-sm backdrop-blur sm:grid-cols-3">
+            {[
+              { icon: Clock3, title: "Fast Response", copy: "Quick support when you need it." },
+              { icon: MapPin, title: "Location Match", copy: "Nearby workers for your convenience." },
+              { icon: CalendarCheck2, title: "Flexible Timing", copy: "Book as per your schedule." },
+            ].map(({ icon: Icon, title, copy }, index) => (
+              <div
+                key={title}
+                className={`flex items-center gap-3 px-5 py-4 ${index > 0 ? "border-t border-blue-100 sm:border-l sm:border-t-0" : ""}`}
+              >
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-700">
+                  <Icon size={21} aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-xs font-extrabold text-slate-950">{title}</h3>
+                  <p className="mt-1 text-[10px] leading-4 text-slate-500">{copy}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -444,11 +477,10 @@ const HomePage = () => {
                 key={label}
                 className={`rounded-[1.75rem] border p-6 transition hover:-translate-y-1 ${index === 0 ? "border-blue-400/30 bg-blue-600/20" : "border-white/10 bg-white/[0.05]"}`}
               >
-                <div className="flex items-start justify-between gap-4">
+                <div>
                   <span className="grid size-11 place-items-center rounded-xl bg-white/10 text-amber-400">
                     <Icon size={22} aria-hidden="true" />
                   </span>
-                  <span className="text-xs font-bold text-white/30">0{index + 1}</span>
                 </div>
                 <strong className="mt-8 block text-3xl font-black tracking-tight sm:text-4xl">{value}</strong>
                 <h3 className="mt-1 font-bold text-blue-300">{label}</h3>
@@ -464,9 +496,9 @@ const HomePage = () => {
           <div className="relative min-h-[32rem] lg:min-h-[38rem]">
             <div className="absolute inset-x-0 bottom-0 top-8 overflow-hidden rounded-[2rem] bg-[var(--home-color-brand-deep)]">
               <img
-                src="/images/work.png"
-                alt="Construction workers collaborating safely on site"
-                className="h-full w-full object-cover"
+                src="/images/dehatwala-worker-join.png"
+                alt="Dehatwala worker in a blue T-shirt and yellow safety helmet"
+                className="h-full w-full object-cover object-[center_30%]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--home-color-brand-deep)]/85 via-transparent to-transparent" />
             </div>
@@ -494,10 +526,10 @@ const HomePage = () => {
             </p>
             <div className="mt-8 grid gap-x-6 gap-y-5 sm:grid-cols-2">
               {[
-                [UsersRound, "नि:शुल्क पंजीकरण"],
-                [BriefcaseBusiness, "नियमित काम के अवसर"],
-                [Banknote, "समय पर भुगतान"],
-                [MapPin, "अपने आसपास काम"],
+                [BadgeCheck, "ID Verification"],
+                [Banknote, "Daily Payments"],
+                [MapPin, "Nearby Jobs"],
+                [Headphones, "Support Team"],
               ].map(([Icon, label]) => {
                 const BenefitIcon = Icon as typeof UsersRound;
                 return (
@@ -525,29 +557,28 @@ const HomePage = () => {
         <div className="relative mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 lg:px-10">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--home-color-brand)]">
-              Trusted &amp; recognised
+              Trust and Recognised
             </p>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--home-color-ink)] sm:text-4xl lg:text-5xl">
-              Built on trust. <span className="text-[var(--home-color-brand)]">Backed by proof.</span>
+              Trust and <span className="text-[var(--home-color-brand)]">Recognised</span>
             </h2>
             <p className="mt-5 max-w-md text-base leading-7 text-slate-600">
-              A responsible workforce platform shaped around compliance, secure technology and reliable support.
+              Backed by Government Recognition &amp; Secure Technology.
             </p>
             <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-[var(--home-color-border)] bg-white px-4 py-3 text-sm font-bold text-[var(--home-color-ink)] shadow-sm">
               <ShieldCheck size={22} className="text-emerald-600" aria-hidden="true" /> Verified credentials
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            {recognition.map(({ icon: Icon, title, copy }, index) => (
+            {recognition.map(({ icon: Icon, title, copy }) => (
               <article
                 key={title}
                 className="group rounded-[1.5rem] border border-[var(--home-color-border)] bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-950/5 sm:p-6"
               >
-                <div className="flex items-center justify-between gap-4">
+                <div>
                   <span className="grid size-12 place-items-center rounded-2xl bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)] transition group-hover:bg-[var(--home-color-brand)] group-hover:text-white">
                     <Icon size={23} aria-hidden="true" />
                   </span>
-                  <span className="text-[11px] font-extrabold tracking-[0.18em] text-slate-300">0{index + 1}</span>
                 </div>
                 <h3 className="mt-5 text-lg font-extrabold text-[var(--home-color-ink)]">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
@@ -588,55 +619,67 @@ const HomePage = () => {
             </p>
           )}
           {clientsQuery.data && clientsQuery.data.clients.length > 0 && (
-            <div className="grid gap-5 md:grid-cols-3">
+            <Swiper
+              modules={[Pagination]}
+              pagination={{ clickable: true }}
+              spaceBetween={16}
+              slidesPerView={1}
+              breakpoints={{
+                640: { slidesPerView: 2, spaceBetween: 20 },
+                1024: { slidesPerView: 3, spaceBetween: 20 },
+              }}
+              className="customer-stories-carousel !overflow-visible !pb-12 [&_.swiper-slide]:h-auto"
+              aria-label="Customer stories"
+            >
               {clientsQuery.data.clients.slice(0, 3).map((client, clientIndex) => (
-                <figure
-                  key={client.id}
-                  className={`flex min-h-72 flex-col rounded-[1.75rem] border p-6 sm:p-7 ${clientIndex === 1 ? "border-[var(--home-color-brand-deep)] bg-[var(--home-color-brand-deep)] text-white shadow-xl shadow-blue-950/15" : "border-[var(--home-color-border)] bg-white text-[var(--home-color-ink)] shadow-sm"}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex gap-1 text-amber-400" aria-label="5 out of 5 stars">
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <Star key={index} size={16} fill="currentColor" aria-hidden="true" />
-                      ))}
-                    </div>
-                    <MessageCircleMore
-                      size={27}
-                      className={clientIndex === 1 ? "text-blue-300" : "text-blue-200"}
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <blockquote
-                    className={`mt-7 flex-1 text-base font-medium leading-7 ${clientIndex === 1 ? "text-slate-100" : "text-slate-700"}`}
+                <SwiperSlide key={client.id}>
+                  <figure
+                    className={`flex min-h-72 h-full flex-col rounded-[1.75rem] border p-6 sm:p-7 ${clientIndex === 1 ? "border-[var(--home-color-brand-deep)] bg-[var(--home-color-brand-deep)] text-white shadow-xl shadow-blue-950/15" : "border-[var(--home-color-border)] bg-white text-[var(--home-color-ink)] shadow-sm"}`}
                   >
-                    “{client.content}”
-                  </blockquote>
-                  <figcaption
-                    className={`mt-7 flex items-center gap-3 border-t pt-5 ${clientIndex === 1 ? "border-white/10" : "border-slate-100"}`}
-                  >
-                    {client.client_image ? (
-                      <img
-                        src={`${VITE_IMAGE_PATH_URL}/client/${client.client_image}`}
-                        alt={`${client.name}, customer`}
-                        className="size-11 rounded-full object-cover ring-2 ring-white/30"
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-1 text-amber-400" aria-label="5 out of 5 stars">
+                        {Array.from({ length: 5 }).map((_, index) => (
+                          <Star key={index} size={16} fill="currentColor" aria-hidden="true" />
+                        ))}
+                      </div>
+                      <MessageCircleMore
+                        size={27}
+                        className={clientIndex === 1 ? "text-blue-300" : "text-blue-200"}
+                        aria-hidden="true"
                       />
-                    ) : (
-                      <span
-                        className={`grid size-11 place-items-center rounded-full font-black ${clientIndex === 1 ? "bg-white/10 text-white" : "bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)]"}`}
-                      >
-                        {client.name.charAt(0)}
+                    </div>
+                    <blockquote
+                      className={`mt-7 flex-1 text-base font-medium leading-7 ${clientIndex === 1 ? "text-slate-100" : "text-slate-700"}`}
+                    >
+                      “{client.content}”
+                    </blockquote>
+                    <figcaption
+                      className={`mt-7 flex items-center gap-3 border-t pt-5 ${clientIndex === 1 ? "border-white/10" : "border-slate-100"}`}
+                    >
+                      {client.client_image ? (
+                        <img
+                          src={`${VITE_IMAGE_PATH_URL}/client/${client.client_image}`}
+                          alt={`${client.name}, customer`}
+                          className="size-11 rounded-full object-cover ring-2 ring-white/30"
+                        />
+                      ) : (
+                        <span
+                          className={`grid size-11 place-items-center rounded-full font-black ${clientIndex === 1 ? "bg-white/10 text-white" : "bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)]"}`}
+                        >
+                          {client.name.charAt(0)}
+                        </span>
+                      )}
+                      <span>
+                        <strong className="block text-sm">{client.name}</strong>
+                        <span className={`text-xs ${clientIndex === 1 ? "text-slate-400" : "text-slate-500"}`}>
+                          {client.company || client.designation || "Customer"}
+                        </span>
                       </span>
-                    )}
-                    <span>
-                      <strong className="block text-sm">{client.name}</strong>
-                      <span className={`text-xs ${clientIndex === 1 ? "text-slate-400" : "text-slate-500"}`}>
-                        {client.company || client.designation || "Customer"}
-                      </span>
-                    </span>
-                  </figcaption>
-                </figure>
+                    </figcaption>
+                  </figure>
+                </SwiperSlide>
               ))}
-            </div>
+            </Swiper>
           )}
           {clientsQuery.data && clientsQuery.data.clients.length === 0 && (
             <p className="rounded-2xl border border-[var(--home-color-border)] bg-[var(--home-color-surface-soft)] p-8 text-center font-medium text-slate-600">

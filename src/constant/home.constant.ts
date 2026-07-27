@@ -22,11 +22,11 @@ export const benefits = [
 ];
 
 export const steps = [
-  { icon: Search, title: "Book online", copy: "Choose your service, date, time and number of workers." },
-  { icon: UserCheck, title: "Worker assigned", copy: "We match you with a verified worker near your site." },
-  { icon: MapPin, title: "Worker arrives", copy: "Your worker reaches the location at the scheduled time." },
-  { icon: Wrench, title: "Work in progress", copy: "The job gets done with professional care and updates." },
-  { icon: CreditCard, title: "Pay & rate", copy: "Pay securely through Dehatwala and share your experience." },
+  { icon: Search, title: "Book Online", copy: "Choose your service, date, time and number of workers." },
+  { icon: UserCheck, title: "Worker Assigned", copy: "We match you with a verified worker near your site." },
+  { icon: MapPin, title: "Worker Arrives", copy: "Your worker reaches the location at the scheduled time." },
+  { icon: Wrench, title: "Work In Progress", copy: "The job gets done with professional care and updates." },
+  { icon: CreditCard, title: "Pay & Rate", copy: "Pay securely through Dehatwala and share your experience." },
 ];
 
 export const impact = [
