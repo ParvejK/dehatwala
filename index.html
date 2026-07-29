@@ -176,10 +176,6 @@
       root.id = "root";
       document.body.appendChild(root);
 
-      const reactScript = document.createElement("script");
-      reactScript.type = "module";
-      reactScript.src = "/src/main.tsx";
-      document.body.appendChild(reactScript);
     } else {
       document.body.classList.add("launching-mode");
 
@@ -211,6 +207,7 @@
       `;
     }
   </script>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 
 </html>
