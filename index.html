@@ -3,21 +3,214 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Workers</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-    rel="stylesheet">
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <title>Dehatwala</title>
+
+  <script>
+    const isDemo =
+      new URLSearchParams(window.location.search).get("demo") === "1";
+
+    document.documentElement.classList.add(
+      isDemo ? "demo-mode" : "launching-mode"
+    );
+  </script>
+
+  <script>
+    if (isDemo) {
+      document.write(`
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin
+        >
+
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet"
+        >
+
+        <script src="https://checkout.razorpay.com/v1/checkout.js"><\/script>
+      `);
+    }
+  </script>
+
+  <style>
+    /*
+     * These styles apply only to the Launching Soon page.
+     * They will not affect the React application.
+     */
+
+    html.launching-mode,
+    html.launching-mode body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    html.launching-mode body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: #ffffff;
+      text-align: center;
+      background:
+        radial-gradient(
+          circle at top left,
+          rgba(124, 58, 237, 0.22),
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at bottom right,
+          rgba(217, 70, 239, 0.18),
+          transparent 35%
+        ),
+        linear-gradient(
+          135deg,
+          #070b1f,
+          #1b1238,
+          #050816
+        );
+    }
+
+    .launching-page,
+    .launching-page * {
+      box-sizing: border-box;
+    }
+
+    .launching-page {
+      width: 100%;
+      max-width: 900px;
+      padding: 40px 24px;
+      font-family: Arial, sans-serif;
+    }
+
+    .launching-page__rocket {
+      margin-bottom: 20px;
+      font-size: 70px;
+      line-height: 1;
+    }
+
+    .launching-page__subtitle {
+      margin-bottom: 15px;
+      color: #a970ff;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 10px;
+    }
+
+    .launching-page__title {
+      margin: 0 0 25px;
+      color: #ffffff;
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .launching-page__title span {
+      color: #a855f7;
+    }
+
+    .launching-page__description {
+      margin: 0 auto;
+      max-width: 700px;
+      color: #d1d5db;
+      font-size: 20px;
+      line-height: 1.7;
+    }
+
+    .launching-page__footer {
+      margin-top: 40px;
+      color: #9ca3af;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .launching-page {
+        padding: 30px 20px;
+      }
+
+      .launching-page__rocket {
+        font-size: 55px;
+      }
+
+      .launching-page__subtitle {
+        font-size: 15px;
+        letter-spacing: 7px;
+      }
+
+      .launching-page__title {
+        font-size: 44px;
+      }
+
+      .launching-page__description {
+        font-size: 17px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .launching-page__title {
+        font-size: 38px;
+      }
+
+      .launching-page__subtitle {
+        letter-spacing: 5px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <div id="root"></div>
+  <script>
+    if (isDemo) {
+      document.body.classList.add("demo-mode");
 
-  <script type="module" src="/src/main.tsx"></script>
+      const root = document.createElement("div");
+      root.id = "root";
+      document.body.appendChild(root);
+
+      const reactScript = document.createElement("script");
+      reactScript.type = "module";
+      reactScript.src = "/src/main.tsx";
+      document.body.appendChild(reactScript);
+    } else {
+      document.body.classList.add("launching-mode");
+
+      document.body.innerHTML = `
+        <main class="launching-page">
+          <div class="launching-page__rocket">
+            🚀
+          </div>
+
+          <div class="launching-page__subtitle">
+            WE ARE
+          </div>
+
+          <h1 class="launching-page__title">
+            Launching <span>Soon</span>
+          </h1>
+
+          <p class="launching-page__description">
+            Our website is under construction.
+            <br>
+            We're working hard to bring you something amazing.
+            Stay tuned!
+          </p>
+
+          <div class="launching-page__footer">
+            DEHATWALA.COM
+          </div>
+        </main>
+      `;
+    }
+  </script>
 </body>
 
 </html>
