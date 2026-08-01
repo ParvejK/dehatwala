@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   Sparkles,
   Star,
-  UsersRound
+  UsersRound,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Pagination } from "swiper/modules";
@@ -58,7 +58,7 @@ const HomePage = () => {
             <div className="relative min-h-[420px] lg:min-h-[560px]">
               <div className="absolute inset-4 rounded-[2.5rem] bg-blue-700 lg:inset-8" />
               <img
-                src="/images/dehatwala-hero-worker.png"
+                src="/images/hero-image.png"
                 alt="Dehatwala worker in a blue T-shirt and yellow safety helmet"
                 className="absolute inset-0 h-full w-full rounded-[2.5rem] object-cover object-center shadow-2xl [clip-path:polygon(8%_0,100%_0,100%_92%,0_100%,0_10%)]"
               />
@@ -201,10 +201,12 @@ const HomePage = () => {
                         <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-slate-950/80 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-white backdrop-blur">
                           <Sparkles size={13} className="text-amber-300" aria-hidden="true" /> Popular
                         </span>
-                        {service.rating ? <span className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-slate-900 shadow-lg">
-                          <Star size={14} className="text-amber-500" fill="currentColor" aria-hidden="true" />
-                          {service.rating}
-                        </span> : null}
+                        {service.rating ? (
+                          <span className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-slate-900 shadow-lg">
+                            <Star size={14} className="text-amber-500" fill="currentColor" aria-hidden="true" />
+                            {service.rating}
+                          </span>
+                        ) : null}
                       </Link>
 
                       <div className="flex flex-1 flex-col p-5">
@@ -231,7 +233,9 @@ const HomePage = () => {
                             <Headphones size={17} className="text-blue-600" aria-hidden="true" /> Live Support
                           </span>
                         </div>
-                        <p className="mt-4 text-lg font-black text-blue-700">₹1,200 <span className="text-sm font-bold">/ Day</span></p>
+                        <p className="mt-4 text-lg font-black text-blue-700">
+                          ₹1,200 <span className="text-sm font-bold">/ Day</span>
+                        </p>
                         <Link
                           to={serviceUrl}
                           className="mt-3 inline-flex min-h-11 items-center justify-between rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
@@ -375,10 +379,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section
-        id="how-it-works"
-        className="relative isolate overflow-hidden bg-[#f8faff] py-16 sm:py-20 lg:py-24"
-      >
+      <section id="how-it-works" className="relative isolate overflow-hidden bg-[#f8faff] py-16 sm:py-20 lg:py-24">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_12%_10%,rgba(37,99,235,0.06),transparent_28%),radial-gradient(circle_at_92%_88%,rgba(37,99,235,0.05),transparent_25%)]" />
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="max-w-xl">
