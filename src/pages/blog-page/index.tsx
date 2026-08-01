@@ -1,303 +1,569 @@
-import { ArrowRight, ArrowUpRight, BookOpen, CalendarDays, RefreshCw, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarDays, Clock3, Mail, RefreshCw, Search, Sparkles, X } from "lucide-react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
 import { useBlogs } from "../../react-query/hooks";
+import { Blog } from "../../types";
+import {
+  BLOG_CATEGORIES,
+  BlogCategory,
+  estimateReadTime,
+  formatDate,
+  isFeaturedBlog,
+  resolveCategory,
+  stripMarkup,
+} from "./data";
 
-type BlogArticle = NonNullable<ReturnType<typeof useBlogs>["data"]>["blogs"][number];
+type Article = {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt: string;
+  image: string;
+  category: BlogCategory;
+  readTime: number;
+  publishedAt: string;
+  updatedAt: string;
+  pinned: boolean;
+};
 
-const formatDate = (date: string) =>
-  new Intl.DateTimeFormat("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(date));
+const toArticle = (blog: Blog): Article => ({
+  id: blog.id,
+  title: blog.title,
+  slug: blog.slug,
+  excerpt: stripMarkup(blog.short_description),
+  image: `${VITE_IMAGE_PATH_URL}/blog/${blog.blogimg}`,
+  category: resolveCategory(blog),
+  readTime: estimateReadTime(blog),
+  publishedAt: blog.created_at,
+  updatedAt: blog.updated_at,
+  pinned: isFeaturedBlog(blog),
+});
 
-const ArticleCard = ({ blog, featured = false }: { blog: BlogArticle; featured?: boolean }) => {
-  const articleUrl = `/blog/${blog.slug}`;
+const CategoryBadge = ({ category }: { category: BlogCategory }) => (
+  <span
+    className={`inline-flex items-center rounded-md px-2 py-1 text-[11px] font-semibold leading-none ring-1 ${category.badgeClassName}`}
+  >
+    {category.label}
+  </span>
+);
 
-  if (featured) {
-    return (
-      <article className="group overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-xl shadow-blue-950/[0.07]">
-        <div className="grid lg:grid-cols-[1.18fr_0.82fr]">
-          <Link
-            to={articleUrl}
-            className="relative block min-h-72 overflow-hidden bg-slate-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-blue-400 sm:min-h-96 lg:min-h-[31rem]"
-            aria-label={`Read ${blog.title}`}
+const ArticleMeta = ({ article, className = "" }: { article: Article; className?: string }) => (
+  <div className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-normal text-slate-500 ${className}`}>
+    <span className="inline-flex items-center gap-1.5">
+      <Clock3 size={14} aria-hidden="true" /> {article.readTime} min read
+    </span>
+    <span className="hidden text-slate-300 sm:inline" aria-hidden="true">
+      •
+    </span>
+    <time dateTime={article.publishedAt} className="inline-flex items-center gap-1.5">
+      <CalendarDays size={14} className="sm:hidden" aria-hidden="true" />
+      {formatDate(article.publishedAt)}
+    </time>
+  </div>
+);
+
+/* ---------------------------------- hero ---------------------------------- */
+
+const BlogHero = ({ search, onSearchChange }: { search: string; onSearchChange: (value: string) => void }) => (
+  <section className="relative isolate overflow-hidden bg-[#062b79] text-white">
+    <div
+      className="pointer-events-none absolute inset-0 -z-10 opacity-[0.07] [background-image:linear-gradient(rgba(255,255,255,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.8)_1px,transparent_1px)] [background-size:56px_56px]"
+      aria-hidden="true"
+    />
+
+    <div className="relative mx-auto flex max-w-7xl flex-col gap-10 px-5 pb-24 pt-12 sm:px-8 lg:min-h-[540px] lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:pb-32 lg:pt-16">
+      <div className="relative z-10 w-full lg:max-w-xl xl:max-w-2xl">
+        <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-blue-100 backdrop-blur">
+          <Sparkles size={15} aria-hidden="true" /> Dehatwala blog
+        </p>
+        <h1 className="mt-5 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl xl:text-[3.5rem]">
+          Dehatwala Workforce <span className="block text-amber-400">Insights</span>
+        </h1>
+        <span className="mt-6 block h-1 w-16 rounded-full bg-amber-400" aria-hidden="true" />
+        <p className="mt-6 max-w-xl text-sm font-normal leading-7 text-blue-100 sm:text-base">
+          Practical guides, hiring tips, worker resources and industry insights to help customers and independent
+          workers make better workforce decisions.
+        </p>
+
+        <label className="mt-8 flex max-w-xl items-center gap-2 rounded-xl bg-white p-1.5 pl-4 text-slate-900 shadow-2xl shadow-blue-950/30 focus-within:ring-4 focus-within:ring-amber-300/40">
+          <Search className="shrink-0 text-blue-700" size={20} aria-hidden="true" />
+          <span className="sr-only">Search articles, services or workforce guides</span>
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => onSearchChange(event.target.value)}
+            placeholder="Search articles, services or workforce guides..."
+            className="min-w-0 flex-1 bg-transparent px-1 py-2.5 text-sm font-normal outline-none placeholder:text-slate-400"
+          />
+          <span
+            className="grid size-10 shrink-0 place-items-center rounded-lg bg-blue-700 text-white"
+            aria-hidden="true"
           >
-            <img
-              src={`${VITE_IMAGE_PATH_URL}/blog/${blog.blogimg}`}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.035]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent" />
-            <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.16em] text-blue-700 shadow-lg backdrop-blur">
-              <Sparkles size={14} aria-hidden="true" /> Featured story
-            </span>
-          </Link>
+            <Search size={18} />
+          </span>
+        </label>
+      </div>
 
-          <div className="flex flex-col justify-between p-7 sm:p-9 lg:p-10">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                <CalendarDays size={15} className="text-blue-600" aria-hidden="true" />
-                <time dateTime={blog.created_at}>{formatDate(blog.created_at)}</time>
-              </div>
-              <h2 className="mt-6 text-2xl font-extrabold leading-tight tracking-tight text-slate-950 sm:text-3xl lg:text-4xl">
-                <Link
-                  to={articleUrl}
-                  className="transition hover:text-blue-700 focus:outline-none focus-visible:rounded focus-visible:ring-4 focus-visible:ring-blue-100"
-                >
-                  {blog.title}
-                </Link>
-              </h2>
-              <p className="mt-5 line-clamp-4 text-base leading-7 text-slate-600">{blog.short_description}</p>
-            </div>
-            <Link
-              to={articleUrl}
-              className="mt-9 inline-flex min-h-12 w-fit items-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
+      <div className="relative w-full overflow-hidden rounded-2xl lg:absolute lg:inset-y-0 lg:right-0 lg:w-[56%] lg:rounded-none xl:right-[calc((1280px-100vw)/2)] xl:w-[calc(54%+(100vw-1280px)/2)]">
+        <img
+          src="/images/blog-hero.png"
+          alt="Dehatwala workers in blue polo T-shirts and safety helmets shown on a mobile screen"
+          className="h-full w-full object-cover object-center"
+        />
+        <div
+          className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(90deg,#062b79_0%,rgba(6,43,121,0.85)_18%,rgba(6,43,121,0.15)_45%,transparent_70%)] lg:block"
+          aria-hidden="true"
+        />
+      </div>
+    </div>
+  </section>
+);
+
+/* ------------------------------ category strip ----------------------------- */
+
+const CategoryStrip = ({
+  counts,
+  active,
+  onSelect,
+}: {
+  counts: Record<string, number>;
+  active: string | null;
+  onSelect: (categoryId: string | null) => void;
+}) => (
+  <nav
+    aria-label="Blog categories"
+    className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.12)] sm:p-7"
+  >
+    <div className="mb-5 flex items-center gap-4">
+      <span className="hidden h-px flex-1 bg-slate-200 sm:block" aria-hidden="true" />
+      <h2 className="text-base font-bold tracking-tight text-slate-950 sm:text-lg">Explore by Category</h2>
+      <span className="hidden h-px flex-1 bg-slate-200 sm:block" aria-hidden="true" />
+    </div>
+
+    <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
+      {BLOG_CATEGORIES.map((category) => {
+        const Icon = category.icon;
+        const isActive = active === category.id;
+        const count = counts[category.id] ?? 0;
+
+        return (
+          <li key={category.id}>
+            <button
+              type="button"
+              onClick={() => onSelect(isActive ? null : category.id)}
+              aria-pressed={isActive}
+              title={category.description}
+              className={`flex h-full w-full flex-col items-center gap-2.5 rounded-2xl border px-2 py-4 text-center transition focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 ${
+                isActive
+                  ? "border-blue-700 bg-blue-700 text-white shadow-lg shadow-blue-700/20"
+                  : "border-slate-200 bg-white text-blue-900 hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
+              } ${count === 0 && !isActive ? "opacity-60" : ""}`}
             >
-              Read article <ArrowRight size={17} aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-      </article>
-    );
-  }
+              <span
+                className={`grid size-11 place-items-center rounded-xl ${isActive ? "bg-white/15 text-white" : category.iconClassName}`}
+              >
+                <Icon size={22} aria-hidden="true" />
+              </span>
+              <span className="text-xs font-bold leading-4 sm:text-[13px]">{category.label}</span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  </nav>
+);
 
-  return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-950/[0.07]">
+/* --------------------------------- cards ---------------------------------- */
+
+const ArticleCard = ({ article }: { article: Article }) => (
+  <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_20px_50px_rgba(15,23,42,0.1)]">
+    <Link
+      to={`/blog/${article.slug}`}
+      tabIndex={-1}
+      aria-hidden="true"
+      className="relative block aspect-[16/10] overflow-hidden bg-slate-100"
+    >
+      <img
+        src={article.image}
+        alt=""
+        loading="lazy"
+        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+      />
+    </Link>
+
+    <div className="flex flex-1 flex-col gap-3 p-4">
+      <CategoryBadge category={article.category} />
+      <h3 className="text-[15px] font-bold leading-6 tracking-tight text-slate-950">
+        <Link
+          to={`/blog/${article.slug}`}
+          className="line-clamp-2 transition hover:text-blue-700 focus:outline-none focus-visible:rounded focus-visible:ring-4 focus-visible:ring-blue-100"
+        >
+          {article.title}
+        </Link>
+      </h3>
+      <ArticleMeta article={article} className="mt-auto border-t border-slate-100 pt-3" />
+    </div>
+  </article>
+);
+
+const FeaturedArticle = ({ article }: { article: Article }) => (
+  <section aria-labelledby="featured-article">
+    <h2 id="featured-article" className="mb-4 text-lg font-bold tracking-tight text-slate-950">
+      Featured Article
+    </h2>
+
+    <article className="grid gap-5 rounded-3xl border border-blue-100 bg-[var(--home-color-surface-tint)] p-4 sm:p-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:p-6">
       <Link
-        to={articleUrl}
-        className="relative block aspect-[16/10] overflow-hidden bg-slate-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-blue-400"
-        aria-label={`Read ${blog.title}`}
+        to={`/blog/${article.slug}`}
+        tabIndex={-1}
+        aria-hidden="true"
+        className="group relative block aspect-[16/10] overflow-hidden rounded-2xl bg-slate-100"
       >
         <img
-          src={`${VITE_IMAGE_PATH_URL}/blog/${blog.blogimg}`}
+          src={article.image}
           alt=""
-          loading="lazy"
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent opacity-70" />
       </Link>
-      <div className="flex flex-1 flex-col p-6">
-        <div className="flex items-center justify-between gap-4">
-          <time
-            dateTime={blog.created_at}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500"
-          >
-            <CalendarDays size={14} className="text-blue-600" aria-hidden="true" />
-            {formatDate(blog.created_at)}
-          </time>
-          <span className="grid size-9 place-items-center rounded-full bg-blue-50 text-blue-700 transition group-hover:bg-blue-700 group-hover:text-white">
-            <ArrowUpRight size={17} aria-hidden="true" />
-          </span>
-        </div>
-        <h2 className="mt-5 line-clamp-2 text-xl font-extrabold leading-7 tracking-tight text-slate-950">
+
+      <div className="lg:pr-6">
+        <CategoryBadge category={article.category} />
+        <h3 className="mt-4 text-2xl font-bold leading-tight tracking-tight text-slate-950 sm:text-3xl">
           <Link
-            to={articleUrl}
+            to={`/blog/${article.slug}`}
             className="transition hover:text-blue-700 focus:outline-none focus-visible:rounded focus-visible:ring-4 focus-visible:ring-blue-100"
           >
-            {blog.title}
+            {article.title}
           </Link>
-        </h2>
-        <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{blog.short_description}</p>
+        </h3>
+        <p className="mt-4 line-clamp-3 text-sm font-normal leading-7 text-slate-600">{article.excerpt}</p>
+
+        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-normal text-slate-500">
+          <span className="inline-flex items-center gap-1.5">
+            <Clock3 size={14} aria-hidden="true" /> {article.readTime} min read
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <CalendarDays size={14} aria-hidden="true" /> Updated {formatDate(article.updatedAt)}
+          </span>
+        </div>
+
         <Link
-          to={articleUrl}
-          className="mt-6 inline-flex w-fit items-center gap-2 text-sm font-extrabold text-blue-700 transition hover:text-blue-900 focus:outline-none focus-visible:rounded focus-visible:ring-4 focus-visible:ring-blue-100"
+          to={`/blog/${article.slug}`}
+          className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
         >
-          Continue reading <ArrowRight size={16} aria-hidden="true" />
+          Read Guide <ArrowRight size={17} aria-hidden="true" />
         </Link>
       </div>
     </article>
+  </section>
+);
+
+const CategoryRow = ({
+  category,
+  articles,
+  onViewAll,
+}: {
+  category: BlogCategory;
+  articles: Article[];
+  onViewAll: () => void;
+}) => (
+  <section aria-labelledby={`category-${category.id}`}>
+    <div className="mb-4 flex items-center justify-between gap-4">
+      <h2 id={`category-${category.id}`} className="text-lg font-bold tracking-tight text-slate-950 sm:text-xl">
+        {category.label}
+      </h2>
+      <button
+        type="button"
+        onClick={onViewAll}
+        className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-1 py-1 text-sm font-semibold text-blue-700 transition hover:text-blue-900 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
+      >
+        View All <ArrowRight size={16} aria-hidden="true" />
+      </button>
+    </div>
+
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {articles.map((article) => (
+        <ArticleCard key={article.id} article={article} />
+      ))}
+    </div>
+  </section>
+);
+
+/* -------------------------------- subscribe -------------------------------- */
+
+const SubscribeSection = () => {
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // TODO: post the address to the newsletter endpoint once the API is available.
+    setSubscribed(true);
+    setEmail("");
+  };
+
+  return (
+    <section className="rounded-3xl border border-blue-100 bg-[var(--home-color-surface-soft)] p-5 sm:p-7">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-center lg:gap-10">
+        <div className="flex items-start gap-4">
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-blue-700 text-white shadow-lg shadow-blue-700/20">
+            <Mail size={22} aria-hidden="true" />
+          </span>
+          <div>
+            <h2 className="text-lg font-bold tracking-tight text-slate-950 sm:text-xl">
+              Stay Updated with Useful Workforce Insights
+            </h2>
+            <p className="mt-1.5 text-sm font-normal leading-6 text-slate-600">
+              Subscribe to get expert tips, hiring guides and worker opportunities straight to your inbox.
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2.5 sm:flex-row">
+          <label className="flex-1">
+            <span className="sr-only">Email address</span>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setSubscribed(false);
+              }}
+              placeholder="Enter your email address"
+              className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm font-normal text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+            />
+          </label>
+          <button
+            type="submit"
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-700 px-6 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
+          >
+            Subscribe
+          </button>
+        </form>
+      </div>
+
+      {subscribed && (
+        <p role="status" className="mt-4 text-sm font-semibold text-emerald-700 lg:text-right">
+          Thanks for subscribing. We will keep you posted.
+        </p>
+      )}
+    </section>
   );
 };
 
+/* -------------------------------- skeleton -------------------------------- */
+
 const BlogSkeleton = () => (
-  <div role="status" aria-live="polite" aria-label="Loading articles" className="motion-safe:animate-pulse">
-    <div className="overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-xl shadow-blue-950/[0.05]">
-      <div className="grid lg:grid-cols-[1.18fr_0.82fr]">
-        <div className="relative min-h-72 overflow-hidden bg-gradient-to-br from-blue-100 via-slate-100 to-blue-50 sm:min-h-96 lg:min-h-[31rem]">
-          <div className="absolute left-5 top-5 h-8 w-36 rounded-full border border-white/80 bg-white/75 shadow-sm" />
-          <div className="absolute -bottom-16 -right-16 size-48 rounded-full border-[32px] border-white/30" />
-        </div>
-        <div className="flex min-h-[24rem] flex-col justify-between p-7 sm:p-9 lg:min-h-0 lg:p-10">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="size-4 rounded-md bg-blue-100" />
-              <div className="h-3 w-32 rounded-full bg-slate-200" />
-            </div>
-            <div className="mt-7 space-y-3">
-              <div className="h-8 w-full rounded-lg bg-slate-200 sm:h-9" />
-              <div className="h-8 w-4/5 rounded-lg bg-slate-200 sm:h-9" />
-              <div className="h-8 w-2/3 rounded-lg bg-slate-100 sm:h-9" />
-            </div>
-            <div className="mt-7 space-y-3">
-              <div className="h-4 w-full rounded-full bg-slate-100" />
-              <div className="h-4 w-11/12 rounded-full bg-slate-100" />
-              <div className="h-4 w-3/4 rounded-full bg-slate-100" />
-            </div>
-          </div>
-          <div className="mt-9 h-12 w-36 rounded-xl bg-blue-100" />
-        </div>
+  <div role="status" aria-live="polite" className="motion-safe:animate-pulse">
+    <div className="grid gap-5 rounded-3xl border border-blue-100 bg-[var(--home-color-surface-tint)] p-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:gap-8 lg:p-6">
+      <div className="aspect-[16/10] rounded-2xl bg-slate-200" />
+      <div className="space-y-4">
+        <div className="h-5 w-28 rounded-md bg-blue-100" />
+        <div className="h-8 w-full rounded-lg bg-slate-200" />
+        <div className="h-8 w-3/4 rounded-lg bg-slate-200" />
+        <div className="h-3.5 w-full rounded-full bg-slate-100" />
+        <div className="h-3.5 w-5/6 rounded-full bg-slate-100" />
+        <div className="h-11 w-36 rounded-xl bg-blue-100" />
       </div>
     </div>
-    <div className="mt-16 lg:mt-20">
-      <div className="mb-9 flex flex-col gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-3">
-          <div className="h-3 w-28 rounded-full bg-blue-100" />
-          <div className="h-9 w-64 max-w-full rounded-lg bg-slate-200" />
-        </div>
-        <div className="space-y-2 sm:w-80">
-          <div className="h-3 w-full rounded-full bg-slate-100" />
-          <div className="h-3 w-4/5 rounded-full bg-slate-100 sm:ml-auto" />
-        </div>
-      </div>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <div
-            key={index}
-            className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm"
-          >
-            <div className="aspect-[16/10] bg-gradient-to-br from-blue-100 via-slate-100 to-blue-50" />
-            <div className="flex flex-1 flex-col p-6">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="size-3.5 rounded bg-blue-100" />
-                  <div className="h-3 w-28 rounded-full bg-slate-200" />
-                </div>
-                <div className="size-9 rounded-full bg-blue-50" />
+
+    {Array.from({ length: 2 }).map((_, rowIndex) => (
+      <div key={rowIndex} className="mt-10">
+        <div className="mb-4 h-6 w-48 rounded-lg bg-slate-200" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((__, cardIndex) => (
+            <div key={cardIndex} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+              <div className="aspect-[16/10] bg-slate-200" />
+              <div className="space-y-3 p-4">
+                <div className="h-5 w-24 rounded-md bg-blue-50" />
+                <div className="h-4 w-full rounded-md bg-slate-200" />
+                <div className="h-4 w-4/5 rounded-md bg-slate-200" />
+                <div className="h-3 w-2/3 rounded-full bg-slate-100" />
               </div>
-              <div className="mt-5 space-y-2.5">
-                <div className="h-6 w-full rounded-md bg-slate-200" />
-                <div className="h-6 w-4/5 rounded-md bg-slate-200" />
-              </div>
-              <div className="mt-4 space-y-2">
-                <div className="h-3.5 w-full rounded-full bg-slate-100" />
-                <div className="h-3.5 w-11/12 rounded-full bg-slate-100" />
-                <div className="h-3.5 w-2/3 rounded-full bg-slate-100" />
-              </div>
-              <div className="mt-7 h-4 w-32 rounded-full bg-blue-100" />
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    ))}
     <span className="sr-only">Loading the latest blog articles…</span>
   </div>
 );
 
+/* ---------------------------------- page ---------------------------------- */
+
+const ARTICLES_PER_ROW = 4;
+
 const BlogPage = () => {
   const blogsQuery = useBlogs();
-  const blogs = blogsQuery.data?.blogs ?? [];
-  const [featuredBlog, ...otherBlogs] = blogs;
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const articlesRef = useRef<HTMLDivElement>(null);
+
+  const articles = useMemo(
+    () =>
+      (blogsQuery.data?.blogs ?? [])
+        .map(toArticle)
+        .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()),
+    [blogsQuery.data],
+  );
+
+  const featured = useMemo(() => articles.find((article) => article.pinned) ?? articles[0], [articles]);
+
+  const counts = useMemo(
+    () =>
+      articles.reduce<Record<string, number>>((total, article) => {
+        total[article.category.id] = (total[article.category.id] ?? 0) + 1;
+        return total;
+      }, {}),
+    [articles],
+  );
+
+  const query = search.trim().toLowerCase();
+  const isFiltering = query.length > 0 || activeCategory !== null;
+
+  const filtered = useMemo(
+    () =>
+      articles.filter((article) => {
+        const matchesCategory = activeCategory === null || article.category.id === activeCategory;
+        const matchesQuery =
+          query.length === 0 ||
+          article.title.toLowerCase().includes(query) ||
+          article.excerpt.toLowerCase().includes(query) ||
+          article.category.label.toLowerCase().includes(query);
+
+        return matchesCategory && matchesQuery;
+      }),
+    [articles, activeCategory, query],
+  );
+
+  const rows = useMemo(
+    () =>
+      BLOG_CATEGORIES.map((category) => ({
+        category,
+        articles: articles
+          .filter((article) => article.category.id === category.id && article.id !== featured?.id)
+          .slice(0, ARTICLES_PER_ROW),
+      })).filter((row) => row.articles.length > 0),
+    [articles, featured],
+  );
+
+  const activeCategoryLabel = BLOG_CATEGORIES.find((category) => category.id === activeCategory)?.label;
+
+  /** Keeps the reader next to the articles when a category replaces the browsing view. */
+  const selectCategory = (categoryId: string | null) => {
+    setActiveCategory(categoryId);
+    requestAnimationFrame(() => articlesRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setActiveCategory(null);
+  };
 
   return (
-    <main className="overflow-hidden bg-white text-slate-950">
-      <section className="relative isolate overflow-hidden bg-[var(--home-color-brand-deep)] pb-28 pt-16 text-white sm:pt-20 lg:pb-36 lg:pt-24">
-        <div
-          className="pointer-events-none absolute inset-0 -z-10 opacity-[0.055] [background-image:linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:64px_64px]"
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute -right-32 -top-32 -z-10 size-[32rem] rounded-full border-[88px] border-blue-500/10"
-          aria-hidden="true"
-        />
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:gap-20 lg:px-10">
-          <div>
-            <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.28em] text-blue-300">
-              <span className="h-px w-10 bg-blue-400" aria-hidden="true" />
-              The field notes
+    <main className="bg-white text-slate-950">
+      <BlogHero search={search} onSearchChange={setSearch} />
+
+      <div className="relative z-10 mx-auto -mt-16 max-w-7xl px-5 sm:px-8 lg:-mt-20 lg:px-10">
+        <CategoryStrip counts={counts} active={activeCategory} onSelect={selectCategory} />
+      </div>
+
+      <div ref={articlesRef} className="mx-auto max-w-7xl scroll-mt-24 px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
+        {blogsQuery.isPending && <BlogSkeleton />}
+
+        {blogsQuery.isError && (
+          <div role="alert" className="mx-auto max-w-xl rounded-3xl border border-red-200 bg-red-50 p-8 text-center">
+            <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white text-red-600 shadow-sm">
+              <RefreshCw size={22} aria-hidden="true" />
+            </span>
+            <h2 className="mt-5 text-xl font-bold text-slate-950">We couldn’t load the articles</h2>
+            <p className="mt-2 text-sm font-normal leading-6 text-slate-600">
+              The articles are temporarily unavailable. Please check your connection and try again.
             </p>
-            <h1 className="mt-7 max-w-4xl text-4xl font-black leading-[1.04] tracking-[-0.04em] sm:text-5xl lg:text-7xl">
-              Work, skills and the future of <span className="text-blue-300">building.</span>
-            </h1>
-          </div>
-
-          <div className="lg:pb-2">
-            <p className="max-w-xl text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
-              Clear, useful perspectives on construction, skilled work, safer sites, and the people shaping the
-              industry.
-            </p>
-            <div className="mt-8 grid grid-cols-3 border-y border-white/15 py-5">
-              {["Site insights", "Skilled work", "Industry ideas"].map((topic, index) => (
-                <span
-                  key={topic}
-                  className={`text-xs font-bold leading-5 text-slate-300 sm:text-sm ${
-                    index > 0 ? "border-l border-white/15 pl-4 sm:pl-5" : ""
-                  }`}
-                >
-                  <span className="mb-1 block text-[10px] font-black tracking-[0.18em] text-blue-400">0{index + 1}</span>
-                  {topic}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="relative -mt-12 pb-16 lg:-mt-16 lg:pb-24">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          {blogsQuery.isPending && <BlogSkeleton />}
-
-          {blogsQuery.isError && (
-            <div
-              role="alert"
-              className="mx-auto max-w-xl rounded-[2rem] border border-red-200 bg-red-50 p-8 text-center"
+            <button
+              type="button"
+              onClick={() => blogsQuery.refetch()}
+              className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
             >
-              <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white text-red-600 shadow-sm">
-                <RefreshCw size={22} aria-hidden="true" />
-              </span>
-              <h2 className="mt-5 text-xl font-extrabold text-slate-950">We couldn’t load the journal</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                The articles are temporarily unavailable. Please check your connection and try again.
-              </p>
+              <RefreshCw size={17} aria-hidden="true" /> Try again
+            </button>
+          </div>
+        )}
+
+        {blogsQuery.isSuccess && articles.length === 0 && (
+          <div className="mx-auto max-w-xl rounded-3xl border border-blue-100 bg-[var(--home-color-surface-soft)] p-8 text-center sm:p-10">
+            <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-white text-blue-700 shadow-sm">
+              <BookOpen size={25} aria-hidden="true" />
+            </span>
+            <h2 className="mt-5 text-2xl font-bold">Stories are on the way</h2>
+            <p className="mt-3 text-sm font-normal leading-6 text-slate-600">
+              We’re preparing useful ideas and field insights. Please check back soon.
+            </p>
+          </div>
+        )}
+
+        {blogsQuery.isSuccess && articles.length > 0 && isFiltering && (
+          <section aria-live="polite">
+            <div className="mb-5 flex flex-col gap-3 border-b border-slate-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-slate-950 sm:text-2xl">
+                  {activeCategoryLabel ?? "Search results"}
+                </h2>
+                <p className="mt-1 text-sm font-normal text-slate-600">
+                  {filtered.length} {filtered.length === 1 ? "article" : "articles"}
+                  {query.length > 0 && <> for “{search.trim()}”</>}
+                </p>
+              </div>
               <button
                 type="button"
-                onClick={() => blogsQuery.refetch()}
-                className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
+                onClick={clearFilters}
+                className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
               >
-                <RefreshCw size={17} aria-hidden="true" /> Try again
+                <X size={16} aria-hidden="true" /> Clear filters
               </button>
             </div>
-          )}
 
-          {blogsQuery.isSuccess && blogs.length === 0 && (
-            <div className="mx-auto max-w-xl rounded-[2rem] border border-blue-100 bg-[var(--home-color-surface-soft)] p-8 text-center sm:p-10">
-              <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-white text-blue-700 shadow-sm">
-                <BookOpen size={25} aria-hidden="true" />
-              </span>
-              <h2 className="mt-5 text-2xl font-extrabold">Stories are on the way</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                We’re preparing useful ideas and field insights. Please check back soon.
-              </p>
-            </div>
-          )}
+            {filtered.length > 0 ? (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {filtered.map((article) => (
+                  <ArticleCard key={article.id} article={article} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center">
+                <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white text-blue-700 shadow-sm">
+                  <Search size={22} aria-hidden="true" />
+                </span>
+                <h3 className="mt-4 text-lg font-bold text-slate-950">No articles here yet</h3>
+                <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-slate-600">
+                  We are still writing for this topic. Try another category or clear your search to see everything.
+                </p>
+              </div>
+            )}
+          </section>
+        )}
 
-          {blogsQuery.isSuccess && featuredBlog && (
-            <>
-              <ArticleCard blog={featuredBlog} featured />
+        {blogsQuery.isSuccess && articles.length > 0 && !isFiltering && (
+          <div className="space-y-10 lg:space-y-12">
+            {featured && <FeaturedArticle article={featured} />}
 
-              {otherBlogs.length > 0 && (
-                <div className="mt-16 lg:mt-20">
-                  <div className="mb-9 flex flex-col gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">Latest insights</p>
-                      <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">More from the journal</h2>
-                    </div>
-                    <p className="max-w-md text-sm leading-6 text-slate-600 sm:text-right">
-                      Explore practical guidance, industry perspectives, and stories from the field.
-                    </p>
-                  </div>
-                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {otherBlogs.map((blog) => (
-                      <ArticleCard key={blog.id} blog={blog} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
+            {rows.map(({ category, articles: rowArticles }) => (
+              <CategoryRow
+                key={category.id}
+                category={category}
+                articles={rowArticles}
+                onViewAll={() => selectCategory(category.id)}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="mt-12 lg:mt-16">
+          <SubscribeSection />
         </div>
-      </section>
+      </div>
     </main>
   );
 };

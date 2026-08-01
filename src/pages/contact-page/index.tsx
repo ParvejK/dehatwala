@@ -81,17 +81,13 @@ const ContactUsPage = () => {
 
   return (
     <main className="overflow-hidden bg-white text-slate-950">
-      <section className="relative isolate overflow-hidden bg-[var(--home-color-brand-deep)] pb-32 pt-16 text-white sm:pb-36 sm:pt-20 slg:pt-24">
+      <section className="relative isolate overflow-hidden bg-[var(--home-color-brand-deep)] text-white">
         <div
           className="pointer-events-none absolute inset-0 -z-10 opacity-[0.075] [background-image:linear-gradient(rgba(255,255,255,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.8)_1px,transparent_1px)] [background-size:64px_64px]"
           aria-hidden="true"
         />
-        <div
-          className="pointer-events-none absolute -right-32 -top-32 -z-10 size-[32rem] rounded-full border-[88px] border-blue-500/10"
-          aria-hidden="true"
-        />
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:gap-20 lg:px-10">
-          <div>
+        <div className="relative mx-auto flex max-w-7xl flex-col gap-10 px-5 pb-28 pt-12 sm:px-8 sm:pb-20 lg:min-h-[540px] lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-16">
+          <div className="relative z-10 w-full lg:max-w-xl xl:max-w-2xl">
             <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.28em] text-blue-300">
               <span className="h-px w-10 bg-blue-400" aria-hidden="true" />
               We are here to help
@@ -99,13 +95,11 @@ const ContactUsPage = () => {
             <h1 className="mt-7 max-w-3xl text-4xl font-black leading-[1.04] tracking-[-0.04em] sm:text-5xl lg:text-7xl">
               Let&apos;s start a <span className="text-blue-300">conversation.</span>
             </h1>
-          </div>
-          <div className="max-w-xl lg:pb-2">
-            <p className="text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
+            <p className="mt-7 max-w-xl text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
               Need help finding a worker, managing a booking, or joining our network? Share a few details and our team
               will point you in the right direction.
             </p>
-            <div className="mt-8 grid grid-cols-2 border-y border-white/15 py-5">
+            <div className="mt-8 grid max-w-xl grid-cols-2 border-y border-white/15 py-5">
               <span className="pr-4 text-xs font-bold leading-5 text-slate-300 sm:text-sm">
                 <ShieldCheck size={17} className="mb-2 text-blue-400" aria-hidden="true" />
                 Helpful, human support
@@ -115,6 +109,18 @@ const ContactUsPage = () => {
                 Mon–Sat, 9 AM–7 PM
               </span>
             </div>
+          </div>
+
+          <div className="relative w-full overflow-hidden rounded-2xl lg:absolute lg:inset-y-0 lg:right-0 lg:w-[56%] lg:rounded-none xl:right-[calc((1280px-100vw)/2)] xl:w-[calc(54%+(100vw-1280px)/2)]">
+            <img
+              src="/images/contact-us-hero.png"
+              alt="Dehatwala construction workers ready to help customers"
+              className="aspect-[16/10] h-full w-full object-cover object-center lg:aspect-auto"
+            />
+            <div
+              className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(90deg,var(--home-color-brand-deep)_0%,rgba(6,43,121,0.88)_18%,rgba(6,43,121,0.2)_48%,transparent_72%)] lg:block"
+              aria-hidden="true"
+            />
           </div>
         </div>
       </section>
