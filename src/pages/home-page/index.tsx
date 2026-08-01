@@ -208,9 +208,9 @@ const HomePage = () => {
                       </Link>
 
                       <div className="flex flex-1 flex-col p-5">
-                        <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-blue-700">
-                          {service.category_name || "Skilled service"}
-                        </p>
+                        {/* <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-blue-700">
+                          {service.category_name || "Skilled service"} Category
+                        </p> */}
                         <h3 className="mt-2 text-xl font-extrabold leading-tight">
                           <Link
                             to={serviceUrl}
