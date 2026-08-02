@@ -30,6 +30,7 @@ const Header = () => {
           {[
             ["/", "Home"],
             ["/about-us", "About us"],
+            ["/media-news", "Media & news"],
             ["/blog", "Blog"],
             ["/contact", "Contact"],
           ].map(([to, label]) => (
@@ -60,7 +61,6 @@ const Header = () => {
               {data?.categories.map((category) => <li key={category.id}><Link className="rounded-lg" to={`/service/${category.slug}`}>{category.name}</Link></li>)}
             </ul>
           </div>
-          <a className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-blue-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100" href="/#how-it-works">How it works</a>
         </nav>
         <div className="flex items-center gap-2">
           <a href="tel:+918600999922" aria-label="Call booking support" className="hidden size-10 items-center justify-center rounded-xl border border-slate-200 text-blue-700 transition hover:border-blue-200 hover:bg-blue-50 xl:inline-flex"><Headphones size={18} aria-hidden="true" /></a>
@@ -79,7 +79,7 @@ const Header = () => {
       {menuOpen && (
         <nav id="mobile-navigation" aria-label="Mobile navigation" className="border-t border-slate-200 bg-white px-5 py-5 shadow-xl shadow-blue-950/5 lg:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 rounded-2xl bg-slate-50 p-2">
-            {[["/", "Home"], ["/#how-it-works", "How it works"], ["/about-us", "About us"], ["/blog", "Blog"], ["/contact", "Contact"], ["/become-a-part-of-dehatwala", "Become a worker"]].map(([to, label]) => <Link key={to} to={to} onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-blue-50 hover:text-blue-700">{label}</Link>)}
+            {[["/", "Home"], ["/about-us", "About us"], ["/media-news", "Media & news"], ["/blog", "Blog"], ["/contact", "Contact"], ["/become-a-part-of-dehatwala", "Become a worker"]].map(([to, label]) => <Link key={to} to={to} onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-blue-50 hover:text-blue-700">{label}</Link>)}
             <details className="rounded-xl px-3 py-3 open:bg-white"><summary className="cursor-pointer text-sm font-semibold text-slate-800">Categories</summary><div className="mt-3 flex max-h-52 flex-col gap-1 overflow-y-auto border-l border-blue-200 pl-3">{isLoading && <span className="py-2 text-sm text-slate-500">Loading categories…</span>}{isError && <span className="py-2 text-sm text-red-600">Categories unavailable</span>}{data?.categories.map((category) => <Link key={category.id} onClick={closeMenu} to={`/service/${category.slug}`} className="rounded-lg px-2 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">{category.name}</Link>)}</div></details>
             <Link to="/#book-a-worker" onClick={closeMenu} className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 text-sm font-bold text-white shadow-lg shadow-blue-700/20 sm:hidden">Book a worker <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>

@@ -254,10 +254,10 @@ const TrustBanner = ({ service }: { service: ServiceDetail }) => (
       </div>
 
       <Link
-        to="/#book-a-worker"
+        to={`/cart?service=day&slug=${encodeURIComponent(service.slug)}`}
         className="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-white px-6 text-sm font-bold text-[#062b79] transition hover:bg-blue-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
       >
-        Book a Worker <ArrowRight size={17} aria-hidden="true" />
+        Book This Service <ArrowRight size={17} aria-hidden="true" />
       </Link>
     </div>
   </section>

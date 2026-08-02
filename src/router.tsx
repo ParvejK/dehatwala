@@ -28,6 +28,7 @@ import ProtectedRoute from "./protected-route";
 import BookedServicePage from "./pages/booked-service-page";
 import InstantServiceReviewsPage from "./pages/service-review-page";
 import AddReviewsPage from "./pages/instant-service-reviews-page";
+import MediaNewsPage from "./pages/media-news-page";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
       {
         path: "/blog",
         element: <BlogPage />,
+      },
+      {
+        path: "/media-news",
+        element: <MediaNewsPage />,
       },
       {
         path: "/blog/:slug",
