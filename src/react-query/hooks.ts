@@ -237,11 +237,3 @@ export function useFetchPolicies(slug: string) {
   });
 }
 
-// Clients
-// export function useFetchServices() {
-//   return useQuery<ServiceApiResponse, Error>({
-//     queryKey: ["services"],
-//     queryFn: getServices,
-//     staleTime: Infinity,
-//   });
-// }

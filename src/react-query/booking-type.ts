@@ -1,5 +1,5 @@
 // Type for the booked_services object
-interface InstantServiceObj {
+export interface InstantServiceObj {
   MasonDayCount: number;
   helperDayCount: number;
   MasonRate: number;
@@ -16,7 +16,7 @@ interface InstantServiceObj {
   tipValue: number;
 }
 
-interface BookedService {
+export interface BookedService {
   id: number;
   user_id: number;
   service_id: number;
@@ -48,6 +48,6 @@ interface BookedService {
 }
 
 // Type for the entire API response
-interface BookedServicesResponse {
+export interface BookedServicesResponse {
   booked_services: BookedService[];
 }

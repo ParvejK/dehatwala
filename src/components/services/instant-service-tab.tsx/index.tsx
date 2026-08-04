@@ -57,7 +57,15 @@ const InstantServicesTab = ({ instantServiceData, serviceTitle = "" }: InstantSe
       setMasonOvertimeRate(instantServiceData.overtime_meason_rate);
       setHelperOvertimeRate(instantServiceData.overtime_helper_rate);
     }
-  }, [instantServiceData, setMasonRate, setHelperRate, setMasonDayRate, setHelperDayRate, setHelperOvertimeRate]);
+  }, [
+    instantServiceData,
+    setMasonRate,
+    setHelperRate,
+    setMasonDayRate,
+    setHelperDayRate,
+    setMasonOvertimeRate,
+    setHelperOvertimeRate,
+  ]);
 
   return (
     <div role="tablist" className="tabs tabs-lifted">

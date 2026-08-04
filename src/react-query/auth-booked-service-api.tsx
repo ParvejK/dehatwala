@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { BookedServicesResponse } from "./booking-type";
 import { API_URL } from "./constants";
 
 const fetchBookedService = async (userId: number, token: string) => {
@@ -13,7 +14,7 @@ const fetchBookedService = async (userId: number, token: string) => {
 
 export const useBookedService = (userId: number, token: string) => {
   return useQuery<BookedServicesResponse, Error>({
-    queryKey: ["bookedService", userId],
+    queryKey: ["bookedService", userId, token],
     queryFn: () => fetchBookedService(userId, token),
     enabled: !!userId && !!token,
   });

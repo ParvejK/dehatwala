@@ -43,7 +43,6 @@ export default function ApplyJobForm() {
   const stateValue = watch("state_id");
   useEffect(() => {
     setSelectedStateId(Number(stateValue));
-    console.log(selectedStateId);
   }, [stateValue]);
 
   if (!id) {

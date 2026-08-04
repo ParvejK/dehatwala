@@ -46,7 +46,7 @@ Route ordering matters where a static segment competes with a dynamic one (e.g. 
 
 `src/react-query/constants.ts` re-exports the `VITE_*` env vars. Components import `API_URL` / `VITE_IMAGE_PATH_URL` from there, never `import.meta.env` directly.
 
-`main.tsx` constructs a bare `new QueryClient()` with no global defaults — the `defaultOptions` block shown in `README.md` is not actually applied. Caching is configured per hook (`staleTime: 10 * 1000` or `Infinity`), so set it explicitly on each new hook.
+`main.tsx` constructs a bare `new QueryClient()` with no global defaults. Caching is configured per hook (`staleTime: 10 * 1000` or `Infinity`), so set it explicitly on each new hook.
 
 **Types** — `src/types.d.ts` holds nearly all API types in one file. Note it declares `interface Service` twice; TypeScript **merges** them, so the effective `Service` is the union of both blocks. Adding a field to either is enough.
 
@@ -56,7 +56,7 @@ Route ordering matters where a static segment competes with a dynamic one (e.g. 
 
 **Images** — API rows store a bare filename; build URLs as `` `${VITE_IMAGE_PATH_URL}/{service|blog|category}/${filename}` ``. Rows also carry an `image_link` absolute URL, but it points at a different host than the configured one, so prefer the constructed path.
 
-**Modals** — `src/components/shared/modals.tsx` wraps a native `<dialog>` and is driven by a ref, not state: hold a `useRef<HTMLDialogElement>` and call `modalRef.current?.showModal()`. `README.md` has the full usage example.
+**Modals** — there is no shared modal component. The booked-services table builds its reschedule/cancel dialogs inline; follow that pattern or extract a shared one when a third caller appears.
 
 ## Styling
 
