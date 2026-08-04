@@ -11,43 +11,13 @@ import {
   Truck,
   UserRoundCheck,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { formatPrice, primaryWorkerRate } from "../../components/services/pricing";
+import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
+import { useCategories, useServicesByCategory } from "../../react-query/hooks";
+import { Category, Service, SubCategory } from "../../types";
 
-type Service = {
-  title: string;
-  description: string;
-  image: string;
-  rating: string;
-  price: string;
-  slug: string;
-};
-
-const services: Service[] = [
-  {
-    title: "Material Handling",
-    description: "Hire workers for material shifting and professional loading & shifting services.",
-    image: "/images/services/loading-material-handling/material-handling.jpg",
-    rating: "4.6",
-    price: "₹1,000",
-    slug: "material-handling",
-  },
-  {
-    title: "Loading/Unloading Work",
-    description: "Hire workers for truck and container loading or unloading work.",
-    image: "/images/services/loading-material-handling/loading-unloading.jpg",
-    rating: "4.7",
-    price: "₹1,000",
-    slug: "loading-unloading-work",
-  },
-  {
-    title: "Material Packing",
-    description: "Hire trained workers for careful and secure packing of commercial materials.",
-    image: "/images/services/loading-material-handling/packing.jpg",
-    rating: "4.5",
-    price: "₹1,000",
-    slug: "material-packing",
-  },
-];
+const FALLBACK_HERO_IMAGE = "/images/services/loading-material-handling/hero.jpg";
 
 const serviceHighlights = [
   { label: "Verified Workers", icon: ShieldCheck },
@@ -70,6 +40,12 @@ const proofPoints = [
   { icon: BadgeIndianRupee, title: "Transparent Pricing", copy: "No Hidden Charges" },
 ];
 
+const categoryImage = (category: Category) =>
+  category.cat_img ? `${VITE_IMAGE_PATH_URL}/category/${category.cat_img}` : FALLBACK_HERO_IMAGE;
+
+const serviceImage = (service: Service) =>
+  service.service_image ? `${VITE_IMAGE_PATH_URL}/service/${service.service_image}` : FALLBACK_HERO_IMAGE;
+
 const DotGrid = ({ className }: { className?: string }) => (
   <div
     aria-hidden="true"
@@ -77,7 +53,17 @@ const DotGrid = ({ className }: { className?: string }) => (
   />
 );
 
-const ServiceHero = () => (
+/**
+ * Wildcard slug for "every category". The API accepts it on either slug and
+ * answers with all services, `category: null` and no sub categories — so the
+ * page has to supply its own hero copy and filters for this case.
+ */
+const ALL_SLUG = "all";
+
+const ALL_DESCRIPTION =
+  "Every skilled and general workforce service on Dehatwala in one place. Pick a category to narrow it down, or browse the full list below.";
+
+const ServiceHero = ({ category }: { category?: Category }) => (
   <section className="relative overflow-hidden rounded-3xl border border-[#dce7fb] bg-[#f2f6fe] shadow-[0_18px_50px_-24px_rgba(20,61,141,0.45)]">
     <DotGrid className="left-5 top-6 h-24 w-16 sm:h-32 sm:w-20" />
     <DotGrid className="bottom-6 left-3 hidden h-24 w-8 lg:block" />
@@ -88,12 +74,11 @@ const ServiceHero = () => (
           <Truck size={36} strokeWidth={1.6} aria-hidden="true" />
         </div>
 
-        <h1 className="text-[32px] font-extrabold leading-[1.12] tracking-tight text-[#0f1e57] sm:text-[38px] lg:text-[40px]">
-          <span className="block">Loading &amp;</span>
-          Material Handling
+        <h1 className="text-[32px] font-extrabold capitalize leading-[1.12] tracking-tight text-[#0f1e57] sm:text-[38px] lg:text-[40px]">
+          {category?.name ?? "All Services"}
         </h1>
         <p className="mt-4 max-w-sm text-sm font-normal leading-6 text-[#4a5b83] sm:text-[15px] sm:leading-7">
-          Men&apos;s loading, unloading and material shifting services for all your site needs.
+          {category?.description || ALL_DESCRIPTION}
         </p>
 
         <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-4 sm:mt-9">
@@ -113,9 +98,12 @@ const ServiceHero = () => (
 
       <div className="relative min-h-64 overflow-hidden sm:min-h-72 lg:min-h-full">
         <img
-          src="/images/services/loading-material-handling/hero.jpg"
-          alt="Dehatwala workers loading packed materials into a truck"
+          src={category ? categoryImage(category) : FALLBACK_HERO_IMAGE}
+          alt={category?.name ?? ""}
           className="absolute inset-0 size-full object-cover"
+          onError={(event) => {
+            event.currentTarget.src = FALLBACK_HERO_IMAGE;
+          }}
         />
         <div
           aria-hidden="true"
@@ -126,16 +114,65 @@ const ServiceHero = () => (
   </section>
 );
 
+const baseChip =
+  "inline-flex h-9 items-center rounded-full border px-4 text-xs font-semibold transition focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100";
+const activeChip = "border-[#0b3fc4] bg-[#0b3fc4] text-white";
+const idleChip = "border-[#dce7fb] bg-white text-[#3d4f77] hover:border-[#bfd5fb] hover:text-[#0b3fc4]";
+
+const SubCategoryFilter = ({
+  categorySlug,
+  subCategories,
+  activeSlug,
+}: {
+  categorySlug: string;
+  subCategories: SubCategory[];
+  activeSlug?: string;
+}) => (
+  <nav aria-label="Filter by sub category" className="mb-6 flex flex-wrap gap-2.5">
+    <Link to={`/services/${categorySlug}`} className={`${baseChip} ${activeSlug ? idleChip : activeChip}`}>
+      All Services
+    </Link>
+    {subCategories.map((subCategory) => (
+      <Link
+        key={subCategory.id}
+        to={`/services/${categorySlug}/${subCategory.slug}`}
+        aria-current={subCategory.slug === activeSlug ? "page" : undefined}
+        className={`${baseChip} ${subCategory.slug === activeSlug ? activeChip : idleChip}`}
+      >
+        {subCategory.name}
+      </Link>
+    ))}
+  </nav>
+);
+
+/** Shown on /services/all, where the API returns no sub categories to filter by. */
+const CategoryFilter = ({ categories }: { categories: Category[] }) => (
+  <nav aria-label="Filter by category" className="mb-6 flex flex-wrap gap-2.5">
+    <span aria-current="page" className={`${baseChip} ${activeChip}`}>
+      All Services
+    </span>
+    {categories.map((category) => (
+      <Link key={category.id} to={`/services/${category.slug}`} className={`${baseChip} ${idleChip}`}>
+        {category.name}
+      </Link>
+    ))}
+  </nav>
+);
+
 const ServiceCard = ({ service }: { service: Service }) => {
-  const detailUrl = `/services/detail/${service.slug}`;
+  const detailUrl = `/service/detail/${service.slug}`;
+  const price = formatPrice(primaryWorkerRate(service)?.amount);
 
   return (
     <article className="group overflow-hidden rounded-2xl border border-[#e0eafb] bg-white shadow-[0_4px_14px_rgba(26,64,135,0.06)] transition duration-300 hover:border-[#bfd5fb] hover:shadow-[0_12px_28px_-12px_rgba(26,64,135,0.35)] md:grid md:h-[206px] md:grid-cols-[36%_64%]">
       <Link to={detailUrl} tabIndex={-1} aria-hidden="true" className="block h-52 overflow-hidden md:h-full">
         <img
-          src={service.image}
+          src={serviceImage(service)}
           alt=""
           className="size-full object-cover transition duration-500 group-hover:scale-[1.04]"
+          onError={(event) => {
+            event.currentTarget.src = FALLBACK_HERO_IMAGE;
+          }}
         />
       </Link>
 
@@ -148,16 +185,18 @@ const ServiceCard = ({ service }: { service: Service }) => {
               </h3>
             </Link>
             <p className="mt-1.5 line-clamp-2 max-w-md text-xs font-normal leading-[1.5] text-[#5a6a90] md:min-h-[39px] lg:text-[13px]">
-              {service.description}
+              {service.short_description}
             </p>
           </div>
-          <span
-            className="inline-flex shrink-0 items-center gap-1.5 text-base font-extrabold text-[#0f1e57]"
-            aria-label={`Rated ${service.rating} out of 5`}
-          >
-            <Star size={18} className="fill-[#ff9f1a] text-[#ff9f1a]" aria-hidden="true" />
-            {service.rating}
-          </span>
+          {service.rating ? (
+            <span
+              className="inline-flex shrink-0 items-center gap-1.5 text-base font-extrabold text-[#0f1e57]"
+              aria-label={`Rated ${service.rating} out of 5`}
+            >
+              <Star size={18} className="fill-[#ff9f1a] text-[#ff9f1a]" aria-hidden="true" />
+              {service.rating}
+            </span>
+          ) : null}
         </div>
 
         <ul className="mt-3.5 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-[#eaf1fd] pb-3.5 text-[10px] font-semibold text-[#0b3fc4] sm:gap-x-7 lg:text-[11px]">
@@ -172,9 +211,17 @@ const ServiceCard = ({ service }: { service: Service }) => {
         <div className="mt-auto flex flex-col gap-3 pt-3.5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-3">
             <div className="rounded-lg bg-[#0b3fc4] px-3.5 py-1.5 text-white">
-              <span className="block text-[9px] font-medium leading-none text-blue-200">Starting from</span>
+              <span className="block text-[9px] font-medium leading-none text-blue-200">
+                {price ? "Starting from" : "Pricing"}
+              </span>
               <strong className="mt-1 block text-sm font-bold leading-none">
-                {service.price} <span className="text-[10px] font-medium">/ Worker</span>
+                {price ? (
+                  <>
+                    {price} <span className="text-[10px] font-medium">/ Worker</span>
+                  </>
+                ) : (
+                  "On Request"
+                )}
               </strong>
             </div>
             <span className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#eaf7ee] px-4 text-[10px] font-semibold text-emerald-700 lg:text-[11px]">
@@ -195,6 +242,42 @@ const ServiceCard = ({ service }: { service: Service }) => {
     </article>
   );
 };
+
+const ListingSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="h-72 rounded-3xl bg-[#eaf1fd] lg:h-80" />
+    <div className="py-10 sm:py-12">
+      <div className="mb-4 h-8 w-72 rounded-lg bg-[#eaf1fd]" />
+      <div className="space-y-4">
+        {[0, 1, 2].map((key) => (
+          <div key={key} className="h-52 rounded-2xl bg-[#eaf1fd] md:h-[206px]" />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const EmptyState = ({ message }: { message: string }) => (
+  <div className="rounded-2xl border border-[#dce7fb] bg-[#f6f9ff] px-6 py-14 text-center">
+    <h3 className="text-lg font-extrabold tracking-tight text-[#0f1e57] sm:text-xl">No services found</h3>
+    <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[#5a6a90]">{message}</p>
+  </div>
+);
+
+const CategoryNotFound = () => (
+  <div className="rounded-3xl border border-[#dce7fb] bg-[#f6f9ff] px-6 py-16 text-center">
+    <h1 className="text-2xl font-extrabold tracking-tight text-[#0f1e57] sm:text-3xl">Category not found</h1>
+    <p className="mx-auto mt-3 max-w-md text-sm font-normal leading-6 text-[#5a6a90]">
+      The category you are looking for is not available. Please head back and pick a service category.
+    </p>
+    <Link
+      to="/"
+      className="mt-6 inline-flex min-h-11 items-center justify-center gap-3 rounded-xl bg-[#0b3fc4] px-6 text-sm font-bold text-white transition hover:bg-[#0932a0] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
+    >
+      Back to home <ArrowRight size={17} aria-hidden="true" />
+    </Link>
+  </div>
+);
 
 const TrustSection = () => (
   <section
@@ -232,29 +315,86 @@ const TrustSection = () => (
   </section>
 );
 
-const ServiceListingPage = () => (
-  <main className="bg-white pb-20 pt-6 sm:pt-10">
-    <div className="mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-10">
-      <ServiceHero />
+const ServiceListingPage = () => {
+  const { category_slug, sub_category_slug } = useParams();
+  const { data, isLoading, isError } = useServicesByCategory(category_slug, sub_category_slug);
 
-      <section aria-labelledby="services-heading" className="py-10 sm:py-12">
-        <div className="mb-4">
-          <h2 id="services-heading" className="text-2xl font-extrabold tracking-tight text-[#0f1e57] sm:text-[30px]">
-            Loading &amp; Material Handling Services
-          </h2>
-          <p className="mt-1 text-xs font-normal text-[#5a6a90] sm:text-sm">Choose the service you need</p>
-        </div>
+  // /services/all has no category to render from, so fall back to the category
+  // list for the filter chips.
+  const isAllCategories = category_slug?.toLowerCase() === ALL_SLUG;
+  const { data: categoryData } = useCategories();
 
-        <div className="space-y-4">
-          {services.map((service) => (
-            <ServiceCard key={service.slug} service={service} />
-          ))}
-        </div>
-      </section>
+  const category = data?.category;
+  const services = data?.services ?? [];
+  const subCategories = data?.sub_categories ?? [];
+  const activeSubCategory =
+    sub_category_slug && sub_category_slug.toLowerCase() !== ALL_SLUG
+      ? subCategories.find((subCategory) => subCategory.slug === sub_category_slug)
+      : undefined;
 
-      <TrustSection />
-    </div>
-  </main>
-);
+  const hasListing = !!category || isAllCategories;
+
+  return (
+    <main className="bg-white pb-20 pt-6 sm:pt-10">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-10">
+        {isLoading && <ListingSkeleton />}
+
+        {!isLoading && (isError || !hasListing) && <CategoryNotFound />}
+
+        {!isLoading && !isError && hasListing && (
+          <>
+            <ServiceHero category={category} />
+
+            <section aria-labelledby="services-heading" className="py-10 sm:py-12">
+              <div className="mb-4">
+                <h2
+                  id="services-heading"
+                  className="text-2xl font-extrabold capitalize tracking-tight text-[#0f1e57] sm:text-[30px]"
+                >
+                  {activeSubCategory ? activeSubCategory.name : category ? `${category.name} Services` : "All Services"}
+                </h2>
+                <p className="mt-1 text-xs font-normal text-[#5a6a90] sm:text-sm">
+                  {services.length > 0
+                    ? `${services.length} service${services.length > 1 ? "s" : ""} available — choose the one you need`
+                    : "Choose the service you need"}
+                </p>
+              </div>
+
+              {isAllCategories
+                ? categoryData?.categories?.length > 0 && <CategoryFilter categories={categoryData.categories} />
+                : subCategories.length > 0 && (
+                    <SubCategoryFilter
+                      categorySlug={category_slug}
+                      subCategories={subCategories}
+                      activeSlug={sub_category_slug}
+                    />
+                  )}
+
+              {services.length > 0 ? (
+                <div className="space-y-4">
+                  {services.map((service) => (
+                    <ServiceCard key={service.id} service={service} />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  message={
+                    activeSubCategory
+                      ? `We have no services listed under ${activeSubCategory.name} yet. Try another sub category.`
+                      : isAllCategories
+                        ? "No services are listed yet. Please check back soon."
+                        : "We have no services listed in this category yet. Please check back soon."
+                  }
+                />
+              )}
+            </section>
+
+            <TrustSection />
+          </>
+        )}
+      </div>
+    </main>
+  );
+};
 
 export default ServiceListingPage;

@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SearchServices from "../../components/search-services";
+import { formatPrice, primaryWorkerRate } from "../../components/services/pricing";
 import TawkMessenger from "../../components/shared/TawkMessenger";
 import { benefits, impact, recognition, steps } from "../../constant/home.constant";
 import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
@@ -152,7 +153,7 @@ const HomePage = () => {
               </p>
             </div>
             <Link
-              to="/service/all"
+              to="/services/all"
               className="inline-flex min-h-12 w-fit items-center justify-center gap-2 rounded-xl border border-blue-200 bg-white px-5 py-3 text-sm font-bold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-100"
             >
               Explore all services <ArrowRight size={17} aria-hidden="true" />
@@ -180,7 +181,7 @@ const HomePage = () => {
           {servicesQuery.data && (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {servicesQuery.data.services.slice(0, 4).map((service) => {
-                const serviceUrl = `/services/detail/${service.slug}`;
+                const serviceUrl = `/service/detail/${service.slug}`;
 
                 return (
                   <article
@@ -233,9 +234,19 @@ const HomePage = () => {
                             <Headphones size={17} className="text-blue-600" aria-hidden="true" /> Live Support
                           </span>
                         </div>
-                        <p className="mt-4 text-lg font-black text-blue-700">
-                          ₹1,200 <span className="text-sm font-bold">/ Day</span>
-                        </p>
+                        {(() => {
+                          const rate = primaryWorkerRate(service);
+                          const price = formatPrice(rate?.amount);
+
+                          return price ? (
+                            <p className="mt-4 text-lg font-black text-blue-700">
+                              {price} <span className="text-sm font-bold">/ Day</span>
+                              <span className="ml-1.5 text-xs font-bold text-slate-500">{rate?.label}</span>
+                            </p>
+                          ) : (
+                            <p className="mt-4 text-sm font-bold text-slate-500">Price on request</p>
+                          );
+                        })()}
                         <Link
                           to={serviceUrl}
                           className="mt-3 inline-flex min-h-11 items-center justify-between rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
@@ -277,7 +288,7 @@ const HomePage = () => {
               </p>
             </div>
             <Link
-              to="/service/all"
+              to="/services/all"
               className="inline-flex min-h-12 w-fit items-center gap-2 rounded-xl border border-[var(--home-color-border)] bg-[var(--home-color-surface)] px-5 py-3 text-sm font-bold text-[var(--home-color-brand)] shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-100"
             >
               View all categories <ArrowRight size={17} aria-hidden="true" />
@@ -310,7 +321,7 @@ const HomePage = () => {
               {categoriesQuery.data.categories.slice(0, 1).map((category) => (
                 <Link
                   key={category.id}
-                  to={`/service/${category.slug}`}
+                  to={`/services/${category.slug}`}
                   className="group relative flex min-h-[25rem] overflow-hidden rounded-[2rem] bg-[var(--home-color-brand-deep)] shadow-xl shadow-blue-950/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
                   aria-label={`Explore ${category.name} services`}
                 >
@@ -342,7 +353,7 @@ const HomePage = () => {
                 {categoriesQuery.data.categories.slice(1, 5).map((category) => (
                   <Link
                     key={category.id}
-                    to={`/service/${category.slug}`}
+                    to={`/services/${category.slug}`}
                     className="group flex min-h-48 overflow-hidden rounded-[1.5rem] border border-[var(--home-color-border)] bg-[var(--home-color-surface)] p-3 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-950/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
                     aria-label={`Explore ${category.name} services`}
                   >

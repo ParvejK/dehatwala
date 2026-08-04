@@ -18,7 +18,7 @@ const MobileNavigationMenu = ({ categories, isLoading, isError, error, user }) =
               {categories && categories.length > 0 ? (
                 categories.map((category) => (
                   <li key={category.id} className="capitalize">
-                    <Link to={`/service/${category.slug}`}>{category.name}</Link>
+                    <Link to={`/services/${category.slug}`}>{category.name}</Link>
                   </li>
                 ))
               ) : (

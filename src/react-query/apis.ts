@@ -29,6 +29,8 @@ import {
   LabourTestimonialsApiResponse,
   CheckAvailabilityPayload,
   CheckAvailabilityResponse,
+  CareerApplicationPayload,
+  CareerApplicationResponse,
 } from "../types";
 import { API_URL } from "./constants";
 
@@ -236,3 +238,29 @@ export const fetchServices = async (filters: { category_slug: string; sub_catego
 
 export const fetchServiceDetail = (slug: string) =>
   axios.get<ServiceDetailApiResponse>(`${API_URL}/get-service-detail/${slug}`).then((res) => res.data);
+
+/**
+ * @Careers
+ * Submit a career application (with CV) as multipart/form-data.
+ *
+ * NOTE: `POST /career-application` does not exist in the Laravel API yet — see
+ * the contract in the careers apply page. Until it is added the request 404s and
+ * the form falls back to the email route.
+ */
+export const submitCareerApplication = async (payload: CareerApplicationPayload) => {
+  const body = new FormData();
+  body.append("name", payload.name);
+  body.append("mobile_number", payload.mobile_number);
+  body.append("email", payload.email);
+  body.append("state_id", payload.state_id);
+  body.append("city_id", payload.city_id);
+  body.append("role", payload.role);
+  body.append("source", payload.source);
+  if (payload.message) body.append("message", payload.message);
+  body.append("cv", payload.cv);
+
+  const response = await axios.post<CareerApplicationResponse>(`${API_URL}/career-application`, body, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};

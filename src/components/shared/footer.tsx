@@ -2,7 +2,7 @@ import { ArrowUpRight, Facebook, Instagram, Linkedin, Youtube } from "lucide-rea
 import { Link } from "react-router-dom";
 
 const linkGroups = [
-  { title: "Company", links: [["About us", "/about-us"], ["Contact us", "/contact"], ["Media & news", "/media-news"], ["Careers", "/jobs"], ["Blog", "/blog"]] },
+  { title: "Company", links: [["About us", "/about-us"], ["Contact us", "/contact"], ["Media & news", "/media-news"], ["Careers", "/careers"], ["Blog", "/blog"]] },
   { title: "Legal", links: [["Privacy policy", "/privacy-policy"], ["Terms & conditions", "/terms-and-conditions"], ["Cancellation policy", "/cancellation-policy"], ["Refund policy", "/refund-policy"]] },
   { title: "For workers", links: [["Join Dehatwala", "/become-a-part-of-dehatwala"], ["Worker Agreement", "/terms-and-conditions"], ["Worker FAQs", "/faqs"], ["Find work opportunities", "/jobs"]] },
   { title: "For customers", links: [["Book a worker", "/#book-a-worker"], ["Explore services", "/#book-a-worker"], ["How it works", "/#how-it-works"], ["Customer FAQs", "/faqs"], ["Contact support", "/contact"]] },

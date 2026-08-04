@@ -75,6 +75,25 @@ interface Services {
   image_link: string | null;
   video_link: string | null;
   status: string;
+  // Per-worker pricing. `base_price` / `overtime_price` were dropped from the
+  // `services` table on 2026-08-04; use `primaryWorkerRate` in
+  // `components/services/pricing.ts` to pick the rate to display.
+  meson_label?: string | null;
+  is_active_meson?: boolean | number | null;
+  meson_amount?: string | number | null;
+  meson_overtime_amount?: string | number | null;
+  helper_label?: string | null;
+  is_active_helper?: boolean | number | null;
+  helper_amount?: string | number | null;
+  helper_overtime_amount?: string | number | null;
+  /** Pre-built by the API from the columns above; preferred when present. */
+  worker_rates?: {
+    key?: string;
+    label?: string | null;
+    amount?: string | number | null;
+    overtime?: string | number | null;
+    active?: boolean | number | null;
+  }[];
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
@@ -112,6 +131,28 @@ interface Blog {
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
+  /** Eager-loaded by getBlogs/getBlog; null when the blog has no category. */
+  category?: BlogCategoryApi | null;
+}
+
+/** A row from `blog_categories` — distinct from the frontend BLOG_CATEGORIES map. */
+interface BlogCategoryApi {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  icon: string | null;
+  icon_link: string | null;
+  status: boolean;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  /** Present on /get-blog-categories only. */
+  blogs_count?: number;
+}
+
+interface BlogCategoriesResponse {
+  categories: BlogCategoryApi[];
 }
 
 interface BlogProps {
@@ -119,6 +160,8 @@ interface BlogProps {
 }
 interface SingleBlogProps {
   blog: Blog;
+  /** Five most recent other posts, returned alongside the blog. */
+  recent_blogs?: Blog[];
 }
 
 interface BlogCardProps {
@@ -455,6 +498,7 @@ interface Service {
   id: number;
   user_id: number;
   category_id: number;
+  sub_category_id?: number | null;
   meta_title: string;
   meta_keyword: string;
   meta_description: string;
@@ -469,6 +513,23 @@ interface Service {
   status: string; // Assuming it's a string, e.g., "1" for active; adjust to number if needed
   is_instant_service: number;
   is_permanent_service: number;
+  // See the note on `Services` — per-worker pricing replaced base_price.
+  meson_label?: string | null;
+  is_active_meson?: boolean | number | null;
+  meson_amount?: string | number | null;
+  meson_overtime_amount?: string | number | null;
+  helper_label?: string | null;
+  is_active_helper?: boolean | number | null;
+  helper_amount?: string | number | null;
+  helper_overtime_amount?: string | number | null;
+  /** Pre-built by the API from the columns above; preferred when present. */
+  worker_rates?: {
+    key?: string;
+    label?: string | null;
+    amount?: string | number | null;
+    overtime?: string | number | null;
+    active?: boolean | number | null;
+  }[];
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
@@ -547,6 +608,14 @@ export interface Service {
   slider_image: string[];
   category_name: string;
   tags: string;
+  tag_list?: string[];
+  category?: Category;
+  /** Admin textarea — newline separated. Use `whats_included_list` when present. */
+  whats_included?: string | string[] | null;
+  whats_included_list?: string[];
+  /** Admin textarea — newline separated. Use `ideal_for_list` when present. */
+  ideal_for?: string | string[] | null;
+  ideal_for_list?: string[];
 }
 
 export interface Slogan {
@@ -567,6 +636,7 @@ export interface Review {
   name: string;
   rating: number;
   review_comments: string;
+  service_name?: string | null;
 }
 interface Tag {
   id: number; // Optional if you have unique IDs
@@ -638,4 +708,27 @@ export interface SliderApiResponse {
 
 export interface JobSliderProps {
   sliders: SliderApiResponse[];
+}
+
+/**
+ * @type
+ *  Careers
+ */
+export interface CareerApplicationPayload {
+  name: string;
+  mobile_number: string;
+  email: string;
+  state_id: string;
+  city_id: string;
+  /** Role title being applied for, or the applicant's area of interest. */
+  role: string;
+  /** Which surface the application came from. */
+  source: "open-position" | "send-profile";
+  message?: string;
+  cv: File;
+}
+
+export interface CareerApplicationResponse {
+  success: boolean;
+  message: string;
 }

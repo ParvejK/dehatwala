@@ -6,7 +6,7 @@ const localStorageProvider = {
     const value = localStorage.getItem(name);
     return value ? JSON.parse(value) : null;
   },
-  setItem: (name: string, value: any) => {
+  setItem: (name: string, value: unknown) => {
     localStorage.setItem(name, JSON.stringify(value));
   },
   removeItem: (name: string) => {
@@ -14,7 +14,20 @@ const localStorageProvider = {
   },
 };
 
+/** Rates and counts the service being booked. Guards against carrying one service's numbers into another. */
+type ServiceWorkerConfig = {
+  serviceId: number | null;
+  /** 0 means the worker is not offered by this service and must not be charged. */
+  masonRate: number;
+  masonOvertimeRate: number;
+  helperRate: number;
+  helperOvertimeRate: number;
+};
+
 interface RateState {
+  /** Which service the rates below belong to. */
+  serviceId: number | null;
+
   MasonDayCount: number;
   helperDayCount: number;
 
@@ -50,12 +63,16 @@ interface RateState {
   setMasonOvertimeRate: (rate: number) => void;
   setHelperOvertimeRate: (rate: number) => void;
 
+  configureService: (config: ServiceWorkerConfig) => void;
+
   setTipPrice: (value: number) => void;
   resetDayTipPrice: (value: number) => void;
   resetDayState: () => void;
 }
 
 const initialState = {
+  serviceId: null,
+
   MasonDayCount: 1,
   helperDayCount: 1,
 
@@ -81,6 +98,55 @@ export const useDayRateStore = create(
   persist<RateState>(
     (set) => ({
       ...initialState,
+
+      /**
+       * Applies the rates of the service being booked. A rate of 0 means that
+       * worker is not offered, so its count and totals are forced to 0 instead
+       * of falling back to the seeded defaults. Counts reset whenever the
+       * service changes, so one booking never inherits another's quantities.
+       */
+      configureService: ({ serviceId, masonRate, masonOvertimeRate, helperRate, helperOvertimeRate }) =>
+        set((state) => {
+          const isSameService = state.serviceId === serviceId;
+
+          const masonDayCount = masonRate > 0 ? (isSameService ? Math.max(1, state.MasonDayCount) : 1) : 0;
+          const helperDayCount = helperRate > 0 ? (isSameService ? Math.max(1, state.helperDayCount) : 1) : 0;
+
+          const masonOvertimeCount =
+            masonOvertimeRate > 0 && masonDayCount > 0 && isSameService ? state.MasonOvertimeCount : 0;
+          const helperOvertimeCount =
+            helperOvertimeRate > 0 && helperDayCount > 0 && isSameService ? state.helperOvertimeCount : 0;
+
+          const tipValue = isSameService ? state.tipValue : 0;
+
+          const totalMasonDayRate = masonDayCount * masonRate;
+          const totalHelperDayRate = helperDayCount * helperRate;
+          const totalMasonOvertimeRate = masonOvertimeCount * masonOvertimeRate;
+          const totalHelperOvertimeRate = helperOvertimeCount * helperOvertimeRate;
+
+          return {
+            serviceId,
+
+            MasonRate: masonRate,
+            helperRate,
+            MasonOvertimeRate: masonOvertimeRate,
+            helperOvertimeRate,
+
+            MasonDayCount: masonDayCount,
+            helperDayCount,
+            MasonOvertimeCount: masonOvertimeCount,
+            helperOvertimeCount,
+
+            totalMasonDayRate,
+            totalHelperDayRate,
+            totalMasonOvertimeRate,
+            totalHelperOvertimeRate,
+
+            tipValue,
+            totalDayPrice:
+              totalMasonDayRate + totalHelperDayRate + totalMasonOvertimeRate + totalHelperOvertimeRate + tipValue,
+          };
+        }),
 
       setTipPrice: (value: number) =>
         set((state) => {

@@ -9,7 +9,7 @@ const ServicesCard: React.FC<ServicesCardProps> = ({ data }) => {
     <>
       {data && (
         <div className="max-w-sm bg-white border border-gray-200 rounded-lg cursor-pointer">
-          <Link to={`/services/detail/${data.slug}`}>
+          <Link to={`/service/detail/${data.slug}`}>
             <img
               className="rounded-t-lg h-[140px] w-full object-cover"
               src={`${VITE_IMAGE_PATH_URL}/service/${data?.service_image}`}
@@ -17,7 +17,7 @@ const ServicesCard: React.FC<ServicesCardProps> = ({ data }) => {
             />
           </Link>
           <div className="p-5">
-            <Link to={`/services/detail/${data.slug}`}>
+            <Link to={`/service/detail/${data.slug}`}>
               <h5 className="mb-0 text-[14px] leading-7 font-semibold tracking-tight text-gray-900">{data.title}</h5>
             </Link>
             <div className="mb-2 flex justify-between items-center">
@@ -30,7 +30,7 @@ const ServicesCard: React.FC<ServicesCardProps> = ({ data }) => {
               <ServiceRating rating={data.rating} reviews={data.reviews} />
             </div>
             <Link
-              to={`/services/detail/${data.slug}`}
+              to={`/service/detail/${data.slug}`}
               className="inline-flex items-center py-2 text-xs font-medium text-center uppercase  text-primary rounded-md"
             >
               View detail

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(echo \"LINT_EXIT:$?\")",
+      "Bash(echo \"TSC:$?\")",
+      "Bash(echo \"LINT:$?\")"
+    ]
+  }
+}

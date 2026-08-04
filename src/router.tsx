@@ -14,10 +14,15 @@ import ServiceLetterPage from "./pages/service-letter";
 import JoinUsPage from "./pages/joinus-page";
 import JoinUsSuccessPage from "./pages/joinus-success-page";
 import JobListingsPage from "./pages/job-listings-page";
+import CareersPage from "./pages/careers-page";
+import CareersOpenPositionsPage from "./pages/careers-open-positions-page";
+import CareersApplyPage from "./pages/careers-apply-page";
+import CareersSendProfilePage from "./pages/careers-send-profile-page";
 import JobCategoriesPage from "./pages/job-categories-page";
 import DetailedJobListingPage from "./pages/detailed-job-listing-page";
 import JobDetailedViewPage from "./pages/detailed-job-view-page";
 import BlogDetailPage from "./pages/blog-detail-page";
+import BlogCategoryPage from "./pages/blog-category-page";
 import ApplyJobPage from "./pages/apply-job-page";
 import PolicyPage from "./pages/policy-page";
 import SignIn from "./pages/sign-in-page";
@@ -29,6 +34,13 @@ import BookedServicePage from "./pages/booked-service-page";
 import InstantServiceReviewsPage from "./pages/service-review-page";
 import AddReviewsPage from "./pages/instant-service-reviews-page";
 import MediaNewsPage from "./pages/media-news-page";
+import MediaNewsListPage from "./pages/media-news-list-page";
+import MediaNewsDetailPage from "./pages/media-news-detail-page";
+import MediaVideosPage from "./pages/media-videos-page";
+import MediaPhotosPage from "./pages/media-photos-page";
+import SelectWorkerPage from "./pages/booking/select-worker";
+import BookingDetailsPage from "./pages/booking/booking-details";
+import PaymentPage from "./pages/booking/payment";
 
 const router = createBrowserRouter([
   {
@@ -61,6 +73,28 @@ const router = createBrowserRouter([
         element: <MediaNewsPage />,
       },
       {
+        path: "/media-news/news",
+        element: <MediaNewsListPage />,
+      },
+      {
+        path: "/media-news/news/:slug",
+        element: <MediaNewsDetailPage />,
+      },
+      {
+        path: "/media-news/videos",
+        element: <MediaVideosPage />,
+      },
+      {
+        path: "/media-news/photos",
+        element: <MediaPhotosPage />,
+      },
+      {
+        // Declared before /blog/:slug; the static "category" segment also ranks
+        // higher in React Router, so it cannot be swallowed by the slug route.
+        path: "/blog/category/:categorySlug",
+        element: <BlogCategoryPage />,
+      },
+      {
         path: "/blog/:slug",
         element: <BlogDetailPage />,
       },
@@ -73,8 +107,20 @@ const router = createBrowserRouter([
         element: <PermanentServices />,
       },
       {
-        path: "/services/detail/:slug",
+        path: "/service/detail/:slug",
         element: <ServicesDetailsPage />,
+      },
+      {
+        path: "/book/:slug/select-worker",
+        element: <SelectWorkerPage />,
+      },
+      {
+        path: "/book/:slug/booking-details",
+        element: <BookingDetailsPage />,
+      },
+      {
+        path: "/book/:slug/payment",
+        element: <PaymentPage />,
       },
       {
         path: "/booked-services",
@@ -103,6 +149,22 @@ const router = createBrowserRouter([
       {
         path: "/become-a-part-of-dehatwala/success",
         element: <JoinUsSuccessPage />,
+      },
+      {
+        path: "/careers",
+        element: <CareersPage />,
+      },
+      {
+        path: "/careers/open-positions",
+        element: <CareersOpenPositionsPage />,
+      },
+      {
+        path: "/careers/open-positions/:slug",
+        element: <CareersApplyPage />,
+      },
+      {
+        path: "/careers/send-profile",
+        element: <CareersSendProfilePage />,
       },
       {
         path: "/jobs",
@@ -149,7 +211,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/service/:category_slug/:sub_category_slug?",
+        path: "/services/:category_slug/:sub_category_slug?",
         element: <ServiceListingPage />,
       },
       {

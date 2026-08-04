@@ -14,6 +14,7 @@ import {
   LabourTestimonialsApiResponse,
   PermanentServiceResponse,
   PolicyApiResponse,
+  ServiceApiResponse,
   ServiceDetailApiResponse,
   ServicesProps,
   SingleBlogProps,
@@ -28,6 +29,7 @@ import {
   fetchInstantService,
   fetchPermanentService,
   fetchServiceDetail,
+  fetchServices,
   fetchSingleBlog,
   fetchSubCategories,
   getClients,
@@ -81,10 +83,25 @@ export function useServices() {
   });
 }
 
+export function useServicesByCategory(categorySlug?: string, subCategorySlug?: string) {
+  return useQuery<ServiceApiResponse, Error>({
+    queryKey: ["services-by-category", categorySlug, subCategorySlug ?? ""],
+    queryFn: () =>
+      fetchServices({
+        category_slug: categorySlug ?? "",
+        sub_category_slug: subCategorySlug ?? "",
+        keyword: "",
+      }),
+    enabled: !!categorySlug,
+    staleTime: 10 * 1000,
+  });
+}
+
 export function useServiceDetail(slug: string) {
   return useQuery<ServiceDetailApiResponse, Error>({
     queryKey: ["service-detail", slug],
     queryFn: () => fetchServiceDetail(slug),
+    enabled: !!slug,
     staleTime: 10 * 1000,
   });
 }
