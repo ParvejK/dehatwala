@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, MapPin, X } from "lucide-react";
 import MediaPageHeader from "../../components/media/media-page-header";
-import { EVENT_PHOTOS, formatMediaDate } from "../media-news-page/data";
+import { formatMediaDate, mediaImage } from "../media-news-page/data";
+import { useMediaPhotos } from "../../react-query/hooks";
 
 const MediaPhotosPage = () => {
+  const photosQuery = useMediaPhotos();
+  const EVENT_PHOTOS = useMemo(() => photosQuery.data?.photos ?? [], [photosQuery.data]);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const close = useCallback(() => setOpenIndex(null), []);
@@ -13,7 +16,7 @@ const MediaPhotosPage = () => {
       if (current === null) return current;
       return (current + direction + EVENT_PHOTOS.length) % EVENT_PHOTOS.length;
     });
-  }, []);
+  }, [EVENT_PHOTOS.length]);
 
   // Keyboard control for the lightbox.
   useEffect(() => {
@@ -49,7 +52,7 @@ const MediaPhotosPage = () => {
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {EVENT_PHOTOS.map((photo, index) => (
             <figure
-              key={photo.src}
+              key={photo.id}
               className="group overflow-hidden rounded-2xl border border-[#dce7fb] bg-white transition hover:border-[#bfd5fb] hover:shadow-[0_12px_28px_-18px_rgba(20,61,141,0.5)]"
             >
               <button
@@ -59,7 +62,7 @@ const MediaPhotosPage = () => {
                 className="relative block h-40 w-full overflow-hidden bg-[#eef4ff] focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-blue-200 sm:h-44"
               >
                 <img
-                  src={photo.src}
+                  src={mediaImage(photo.image)}
                   alt={photo.alt}
                   loading="lazy"
                   className="size-full object-cover transition duration-500 group-hover:scale-105"
@@ -72,7 +75,7 @@ const MediaPhotosPage = () => {
                   <MapPin size={12} aria-hidden="true" /> {photo.location}
                 </p>
                 <p className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-normal text-[#8fa2c8]">
-                  <CalendarDays size={12} aria-hidden="true" /> {formatMediaDate(photo.date)}
+                  <CalendarDays size={12} aria-hidden="true" /> {formatMediaDate(photo.taken_at)}
                 </p>
               </figcaption>
             </figure>
@@ -123,14 +126,14 @@ const MediaPhotosPage = () => {
 
           <figure onClick={(event) => event.stopPropagation()} className="max-h-full w-full max-w-4xl">
             <img
-              src={active.src}
+              src={mediaImage(active.image)}
               alt={active.alt}
               className="mx-auto max-h-[72vh] w-auto rounded-xl object-contain"
             />
             <figcaption className="mt-4 text-center text-white">
               <p className="text-sm font-bold">{active.caption}</p>
               <p className="mt-1 text-xs font-normal text-white/70">
-                {active.location} · {formatMediaDate(active.date)}
+                {active.location} · {formatMediaDate(active.taken_at)}
               </p>
               <p className="mt-1 text-[11px] font-normal text-white/50">
                 {(openIndex ?? 0) + 1} / {EVENT_PHOTOS.length}

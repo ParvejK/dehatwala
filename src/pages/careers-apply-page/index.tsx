@@ -4,7 +4,8 @@ import { Link, useParams } from "react-router-dom";
 import ApplicationForm from "../../components/careers/application-form";
 import CareerHero from "../../components/careers/career-hero";
 import CareersBreadcrumb from "../../components/careers/careers-breadcrumb";
-import { findPosition, OPEN_POSITIONS_PATH, SEND_PROFILE_PATH } from "../../components/careers/data";
+import { departmentIcon, OPEN_POSITIONS_PATH, SEND_PROFILE_PATH, toBulletList } from "../../components/careers/data";
+import { useCareerOpening } from "../../react-query/hooks";
 
 const BulletList = ({ title, items }: { title: string; items: string[] }) => (
   <div>
@@ -22,9 +23,27 @@ const BulletList = ({ title, items }: { title: string; items: string[] }) => (
 
 const CareersApplyPage = () => {
   const { slug } = useParams();
-  const position = findPosition(slug);
+  const { data, isPending, isError } = useCareerOpening(slug);
+  const position = data?.opening;
 
-  if (!position) {
+  if (isPending) {
+    return (
+      <main className="bg-[#f8fbff] pb-14 pt-5 sm:pt-6">
+        <div className="mx-auto w-full max-w-7xl animate-pulse px-4 sm:px-8 lg:px-10">
+          <div className="h-4 w-64 rounded bg-[#e6eefb]" />
+          <div className="mt-5 h-64 rounded-3xl bg-[#e6eefb]" />
+          <div className="mt-6 grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="h-80 rounded-3xl bg-[#e6eefb]" />
+            <div className="h-[32rem] rounded-3xl bg-[#e6eefb]" />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // A 404 from the detail endpoint means the role was closed or never existed —
+  // both land on the same "no longer listed" screen.
+  if (isError || !position) {
     return (
       <main className="bg-[#f8fbff] pb-14 pt-5 sm:pt-6">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-10">
@@ -58,7 +77,10 @@ const CareersApplyPage = () => {
     );
   }
 
-  const { title, icon: Icon, location, type, department, summary, responsibilities, requirements } = position;
+  const { title, location, type, department, summary } = position;
+  const Icon = departmentIcon(department);
+  const responsibilities = toBulletList(position.responsibilities, position.responsibilities_list);
+  const requirements = toBulletList(position.requirements, position.requirements_list);
 
   return (
     <main className="bg-[#f8fbff] pb-14 pt-5 sm:pt-6">

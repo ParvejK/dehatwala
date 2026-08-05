@@ -1,16 +1,20 @@
 import {
   BadgeCheck,
-  Building2,
+  BriefcaseBusiness,
+  ClipboardList,
   Clock3,
   CreditCard,
   Headphones,
   IndianRupee,
   LocateFixed,
+  Lock,
   MapPin,
   MessageCircleMore,
   Search,
   ShieldCheck,
+  Smartphone,
   UserCheck,
+  UsersRound,
   Wrench,
 } from "lucide-react";
 
@@ -51,17 +55,41 @@ export const impact = [
   },
 ];
 
+/** "क्यों जुड़ें देहातवाला से?" — reasons listed beside the worker photo. */
+export const workerBenefits = [
+  { icon: ClipboardList, title: "नि:शुल्क पंजीकरण", copy: "बिना किसी रजिस्ट्रेशन शुल्क के जुड़ें।" },
+  { icon: BriefcaseBusiness, title: "नियमित काम के अवसर", copy: "अपनी उपलब्धता के अनुसार काम पाएँ।" },
+  { icon: IndianRupee, title: "समय पर भुगतान", copy: "पारदर्शी और भरोसेमंद भुगतान।" },
+  { icon: MapPin, title: "अपने आस-पास काम", copy: "अपने क्षेत्र के नज़दीक काम के अवसर।" },
+];
+
+/** Strip below the worker section. */
+export const workerAssurances = [
+  { icon: ShieldCheck, title: "सुरक्षित और भरोसेमंद", copy: "आपकी सुरक्षा हमारी प्राथमिकता" },
+  { icon: Smartphone, title: "काम के अपडेट", copy: "नए काम की जानकारी सीधे आपके फोन पर" },
+  { icon: UsersRound, title: "सम्मान और भरोसा", copy: "हम आपको देते हैं सम्मान और पहचान" },
+  { icon: Headphones, title: "सहायता हमेशा साथ", copy: "हमारी टीम हमेशा आपके साथ है" },
+];
+
 export const recognition = [
-  { icon: Building2, title: "DPIIT recognised", copy: "A recognised startup building dependable workforce access." },
-  { icon: BadgeCheck, title: "Udyam registered", copy: "Registered enterprise supporting local jobs and businesses." },
-  {
-    icon: LocateFixed,
-    title: "Startup UP recognised",
-    copy: "Part of a growing ecosystem for entrepreneurship and impact.",
-  },
   {
     icon: ShieldCheck,
-    title: "Secure online payments",
-    copy: "Protected transactions through trusted payment technology.",
+    title: "Verified Credentials",
+    copy: "Every worker is background checked before they are sent to a site.",
+  },
+  {
+    icon: Lock,
+    title: "Secure Platform",
+    copy: "Bookings and payments run over protected, trusted technology.",
+  },
+  {
+    icon: MapPin,
+    title: "Local Workforce",
+    copy: "Workers matched from your own area, so they reach you sooner.",
+  },
+  {
+    icon: Smartphone,
+    title: "Digital Booking",
+    copy: "Raise a request, track it and pay — all from your phone.",
   },
 ];

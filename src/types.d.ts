@@ -128,10 +128,13 @@ interface Blog {
   blogimg: string;
   image_link: string;
   status: string;
+  is_featured: boolean;
+  /** Pre-formatted by the API, e.g. "5 min read". */
+  read_time: string;
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
-  /** Eager-loaded by getBlogs/getBlog; null when the blog has no category. */
+  /** Eager-loaded by getBlog; null when the blog has no category. */
   category?: BlogCategoryApi | null;
 }
 
@@ -155,8 +158,48 @@ interface BlogCategoriesResponse {
   categories: BlogCategoryApi[];
 }
 
+/** Trimmed category shape carried on every blog card. */
+interface BlogCardCategory {
+  id: number;
+  name: string;
+  slug: string;
+  icon: string | null;
+}
+
+/**
+ * The card shape `/get-blogs` returns — not a full `blogs` row. The API has
+ * already trimmed the excerpt, computed the read time and picked the category.
+ */
+interface BlogCard {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt: string;
+  /** Filename only; build with `${VITE_IMAGE_PATH_URL}/blog/${image}`. */
+  image: string;
+  /** Pre-formatted by the API, e.g. "5 min read". */
+  read_time: string;
+  is_featured: boolean;
+  published_at: string;
+  updated_at: string;
+  category: BlogCardCategory | null;
+}
+
+/** `GET /get-blogs` with no params — everything the blog landing page renders. */
 interface BlogProps {
-  blogs: Blog[];
+  success: boolean;
+  total: number;
+  featured: BlogCard | null;
+  categories: (BlogCardCategory & { blogs_count: number })[];
+  sections: { category: BlogCardCategory; blogs: BlogCard[] }[];
+  blogs: BlogCard[];
+}
+
+/** `GET /get-blogs?category=…` or `?search=…` — the filtered subset only. */
+interface BlogListProps {
+  success: boolean;
+  total: number;
+  blogs: BlogCard[];
 }
 interface SingleBlogProps {
   blog: Blog;
@@ -377,6 +420,23 @@ interface Faq {
 interface FaqApiResponse {
   faqs: Faq[];
 }
+
+interface FaqCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  /** Null on every row today; reserved for an admin-picked icon key. */
+  icon: string | null;
+  faqs_count: number;
+}
+
+interface FaqCategoriesApiResponse {
+  success: boolean;
+  total_faqs: number;
+  categories: FaqCategory[];
+}
+
 
 // Clients
 interface Client {
@@ -731,4 +791,118 @@ export interface CareerApplicationPayload {
 export interface CareerApplicationResponse {
   success: boolean;
   message: string;
+}
+
+/** A row from `GET /career-openings`. */
+export interface CareerOpeningSummary {
+  id: number;
+  slug: string;
+  title: string;
+  department: string;
+  location: string;
+  type: string;
+  summary: string;
+}
+
+/** `GET /career-openings/{slug}` adds the body copy. */
+export interface CareerOpeningDetail extends CareerOpeningSummary {
+  /** Raw textarea, one bullet per line. Prefer the `_list` companions. */
+  responsibilities: string;
+  requirements: string;
+  responsibilities_list?: string[];
+  requirements_list?: string[];
+}
+
+export interface CareerOpeningsResponse {
+  success: boolean;
+  openings: CareerOpeningSummary[];
+}
+
+export interface CareerOpeningResponse {
+  success: boolean;
+  opening: CareerOpeningDetail;
+}
+
+export interface CareerContentResponse {
+  success: boolean;
+  careers_email: string;
+}
+
+/**
+ * @type
+ *  Media & News
+ */
+export interface MediaPublication {
+  id: number;
+  name: string;
+  /** Filename in the `publication` storage folder. */
+  logo: string | null;
+  website_url: string | null;
+  sort_order: number;
+}
+
+export interface MediaNewsItem {
+  id: number;
+  slug: string;
+  title: string;
+  tag: string;
+  source: string;
+  published_at: string;
+  /** Either a bare number ("2") or a phrase ("2 min read") — normalise before display. */
+  read_time: string | null;
+  /** Filename in the `media` storage folder. */
+  image: string;
+  external_url: string | null;
+  excerpt: string;
+}
+
+export interface MediaNewsArticle extends MediaNewsItem {
+  lead: string | null;
+  /** One paragraph per line; `body_list` is the pre-split form. */
+  body: string | null;
+  body_list?: string[];
+  quote_text: string | null;
+  quote_author: string | null;
+}
+
+export interface MediaVideo {
+  id: number;
+  title: string;
+  subtitle: string | null;
+  channel: string;
+  duration: string | null;
+  thumbnail: string;
+  video_url: string;
+  published_at: string;
+}
+
+export interface MediaPhoto {
+  id: number;
+  image: string;
+  alt: string;
+  caption: string;
+  location: string | null;
+  taken_at: string;
+}
+
+export interface MediaPublicationsResponse {
+  success: boolean;
+  publications: MediaPublication[];
+}
+export interface MediaNewsResponse {
+  success: boolean;
+  news: MediaNewsItem[];
+}
+export interface MediaNewsDetailResponse {
+  success: boolean;
+  article: MediaNewsArticle;
+  related: MediaNewsItem[];
+}
+export interface MediaVideosResponse {
+  success: boolean;
+  videos: MediaVideo[];
+}
+export interface MediaPhotosResponse {
+  success: boolean;
+  photos: MediaPhoto[];
 }

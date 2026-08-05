@@ -39,7 +39,7 @@ const Header = () => {
             ["/", "Home"],
             ["/about-us", "About us"],
             ["/media-news", "Media & news"],
-            ["/blog", "Blog"],
+            ["/blog", "Blogs"],
             ["/contact", "Contact"],
           ].map(([to, label]) => (
             <NavLink

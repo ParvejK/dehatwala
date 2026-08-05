@@ -1,33 +1,45 @@
+import { useState } from "react";
 import {
   ArrowRight,
   BadgeCheck,
-  Banknote,
-  BriefcaseBusiness,
   CalendarCheck2,
   Clock3,
-  Headphones,
+  Flame,
   LayoutGrid,
   MapPin,
   MessageCircleMore,
   ShieldCheck,
   Sparkles,
   Star,
-  UsersRound,
+  TrendingUp,
+  Workflow,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import SearchServices from "../../components/search-services";
-import { formatPrice, primaryWorkerRate } from "../../components/services/pricing";
+import ServiceCard from "../../components/services/service-card";
+import ServiceSearch from "../../components/services/service-search";
+import ServiceSearchResults from "../../components/services/service-search-results";
 import TawkMessenger from "../../components/shared/TawkMessenger";
-import { benefits, impact, recognition, steps } from "../../constant/home.constant";
+import {
+  benefits,
+  impact,
+  recognition,
+  steps,
+  workerAssurances,
+  workerBenefits,
+} from "../../constant/home.constant";
 import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
 import { useCategories, useFetchClients, useServices } from "../../react-query/hooks";
+import { Service } from "../../types";
 
 const HomePage = () => {
   const servicesQuery = useServices();
   const categoriesQuery = useCategories();
   const clientsQuery = useFetchClients();
+
+  // Owned here so the search bar and its results can live in separate sections.
+  const [search, setSearch] = useState<{ query: string; services: Service[] } | null>(null);
 
   return (
     <main className="overflow-hidden bg-white text-slate-950">
@@ -77,12 +89,12 @@ const HomePage = () => {
               </div>
             </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <a
-                href="#book-a-worker"
+              <Link
+                to="/services/all"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-700 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
               >
                 Book a worker <ArrowRight size={18} aria-hidden="true" />
-              </a>
+              </Link>
               <Link
                 to="/become-a-part-of-dehatwala"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-bold text-slate-800 transition hover:border-blue-300 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100"
@@ -129,11 +141,15 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="relative m-2 mt-5 rounded-[1.5rem] bg-white p-1 shadow-xl shadow-blue-950/15 sm:m-3 sm:mt-6 md:p-2">
-            <SearchServices />
+          <div className="relative m-2 mt-5 rounded-[1.5rem] bg-white px-4 py-5 shadow-xl shadow-blue-950/15 sm:m-3 sm:mt-6 sm:px-6 sm:py-6">
+            <ServiceSearch onResults={setSearch} />
           </div>
         </div>
       </section>
+
+      {search && (
+        <ServiceSearchResults query={search.query} services={search.services} onClear={() => setSearch(null)} />
+      )}
 
       <section className="home-surface-soft relative isolate mt-12 overflow-hidden border-y border-blue-100 py-20 text-slate-950 sm:mt-16 lg:mt-20 lg:py-28">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_10%_12%,rgba(37,99,235,0.12),transparent_28%),radial-gradient(circle_at_90%_88%,rgba(245,158,11,0.1),transparent_24%)]" />
@@ -143,7 +159,7 @@ const HomePage = () => {
           <div className="mb-10 flex flex-col gap-7 md:mb-12 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
               <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-blue-700 shadow-sm">
-                <Sparkles size={14} aria-hidden="true" /> Most Booked Services
+                <Flame size={14} aria-hidden="true" /> Popular right now
               </p>
               <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
                 Most <span className="text-blue-700">Booked Services</span>
@@ -180,88 +196,9 @@ const HomePage = () => {
           )}
           {servicesQuery.data && (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {servicesQuery.data.services.slice(0, 4).map((service) => {
-                const serviceUrl = `/service/detail/${service.slug}`;
-
-                return (
-                  <article
-                    key={service.id}
-                    className="group flex overflow-hidden rounded-[1.75rem] border border-blue-100 bg-white text-slate-950 shadow-lg shadow-blue-900/5 transition duration-300 hover:-translate-y-1.5 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-900/10"
-                  >
-                    <div className="flex w-full flex-col">
-                      <Link
-                        to={serviceUrl}
-                        className="relative block overflow-hidden focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-blue-400"
-                      >
-                        <img
-                          src={`${VITE_IMAGE_PATH_URL}/service/${service.service_image}`}
-                          alt={`${service.title} service`}
-                          className="h-52 w-full object-cover transition duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-transparent" />
-                        <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-slate-950/80 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-white backdrop-blur">
-                          <Sparkles size={13} className="text-amber-300" aria-hidden="true" /> Popular
-                        </span>
-                        {service.rating ? (
-                          <span className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-slate-900 shadow-lg">
-                            <Star size={14} className="text-amber-500" fill="currentColor" aria-hidden="true" />
-                            {service.rating}
-                          </span>
-                        ) : null}
-                      </Link>
-
-                      <div className="flex flex-1 flex-col p-5">
-                        {/* <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-blue-700">
-                          {service.category_name || "Skilled service"} Category
-                        </p> */}
-                        <h3 className="mt-2 text-xl font-extrabold leading-tight">
-                          <Link
-                            to={serviceUrl}
-                            className="rounded-sm transition hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                          >
-                            {service.title}
-                          </Link>
-                        </h3>
-                        <p className="mt-3 line-clamp-2 min-h-11 text-sm leading-6 text-slate-600">
-                          {service.short_description}
-                        </p>
-
-                        <div className="mt-auto grid gap-2 border-t border-slate-100 pt-4 text-xs font-semibold text-slate-500">
-                          <span className="inline-flex items-center gap-2">
-                            <Sparkles size={17} className="text-blue-600" aria-hidden="true" /> Fast Response
-                          </span>
-                          <span className="inline-flex items-center gap-2">
-                            <Headphones size={17} className="text-blue-600" aria-hidden="true" /> Live Support
-                          </span>
-                        </div>
-                        {(() => {
-                          const rate = primaryWorkerRate(service);
-                          const price = formatPrice(rate?.amount);
-
-                          return price ? (
-                            <p className="mt-4 text-lg font-black text-blue-700">
-                              {price} <span className="text-sm font-bold">/ Day</span>
-                              <span className="ml-1.5 text-xs font-bold text-slate-500">{rate?.label}</span>
-                            </p>
-                          ) : (
-                            <p className="mt-4 text-sm font-bold text-slate-500">Price on request</p>
-                          );
-                        })()}
-                        <Link
-                          to={serviceUrl}
-                          className="mt-3 inline-flex min-h-11 items-center justify-between rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
-                          aria-label={`Book ${service.title}`}
-                        >
-                          Book now{" "}
-                          <span className="grid size-7 place-items-center rounded-lg bg-white/15">
-                            <ArrowRight size={16} aria-hidden="true" />
-                          </span>
-                        </Link>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
+              {servicesQuery.data.services.slice(0, 4).map((service) => (
+                <ServiceCard key={service.id} service={service} badge="Popular" />
+              ))}
             </div>
           )}
         </div>
@@ -395,7 +332,7 @@ const HomePage = () => {
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="max-w-xl">
             <p className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-blue-700">
-              <UsersRound size={13} aria-hidden="true" /> How Dehatwala Works
+              <Workflow size={13} aria-hidden="true" /> Simple booking process
             </p>
             <h2 className="mt-4 text-3xl font-black tracking-[-0.035em] text-slate-950 sm:text-4xl lg:text-[2.75rem]">
               How Dehatwala <span className="text-blue-700">Works</span>
@@ -404,12 +341,12 @@ const HomePage = () => {
               A simple booking process from request to completion.
               <br className="hidden sm:block" /> Book in minutes—we’ll handle the rest.
             </p>
-            <a
-              href="#book-a-worker"
+            <Link
+              to="/services/all"
               className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
             >
               Start a booking <ArrowRight size={16} aria-hidden="true" />
-            </a>
+            </Link>
           </div>
 
           <ol className="relative mt-10 grid gap-4 lg:mt-8 lg:grid-cols-5 lg:gap-6 lg:pt-10 lg:before:absolute lg:before:left-[10%] lg:before:right-[10%] lg:before:top-[0.7rem] lg:before:h-px lg:before:bg-blue-500">
@@ -467,7 +404,9 @@ const HomePage = () => {
         <div className="relative mx-auto grid max-w-7xl gap-8 px-5 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:px-10">
           <div className="flex flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.06] p-7 backdrop-blur sm:p-9">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue-300">Our impact</p>
+              <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-blue-300">
+                <TrendingUp size={15} aria-hidden="true" /> Our impact
+              </p>
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
                 Local service.
                 <br />
@@ -503,63 +442,84 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="bg-[var(--home-color-surface)] py-20 lg:py-28">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
-          <div className="relative min-h-[32rem] lg:min-h-[38rem]">
-            <div className="absolute inset-x-0 bottom-0 top-8 overflow-hidden rounded-[2rem] bg-[var(--home-color-brand-deep)]">
-              <img
-                src="/images/dehatwala-worker-join.png"
-                alt="Dehatwala worker in a blue T-shirt and yellow safety helmet"
-                className="h-full w-full object-cover object-[center_30%]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[var(--home-color-brand-deep)]/85 via-transparent to-transparent" />
-            </div>
-            <div className="absolute left-4 top-0 rounded-2xl border border-[var(--home-color-border)] bg-white p-4 shadow-xl sm:left-8 sm:p-5">
-              <span className="grid size-11 place-items-center rounded-xl bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)]">
-                <BriefcaseBusiness size={22} aria-hidden="true" />
-              </span>
-              <strong className="mt-3 block text-sm text-[var(--home-color-ink)]">Work with dignity</strong>
-              <span className="text-xs text-slate-500">Grow with every opportunity</span>
-            </div>
-            <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-2xl border border-white/20 bg-[var(--home-color-brand-deep)]/90 p-4 text-white backdrop-blur sm:left-auto sm:right-6 sm:w-64">
-              <BadgeCheck size={24} className="shrink-0 text-amber-400" aria-hidden="true" />
-              <span className="text-xs font-semibold leading-5">Free registration with a simple joining process</span>
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--home-color-brand)]">
-              Become a worker
-            </p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--home-color-ink)] sm:text-4xl lg:text-5xl">
-              क्या आप काम की तलाश में हैं?
-            </h2>
-            <p className="mt-5 text-lg leading-8 text-slate-600">
-              आज ही देहातवाला से जुड़ें और अपनी उपलब्धता के अनुसार काम के अपडेट पाएं।
-            </p>
-            <div className="mt-8 grid gap-x-6 gap-y-5 sm:grid-cols-2">
-              {[
-                [BadgeCheck, "ID Verification"],
-                [Banknote, "Daily Payments"],
-                [MapPin, "Nearby Jobs"],
-                [Headphones, "Support Team"],
-              ].map(([Icon, label]) => {
-                const BenefitIcon = Icon as typeof UsersRound;
-                return (
-                  <div key={label as string} className="flex items-center gap-3 font-bold text-[var(--home-color-ink)]">
-                    <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)]">
-                      <BenefitIcon size={19} aria-hidden="true" />
+      <section className="bg-white py-14 lg:py-20">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+          <div className="overflow-hidden rounded-[2rem] bg-[#f7f7f5] p-5 sm:p-7">
+            <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-6">
+              <div className="lg:py-2">
+                <h2 className="text-[34px] font-black leading-[1.08] tracking-tight text-[var(--home-color-ink)] sm:text-[40px]">
+                  Become a
+                  <br />
+                  <span className="relative inline-block text-[var(--home-color-brand)]">
+                    Worker
+                    <span
+                      aria-hidden="true"
+                      className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-amber-400"
+                    />
+                  </span>
+                </h2>
+
+                <p className="mt-6 text-lg font-extrabold text-[var(--home-color-ink)]">
+                  क्या आप काम की तलाश में है ?
+                </p>
+                <p className="mt-1 max-w-xs text-sm leading-6 text-slate-600">
+                  आज ही देहातवाला से जुड़ें और काम के अपडेट पाएं।
+                </p>
+
+                <div className="mt-4">
+                  <Link
+                    to="/become-a-part-of-dehatwala"
+                    className="inline-flex min-h-11 items-center gap-3 rounded-lg bg-[var(--home-color-brand)] py-2.5 pl-5 pr-2.5 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
+                  >
+                    अभी रजिस्टर करे
+                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white text-[var(--home-color-brand)]">
+                      <ArrowRight size={15} aria-hidden="true" />
                     </span>
-                    {label as string}
-                  </div>
-                );
-              })}
+                  </Link>
+                </div>
+
+                <p className="mt-7 flex items-center gap-2 text-base font-extrabold text-[var(--home-color-ink)]">
+                  <Star size={17} className="shrink-0 text-amber-400" fill="currentColor" aria-hidden="true" />
+                  क्यों जुड़ें देहातवाला से?
+                </p>
+
+                <ul className="mt-3.5 space-y-3.5">
+                  {workerBenefits.map(({ icon: Icon, title, copy }) => (
+                    <li key={title} className="flex items-start gap-3">
+                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)]">
+                        <Icon size={17} aria-hidden="true" />
+                      </span>
+                      <span className="min-w-0">
+                        <strong className="block text-[13px] font-extrabold text-[var(--home-color-ink)]">
+                          {title}
+                        </strong>
+                        <span className="mt-0.5 block text-[11px] leading-5 text-slate-500">{copy}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="overflow-hidden rounded-[1.5rem] lg:-mr-3 lg:-mt-3 lg:rounded-bl-[7rem] lg:rounded-tl-[7rem]">
+                <img
+                  src="/images/dehatwala-worker-join.png"
+                  alt="Dehatwala workers in blue uniforms and yellow safety helmets on a construction site"
+                  className="h-[20rem] w-full object-cover object-[center_25%] sm:h-[24rem] lg:h-[30rem]"
+                />
+              </div>
             </div>
-            <Link
-              to="/become-a-part-of-dehatwala"
-              className="mt-9 inline-flex min-h-12 items-center gap-2 rounded-xl bg-[var(--home-color-brand)] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
-            >
-              अभी रजिस्टर करें <ArrowRight size={18} aria-hidden="true" />
-            </Link>
+
+            <ul className="mt-6 grid gap-5 rounded-[1.25rem] bg-white px-5 py-5 shadow-sm sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
+              {workerAssurances.map(({ icon: Icon, title, copy }) => (
+                <li key={title} className="flex items-start gap-2.5">
+                  <Icon size={22} className="mt-0.5 shrink-0 text-[var(--home-color-brand)]" aria-hidden="true" />
+                  <span className="min-w-0">
+                    <strong className="block text-[13px] font-extrabold text-[var(--home-color-ink)]">{title}</strong>
+                    <span className="mt-0.5 block text-[11px] leading-4 text-slate-500">{copy}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -568,8 +528,8 @@ const HomePage = () => {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-300 to-transparent" />
         <div className="relative mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 lg:px-10">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--home-color-brand)]">
-              Trust and Recognised
+            <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-[var(--home-color-brand)]">
+              <BadgeCheck size={15} aria-hidden="true" /> Recognised by
             </p>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--home-color-ink)] sm:text-4xl lg:text-5xl">
               Trust and <span className="text-[var(--home-color-brand)]">Recognised</span>
@@ -578,7 +538,7 @@ const HomePage = () => {
               Backed by Government Recognition &amp; Secure Technology.
             </p>
             <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-[var(--home-color-border)] bg-white px-4 py-3 text-sm font-bold text-[var(--home-color-ink)] shadow-sm">
-              <ShieldCheck size={22} className="text-emerald-600" aria-hidden="true" /> Verified credentials
+              <ShieldCheck size={22} className="text-emerald-600" aria-hidden="true" /> Trusted by 1,00,000+ workers
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -604,8 +564,8 @@ const HomePage = () => {
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="mb-10 flex flex-col gap-5 md:mb-12 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--home-color-brand)]">
-                Customer stories
+              <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-[var(--home-color-brand)]">
+                <MessageCircleMore size={15} aria-hidden="true" /> Customer stories
               </p>
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--home-color-ink)] sm:text-4xl lg:text-5xl">
                 Trusted by people who <span className="text-[var(--home-color-brand)]">needed it done.</span>

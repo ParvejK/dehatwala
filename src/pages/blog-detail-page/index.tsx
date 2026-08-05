@@ -1,11 +1,10 @@
 import { ArrowLeft, ArrowRight, CalendarDays, ChevronRight, Clock3, Home, RefreshCw, Tag } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { CategoryBadge } from "../../components/blog/article";
-import { toArticle } from "../../components/blog/article-model";
 import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
 import { useSingleBlog } from "../../react-query/hooks";
 import { Blog } from "../../types";
-import { estimateReadTime, formatDate, resolveCategory, stripMarkup } from "../blog-page/data";
+import { formatDate, resolveCategory, stripMarkup } from "../blog-page/data";
 
 /** `tags` is stored either as a JSON array of {value} or as a comma-separated string. */
 const parseTags = (tags: string | null | undefined): string[] => {
@@ -64,8 +63,14 @@ const NotFound = ({ message }: { message: string }) => (
   </main>
 );
 
+/** `recent_blogs` are full rows from the detail endpoint, not `/get-blogs` cards. */
 const RecentCard = ({ blog }: { blog: Blog }) => {
-  const article = toArticle(blog);
+  const article = {
+    slug: blog.slug,
+    title: blog.title,
+    image: `${VITE_IMAGE_PATH_URL}/blog/${blog.blogimg}`,
+    publishedAt: blog.created_at,
+  };
 
   return (
     <li>
@@ -103,7 +108,7 @@ const BlogDetailPage = () => {
   if (!blog) return <NotFound message="This article is not available or may have been removed." />;
 
   const category = resolveCategory(blog);
-  const readTime = estimateReadTime(blog);
+  const readTime = blog.read_time;
   const tags = parseTags(blog.tags);
   const recent = (data?.recent_blogs ?? []).filter((item) => item.slug !== blog.slug);
   const excerpt = stripMarkup(blog.short_description);
@@ -157,7 +162,7 @@ const BlogDetailPage = () => {
 
             <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-y border-slate-100 py-3 text-xs font-normal text-slate-500">
               <span className="inline-flex items-center gap-1.5">
-                <Clock3 size={14} aria-hidden="true" /> {readTime} min read
+                <Clock3 size={14} aria-hidden="true" /> {readTime}
               </span>
               <time dateTime={blog.created_at} className="inline-flex items-center gap-1.5">
                 <CalendarDays size={14} aria-hidden="true" /> Published {formatDate(blog.created_at)}

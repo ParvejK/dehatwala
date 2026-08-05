@@ -2,12 +2,15 @@ import axios from "axios";
 import { EmployeeFormData } from "../schema/permanent-service/schema";
 import { FormJoinUsType } from "../schema/step-form";
 import {
+  BlogCategoriesResponse,
+  BlogListProps,
   BlogProps,
   CategoriesProps,
   CateGoryApiResponse,
   CitiesResponse,
   ClientsApiResponse,
   FaqApiResponse,
+  FaqCategoriesApiResponse,
   FormInputs,
   InstantApiResponse,
   JobApiResponse,
@@ -31,6 +34,14 @@ import {
   CheckAvailabilityResponse,
   CareerApplicationPayload,
   CareerApplicationResponse,
+  CareerContentResponse,
+  CareerOpeningResponse,
+  CareerOpeningsResponse,
+  MediaNewsDetailResponse,
+  MediaNewsResponse,
+  MediaPhotosResponse,
+  MediaPublicationsResponse,
+  MediaVideosResponse,
 } from "../types";
 import { API_URL } from "./constants";
 
@@ -43,6 +54,10 @@ export const fetchCategories = () => axios.get<CategoriesProps>(`${API_URL}/get-
 export const fetchSubCategories = (categoryId: number) =>
   axios.get<SubCategoryProps>(`${API_URL}/get-sub-category/${categoryId}`).then((res) => res.data);
 
+/** Work types offered on the worker registration form. */
+export const fetchJoinUsCategories = () =>
+  axios.get<CategoriesProps>(`${API_URL}/get-join-us-category`).then((res) => res.data);
+
 /**
  * @Blog
  * Get Blog data.
@@ -52,6 +67,15 @@ export const fetchBlog = () => axios.get<BlogProps>(`${API_URL}/get-blogs`).then
 
 export const fetchSingleBlog = (slug: string) =>
   axios.get<SingleBlogProps>(`${API_URL}/get-blog/${slug}`).then((res) => res.data);
+
+export const fetchBlogCategories = () =>
+  axios.get<BlogCategoriesResponse>(`${API_URL}/get-blog-categories`).then((res) => res.data);
+
+/** `?category=` narrows to one category and returns the slim `{ total, blogs }` shape. */
+export const fetchBlogsByCategory = (categorySlug: string) =>
+  axios
+    .get<BlogListProps>(`${API_URL}/get-blogs`, { params: { category: categorySlug } })
+    .then((res) => res.data);
 
 /**
  * @HomeSlider
@@ -166,6 +190,12 @@ export const getFaqs = async () => {
   return response.data;
 };
 
+export const getFaqCategories = async () => {
+  const response = await axios.get<FaqCategoriesApiResponse>(`${API_URL}/get-faq-categories`);
+  return response.data;
+};
+
+
 /**
  * @Apply Clients
  */
@@ -241,12 +271,18 @@ export const fetchServiceDetail = (slug: string) =>
 
 /**
  * @Careers
- * Submit a career application (with CV) as multipart/form-data.
- *
- * NOTE: `POST /career-application` does not exist in the Laravel API yet — see
- * the contract in the careers apply page. Until it is added the request 404s and
- * the form falls back to the email route.
  */
+
+export const fetchCareerOpenings = () =>
+  axios.get<CareerOpeningsResponse>(`${API_URL}/career-openings`).then((res) => res.data);
+
+export const fetchCareerOpening = (slug: string) =>
+  axios.get<CareerOpeningResponse>(`${API_URL}/career-openings/${slug}`).then((res) => res.data);
+
+export const fetchCareerContent = () =>
+  axios.get<CareerContentResponse>(`${API_URL}/career-content`).then((res) => res.data);
+
+/** Submit a career application (with CV) as multipart/form-data. */
 export const submitCareerApplication = async (payload: CareerApplicationPayload) => {
   const body = new FormData();
   body.append("name", payload.name);
@@ -264,3 +300,19 @@ export const submitCareerApplication = async (payload: CareerApplicationPayload)
   });
   return response.data;
 };
+
+/**
+ * @Media & News
+ */
+
+export const fetchMediaPublications = () =>
+  axios.get<MediaPublicationsResponse>(`${API_URL}/media/publications`).then((res) => res.data);
+
+export const fetchMediaNews = () => axios.get<MediaNewsResponse>(`${API_URL}/media/news`).then((res) => res.data);
+
+export const fetchMediaNewsDetail = (slug: string) =>
+  axios.get<MediaNewsDetailResponse>(`${API_URL}/media/news/${slug}`).then((res) => res.data);
+
+export const fetchMediaVideos = () => axios.get<MediaVideosResponse>(`${API_URL}/media/videos`).then((res) => res.data);
+
+export const fetchMediaPhotos = () => axios.get<MediaPhotosResponse>(`${API_URL}/media/photos`).then((res) => res.data);

@@ -1,10 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  CareerContentResponse,
+  CareerOpeningResponse,
+  CareerOpeningsResponse,
+  MediaNewsDetailResponse,
+  MediaNewsResponse,
+  MediaPhotosResponse,
+  MediaPublicationsResponse,
+  MediaVideosResponse,
+  BlogCategoriesResponse,
+  BlogListProps,
   BlogProps,
   CategoriesProps,
   CateGoryApiResponse,
   ClientsApiResponse,
   FaqApiResponse,
+  FaqCategoriesApiResponse,
   InstantApiResponse,
   JobApiResponse,
   JobCategoryApiResponse,
@@ -23,8 +34,19 @@ import {
 } from "../types";
 import {
   fetchBlog,
+  fetchCareerContent,
+  fetchCareerOpening,
+  fetchCareerOpenings,
+  fetchBlogCategories,
+  fetchBlogsByCategory,
   fetchCategories,
   fetchHeroCarousel,
+  fetchJoinUsCategories,
+  fetchMediaNews,
+  fetchMediaNewsDetail,
+  fetchMediaPhotos,
+  fetchMediaPublications,
+  fetchMediaVideos,
   fetchHomeServices,
   fetchInstantService,
   fetchPermanentService,
@@ -33,6 +55,7 @@ import {
   fetchSingleBlog,
   fetchSubCategories,
   getClients,
+  getFaqCategories,
   getFaqs,
   getPartners,
   getTopCompanies,
@@ -140,6 +163,23 @@ export function useSingleBlog(slug: string) {
   });
 }
 
+export function useBlogCategories() {
+  return useQuery<BlogCategoriesResponse, Error>({
+    queryKey: ["blog-categories"],
+    queryFn: fetchBlogCategories,
+    staleTime: Infinity,
+  });
+}
+
+export function useBlogsByCategory(categorySlug?: string) {
+  return useQuery<BlogListProps, Error>({
+    queryKey: ["blogs-by-category", categorySlug],
+    queryFn: () => fetchBlogsByCategory(categorySlug ?? ""),
+    enabled: !!categorySlug,
+    staleTime: 10 * 1000,
+  });
+}
+
 // Carousel
 export function useHeroCarousel() {
   return useQuery<SliderProps, Error>({
@@ -184,6 +224,14 @@ export function useJobsBySlug(slug: string) {
 }
 
 // FAQs
+export function useFetchFaqCategories() {
+  return useQuery<FaqCategoriesApiResponse, Error>({
+    queryKey: ["faq-categories"],
+    queryFn: getFaqCategories,
+    staleTime: Infinity,
+  });
+}
+
 export function useFetchFaqs() {
   return useQuery<FaqApiResponse, Error>({
     queryKey: ["faqs"],
@@ -237,3 +285,79 @@ export function useFetchPolicies(slug: string) {
   });
 }
 
+
+// Careers
+export function useCareerOpenings() {
+  return useQuery<CareerOpeningsResponse, Error>({
+    queryKey: ["career-openings"],
+    queryFn: fetchCareerOpenings,
+    staleTime: 10 * 1000,
+  });
+}
+
+export function useCareerOpening(slug?: string) {
+  return useQuery<CareerOpeningResponse, Error>({
+    queryKey: ["career-opening", slug],
+    queryFn: () => fetchCareerOpening(slug ?? ""),
+    enabled: !!slug,
+    staleTime: 10 * 1000,
+  });
+}
+
+export function useCareerContent() {
+  return useQuery<CareerContentResponse, Error>({
+    queryKey: ["career-content"],
+    queryFn: fetchCareerContent,
+    staleTime: Infinity,
+  });
+}
+
+export function useJoinUsCategories() {
+  return useQuery<CategoriesProps, Error>({
+    queryKey: ["join-us-categories"],
+    queryFn: fetchJoinUsCategories,
+    staleTime: Infinity,
+  });
+}
+
+// Media & News
+export function useMediaPublications() {
+  return useQuery<MediaPublicationsResponse, Error>({
+    queryKey: ["media-publications"],
+    queryFn: fetchMediaPublications,
+    staleTime: Infinity,
+  });
+}
+
+export function useMediaNews() {
+  return useQuery<MediaNewsResponse, Error>({
+    queryKey: ["media-news"],
+    queryFn: fetchMediaNews,
+    staleTime: 10 * 1000,
+  });
+}
+
+export function useMediaNewsDetail(slug?: string) {
+  return useQuery<MediaNewsDetailResponse, Error>({
+    queryKey: ["media-news-detail", slug],
+    queryFn: () => fetchMediaNewsDetail(slug ?? ""),
+    enabled: !!slug,
+    staleTime: 10 * 1000,
+  });
+}
+
+export function useMediaVideos() {
+  return useQuery<MediaVideosResponse, Error>({
+    queryKey: ["media-videos"],
+    queryFn: fetchMediaVideos,
+    staleTime: 10 * 1000,
+  });
+}
+
+export function useMediaPhotos() {
+  return useQuery<MediaPhotosResponse, Error>({
+    queryKey: ["media-photos"],
+    queryFn: fetchMediaPhotos,
+    staleTime: 10 * 1000,
+  });
+}

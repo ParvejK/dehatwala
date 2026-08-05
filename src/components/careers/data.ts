@@ -1,7 +1,11 @@
 import {
+  BriefcaseBusiness,
+  Code2,
   FileCheck2,
   Headphones,
   Lightbulb,
+  LineChart,
+  Megaphone,
   MessagesSquare,
   PhoneCall,
   Rocket,
@@ -77,66 +81,35 @@ export const HIRING_PROCESS: (Highlight & { step: string })[] = [
   },
 ];
 
-export type OpenPosition = {
-  slug: string;
-  title: string;
-  icon: LucideIcon;
-  department: string;
-  location: string;
-  type: string;
-  summary: string;
-  responsibilities: string[];
-  requirements: string[];
+/**
+ * `career_openings` has no icon column, so one is picked from the department
+ * name. An unlisted department falls back to the generic briefcase.
+ */
+const DEPARTMENT_ICONS: Record<string, LucideIcon> = {
+  operations: UserCog,
+  "customer support": Headphones,
+  support: Headphones,
+  engineering: Code2,
+  product: Code2,
+  technology: Code2,
+  marketing: Megaphone,
+  growth: Megaphone,
+  sales: BriefcaseBusiness,
+  partnerships: BriefcaseBusiness,
+  finance: LineChart,
+  people: Users,
+  hr: Users,
 };
 
-/**
- * Single source of truth for both the listing and the apply page.
- * Empty this array when there are no live openings — the listing then shows the
- * "no open positions" state and points people at Send Your Profile.
- */
-export const OPEN_POSITIONS: OpenPosition[] = [
-  {
-    slug: "operations-executive",
-    title: "Operations Executive",
-    icon: UserCog,
-    department: "Operations",
-    location: "Gurugram",
-    type: "Full Time",
-    summary:
-      "Own day-to-day service delivery — matching customer requirements with the right workers and keeping every booking on track from request to completion.",
-    responsibilities: [
-      "Coordinate worker assignment against incoming service requests.",
-      "Verify worker documents and keep onboarding records accurate.",
-      "Track live bookings and resolve on-ground issues with customers and workers.",
-      "Share daily reporting on fulfilment, delays and repeat requirements.",
-    ],
-    requirements: [
-      "0–3 years in operations, field coordination or customer service.",
-      "Comfortable working in Hindi and English, on phone and on site.",
-      "Working knowledge of Excel or Google Sheets.",
-      "Willing to spend part of the week on field visits around Gurugram.",
-    ],
-  },
-  {
-    slug: "customer-support-associate",
-    title: "Customer Support Associate",
-    icon: Headphones,
-    department: "Customer Support",
-    location: "Gurugram",
-    type: "Full Time",
-    summary:
-      "Be the first voice customers hear — help them place the right booking, answer questions during the service and follow up after it is done.",
-    responsibilities: [
-      "Handle inbound calls, WhatsApp and assisted-booking requests.",
-      "Capture requirements accurately and hand them to the operations team.",
-      "Follow up post-service and record feedback and complaints.",
-    ],
-    requirements: [
-      "0–2 years in a voice or chat support role.",
-      "Clear spoken Hindi and functional English.",
-      "Patience with first-time and low-digital-literacy users.",
-    ],
-  },
-];
+export const departmentIcon = (department: string): LucideIcon =>
+  DEPARTMENT_ICONS[department.trim().toLowerCase()] ?? BriefcaseBusiness;
 
-export const findPosition = (slug?: string) => OPEN_POSITIONS.find((position) => position.slug === slug);
+/** Splits the one-bullet-per-line textareas the API returns. */
+export const toBulletList = (raw?: string | null, preParsed?: string[] | null): string[] => {
+  if (preParsed?.length) return preParsed.map((item) => item.trim()).filter(Boolean);
+
+  return (raw ?? "")
+    .split(/\r?\n/)
+    .map((item) => item.replace(/^[-•*\s]+/, "").trim())
+    .filter(Boolean);
+};

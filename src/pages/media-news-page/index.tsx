@@ -3,7 +3,8 @@ import { ArrowRight, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import ArticleLinkIcon from "../../components/media/article-link-icon";
 import PressCta from "../../components/media/press-cta";
-import { COVERAGE, EVENT_PHOTOS, formatMediaDate, mediaArticlePath, PUBLICATIONS, VIDEOS } from "./data";
+import { formatMediaDate, isRealUrl, mediaArticlePath, mediaImage, publicationLogo } from "./data";
+import { useMediaNews, useMediaPhotos, useMediaPublications, useMediaVideos } from "../../react-query/hooks";
 
 const SectionHeader = ({ title, linkLabel, to }: { title: string; linkLabel: string; to: string }) => (
   <div className="mb-4 flex items-center justify-between gap-4">
@@ -19,6 +20,10 @@ const SectionHeader = ({ title, linkLabel, to }: { title: string; linkLabel: str
 );
 
 const MediaNewsPage = () => {
+  const publications = useMediaPublications().data?.publications ?? [];
+  const coverage = useMediaNews().data?.news ?? [];
+  const videos = useMediaVideos().data?.videos ?? [];
+  const photos = useMediaPhotos().data?.photos ?? [];
   const stripRef = useRef<HTMLDivElement>(null);
 
   const scrollStrip = (direction: -1 | 1) => {
@@ -79,28 +84,42 @@ const MediaNewsPage = () => {
 
         {/* ---------- Featured in ---------- */}
         <section aria-labelledby="featured-heading" className="mt-6 rounded-2xl border border-[#dce7fb] bg-white p-5 sm:p-6">
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <h2 id="featured-heading" className="text-[15px] font-extrabold tracking-tight text-[#0b3fc4] sm:text-base">
-              Featured In
-            </h2>
-            <Link
-              to="/media-news/news"
-              className="group inline-flex shrink-0 items-center gap-1.5 text-xs font-bold text-[#0b3fc4] transition hover:text-[#0932a0]"
-            >
-              View all
-              <ArrowRight size={14} className="transition group-hover:translate-x-0.5" aria-hidden="true" />
-            </Link>
-          </div>
+          <h2
+            id="featured-heading"
+            className="mb-4 text-[15px] font-extrabold tracking-tight text-[#0b3fc4] sm:text-base"
+          >
+            Featured In
+          </h2>
 
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {PUBLICATIONS.map(({ name, className }) => (
-              <li
-                key={name}
-                className="grid min-h-[62px] place-items-center rounded-xl border border-[#e6edf9] bg-white px-3 text-center transition hover:border-[#bfd5fb] hover:shadow-sm"
-              >
-                <span className={className}>{name}</span>
-              </li>
-            ))}
+            {publications.map(({ id, name, logo, website_url }) => {
+              const tile = logo ? (
+                <img src={publicationLogo(logo)} alt={name} className="max-h-10 w-auto object-contain" />
+              ) : (
+                <span className="text-[15px] font-extrabold tracking-tight text-slate-900">{name}</span>
+              );
+
+              return (
+                <li
+                  key={id}
+                  className="grid min-h-[62px] place-items-center rounded-xl border border-[#e6edf9] bg-white px-3 text-center transition hover:border-[#bfd5fb] hover:shadow-sm"
+                >
+                  {isRealUrl(website_url) ? (
+                    <a
+                      href={website_url ?? undefined}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`${name} (opens in a new tab)`}
+                      className="grid size-full place-items-center"
+                    >
+                      {tile}
+                    </a>
+                  ) : (
+                    tile
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </section>
 
@@ -109,9 +128,9 @@ const MediaNewsPage = () => {
           <SectionHeader title="Latest Media Coverage" linkLabel="View all news" to="/media-news/news" />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {COVERAGE.slice(0, 3).map(({ slug, tag, title, source, date, image, externalUrl }) => (
+            {coverage.slice(0, 3).map(({ id, slug, tag, title, source, published_at, image, external_url }) => (
               <article
-                key={slug}
+                key={id}
                 className="group overflow-hidden rounded-2xl border border-[#dce7fb] bg-white transition hover:border-[#bfd5fb] hover:shadow-[0_12px_28px_-18px_rgba(20,61,141,0.5)]"
               >
                 <Link
@@ -121,7 +140,7 @@ const MediaNewsPage = () => {
                   className="relative block h-40 overflow-hidden bg-[#eef4ff] sm:h-44"
                 >
                   <img
-                    src={image}
+                    src={mediaImage(image)}
                     alt=""
                     className="size-full object-cover transition duration-500 group-hover:scale-105"
                   />
@@ -143,9 +162,9 @@ const MediaNewsPage = () => {
                   <div className="mt-4 flex items-end justify-between gap-3 border-t border-[#eef2f9] pt-3">
                     <div className="min-w-0">
                       <p className="truncate text-[11px] font-bold text-[#40517b]">{source}</p>
-                      <p className="mt-0.5 text-[11px] font-normal text-[#8fa2c8]">{formatMediaDate(date)}</p>
+                      <p className="mt-0.5 text-[11px] font-normal text-[#8fa2c8]">{formatMediaDate(published_at)}</p>
                     </div>
-                    <ArticleLinkIcon slug={slug} title={title} source={source} externalUrl={externalUrl} />
+                    <ArticleLinkIcon slug={slug} title={title} source={source} externalUrl={external_url ?? ""} />
                   </div>
                 </div>
               </article>
@@ -158,10 +177,10 @@ const MediaNewsPage = () => {
           <SectionHeader title="Videos & Interviews" linkLabel="View all videos" to="/media-news/videos" />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {VIDEOS.slice(0, 3).map(({ title, subtitle, duration, image, href }) => (
+            {videos.slice(0, 3).map(({ id, title, subtitle, duration, thumbnail, video_url }) => (
               <a
-                key={title}
-                href={href}
+                key={id}
+                href={video_url}
                 target="_blank"
                 rel="noreferrer"
                 aria-label={`Play ${title} on YouTube`}
@@ -169,7 +188,7 @@ const MediaNewsPage = () => {
               >
                 <div className="relative h-40 overflow-hidden bg-[#0a2a6b] sm:h-44">
                   <img
-                    src={image}
+                    src={mediaImage(thumbnail)}
                     alt=""
                     className="size-full object-cover opacity-85 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
                   />
@@ -201,13 +220,13 @@ const MediaNewsPage = () => {
               ref={stripRef}
               className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              {EVENT_PHOTOS.slice(0, 5).map(({ src, alt }) => (
+              {photos.slice(0, 5).map(({ id, image, alt }) => (
                 <figure
-                  key={src}
+                  key={id}
                   className="group relative h-28 w-40 shrink-0 snap-start overflow-hidden rounded-xl border border-[#dce7fb] bg-[#eef4ff] sm:h-32 sm:w-48 lg:w-[19%]"
                 >
                   <img
-                    src={src}
+                    src={mediaImage(image)}
                     alt={alt}
                     className="size-full object-cover transition duration-500 group-hover:scale-105"
                   />

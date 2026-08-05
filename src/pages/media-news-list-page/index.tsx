@@ -3,7 +3,8 @@ import { Search, X } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import ArticleLinkIcon from "../../components/media/article-link-icon";
 import MediaPageHeader from "../../components/media/media-page-header";
-import { COVERAGE, formatMediaDate, mediaArticlePath } from "../media-news-page/data";
+import { formatMediaDate, mediaArticlePath, mediaImage } from "../media-news-page/data";
+import { useMediaNews } from "../../react-query/hooks";
 
 const ALL = "All";
 
@@ -12,8 +13,10 @@ const MediaNewsListPage = () => {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const [tag, setTag] = useState<string>(ALL);
+  const newsQuery = useMediaNews();
+  const COVERAGE = useMemo(() => newsQuery.data?.news ?? [], [newsQuery.data]);
 
-  const tags = useMemo(() => [ALL, ...Array.from(new Set(COVERAGE.map((item) => item.tag)))], []);
+  const tags = useMemo(() => [ALL, ...Array.from(new Set(COVERAGE.map((item) => item.tag)))], [COVERAGE]);
 
   const query = search.trim().toLowerCase();
 
@@ -27,8 +30,8 @@ const MediaNewsListPage = () => {
             item.source.toLowerCase().includes(query) ||
             item.excerpt.toLowerCase().includes(query),
         )
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-    [tag, query],
+        .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()),
+    [COVERAGE, tag, query],
   );
 
   return (
@@ -84,9 +87,9 @@ const MediaNewsListPage = () => {
 
         {articles.length > 0 ? (
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {articles.map(({ slug, tag: itemTag, title, source, date, image, externalUrl, excerpt }) => (
+            {articles.map(({ id, slug, tag: itemTag, title, source, published_at, image, external_url, excerpt }) => (
               <article
-                key={slug}
+                key={id}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-[#dce7fb] bg-white transition hover:border-[#bfd5fb] hover:shadow-[0_12px_28px_-18px_rgba(20,61,141,0.5)]"
               >
                 <Link
@@ -96,7 +99,7 @@ const MediaNewsListPage = () => {
                   className="relative block h-40 overflow-hidden bg-[#eef4ff] sm:h-44"
                 >
                   <img
-                    src={image}
+                    src={mediaImage(image)}
                     alt=""
                     loading="lazy"
                     className="size-full object-cover transition duration-500 group-hover:scale-105"
@@ -120,9 +123,9 @@ const MediaNewsListPage = () => {
                   <div className="mt-auto flex items-end justify-between gap-3 border-t border-[#eef2f9] pt-3">
                     <div className="min-w-0">
                       <p className="truncate text-[11px] font-bold text-[#40517b]">{source}</p>
-                      <p className="mt-0.5 text-[11px] font-normal text-[#8fa2c8]">{formatMediaDate(date)}</p>
+                      <p className="mt-0.5 text-[11px] font-normal text-[#8fa2c8]">{formatMediaDate(published_at)}</p>
                     </div>
-                    <ArticleLinkIcon slug={slug} title={title} source={source} externalUrl={externalUrl} />
+                    <ArticleLinkIcon slug={slug} title={title} source={source} externalUrl={external_url ?? ""} />
                   </div>
                 </div>
               </article>

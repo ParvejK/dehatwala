@@ -1,12 +1,6 @@
 import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
-import { Blog } from "../../types";
-import {
-  BlogCategory,
-  estimateReadTime,
-  isFeaturedBlog,
-  resolveCategory,
-  stripMarkup,
-} from "../../pages/blog-page/data";
+import { BlogCard } from "../../types";
+import { BlogCategory, stripMarkup, toBlogCategory, UNCATEGORISED } from "../../pages/blog-page/data";
 
 export type Article = {
   id: number;
@@ -15,22 +9,23 @@ export type Article = {
   excerpt: string;
   image: string;
   category: BlogCategory;
-  readTime: number;
+  /** Pre-formatted by the API, e.g. "5 min read". */
+  readTime: string;
   publishedAt: string;
   updatedAt: string;
   pinned: boolean;
 };
 
-/** Maps a DB blog row onto the shape the article cards render. */
-export const toArticle = (blog: Blog): Article => ({
-  id: blog.id,
-  title: blog.title,
-  slug: blog.slug,
-  excerpt: stripMarkup(blog.short_description),
-  image: `${VITE_IMAGE_PATH_URL}/blog/${blog.blogimg}`,
-  category: resolveCategory(blog),
-  readTime: estimateReadTime(blog),
-  publishedAt: blog.created_at,
-  updatedAt: blog.updated_at,
-  pinned: isFeaturedBlog(blog),
+/** Maps a card from `/get-blogs` onto the shape the article components render. */
+export const toArticle = (card: BlogCard): Article => ({
+  id: card.id,
+  title: card.title,
+  slug: card.slug,
+  excerpt: stripMarkup(card.excerpt),
+  image: `${VITE_IMAGE_PATH_URL}/blog/${card.image}`,
+  category: card.category ? toBlogCategory(card.category) : UNCATEGORISED,
+  readTime: card.read_time,
+  publishedAt: card.published_at,
+  updatedAt: card.updated_at,
+  pinned: card.is_featured,
 });

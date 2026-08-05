@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -6,26 +6,11 @@ import axios, { AxiosError } from "axios";
 import { RotateCw, ShieldCheck } from "lucide-react";
 import { getCities, getStates, stepFormeData } from "../../react-query/apis";
 import { API_URL } from "../../react-query/constants";
+import { useJoinUsCategories } from "../../react-query/hooks";
 import { ApiErrorResponse, CitiesResponse, StateProps } from "../../types";
 import { FormJoinUsType } from "../../schema/step-form";
 
 const OTP_RESEND_SECONDS = 59;
-
-const WORK_OPTIONS = [
-  "राज मिस्त्री (Building Work)",
-  "लेबर / हेल्पर",
-  "लोडिंग / अनलोडिंग",
-  "पेंटर",
-  "इलेक्ट्रिशियन",
-  "प्लंबर",
-  "सफाई कार्य",
-  "टाइल्स कार्य",
-  "फिनिशिंग कार्य",
-  "शटरिंग कार्य",
-  "स्टील बार बेंडर",
-  "कारपेंटर",
-  "अन्य",
-];
 
 const OTHER_WORK = "अन्य";
 
@@ -83,6 +68,21 @@ const RegistrationForm = () => {
     enabled: !!stateId,
     staleTime: Infinity,
   });
+
+  const { data: workCategories, isPending: isLoadingWorks } = useJoinUsCategories();
+
+  /**
+   * `direct_joins.skills` stores the labels as free text, so the option label is
+   * what gets submitted. `hindi_name` is preferred — this form is in Hindi — and
+   * "अन्य" is appended locally because the API has no equivalent row.
+   */
+  const workOptions = useMemo(
+    () => [
+      ...(workCategories?.categories ?? []).map((category) => category.hindi_name?.trim() || category.name),
+      OTHER_WORK,
+    ],
+    [workCategories],
+  );
 
   // Resend countdown.
   useEffect(() => {
@@ -260,8 +260,10 @@ const RegistrationForm = () => {
             <span className="font-medium text-[#8fa2c8]">(एक या एक से अधिक चुनें)</span>
           </legend>
 
+          {isLoadingWorks && <p className="mt-2.5 text-[13px] text-[#8fa2c8]">कार्य सूची लोड हो रही है…</p>}
+
           <div className="mt-2.5 grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
-            {WORK_OPTIONS.map((work) => (
+            {workOptions.map((work) => (
               <label key={work} className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#40517b]">
                 <input
                   type="checkbox"

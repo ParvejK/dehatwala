@@ -1,15 +1,18 @@
 import { useMemo, useState } from "react";
 import { Play, Search, X } from "lucide-react";
 import MediaPageHeader from "../../components/media/media-page-header";
-import { formatMediaDate, VIDEOS } from "../media-news-page/data";
+import { formatMediaDate, mediaImage } from "../media-news-page/data";
+import { useMediaVideos } from "../../react-query/hooks";
 
 const ALL = "All";
 
 const MediaVideosPage = () => {
   const [search, setSearch] = useState("");
   const [channel, setChannel] = useState<string>(ALL);
+  const videosQuery = useMediaVideos();
+  const VIDEOS = useMemo(() => videosQuery.data?.videos ?? [], [videosQuery.data]);
 
-  const channels = useMemo(() => [ALL, ...Array.from(new Set(VIDEOS.map((video) => video.channel)))], []);
+  const channels = useMemo(() => [ALL, ...Array.from(new Set(VIDEOS.map((video) => video.channel)))], [VIDEOS]);
 
   const query = search.trim().toLowerCase();
 
@@ -23,8 +26,8 @@ const MediaVideosPage = () => {
             video.subtitle.toLowerCase().includes(query) ||
             video.channel.toLowerCase().includes(query),
         )
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-    [channel, query],
+        .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()),
+    [VIDEOS, channel, query],
   );
 
   return (
@@ -80,10 +83,10 @@ const MediaVideosPage = () => {
 
         {videos.length > 0 ? (
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {videos.map(({ title, subtitle, duration, image, href, channel: videoChannel, date }) => (
+            {videos.map(({ id, title, subtitle, duration, thumbnail, video_url, channel: videoChannel, published_at }) => (
               <a
-                key={title}
-                href={href}
+                key={id}
+                href={video_url}
                 target="_blank"
                 rel="noreferrer"
                 aria-label={`Play ${title} on YouTube`}
@@ -91,7 +94,7 @@ const MediaVideosPage = () => {
               >
                 <div className="relative h-40 overflow-hidden bg-[#0a2a6b] sm:h-44">
                   <img
-                    src={image}
+                    src={mediaImage(thumbnail)}
                     alt=""
                     loading="lazy"
                     className="size-full object-cover opacity-85 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
@@ -112,7 +115,7 @@ const MediaVideosPage = () => {
 
                   <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#eef2f9] pt-3 text-[11px]">
                     <span className="truncate font-bold text-[#40517b]">{videoChannel}</span>
-                    <span className="shrink-0 font-normal text-[#8fa2c8]">{formatMediaDate(date)}</span>
+                    <span className="shrink-0 font-normal text-[#8fa2c8]">{formatMediaDate(published_at)}</span>
                   </div>
                 </div>
               </a>

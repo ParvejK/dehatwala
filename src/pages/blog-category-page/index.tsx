@@ -3,8 +3,8 @@ import { ArrowLeft, ChevronRight, Home, Search, X } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { ArticleCard } from "../../components/blog/article";
 import { toArticle } from "../../components/blog/article-model";
-import { useBlogs } from "../../react-query/hooks";
-import { BLOG_CATEGORIES } from "../blog-page/data";
+import { useBlogCategories, useBlogsByCategory } from "../../react-query/hooks";
+import { toBlogCategory } from "../blog-page/data";
 
 const CategorySkeleton = () => (
   <div role="status" aria-live="polite" className="grid gap-4 motion-safe:animate-pulse sm:grid-cols-2 lg:grid-cols-4">
@@ -25,42 +25,47 @@ const CategorySkeleton = () => (
 
 const BlogCategoryPage = () => {
   const { categorySlug } = useParams();
-  const blogsQuery = useBlogs();
+  const blogsQuery = useBlogsByCategory(categorySlug);
+  const categoriesQuery = useBlogCategories();
   const [search, setSearch] = useState("");
 
-  const category = BLOG_CATEGORIES.find((item) => item.id === categorySlug);
-
-  const articles = useMemo(
+  const categories = useMemo(
     () =>
-      (blogsQuery.data?.blogs ?? [])
-        .map(toArticle)
-        .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()),
-    [blogsQuery.data],
+      (categoriesQuery.data?.categories ?? []).map((category) => ({
+        ...toBlogCategory(category),
+        count: category.blogs_count ?? 0,
+      })),
+    [categoriesQuery.data],
   );
 
-  const counts = useMemo(
-    () =>
-      articles.reduce<Record<string, number>>((total, article) => {
-        total[article.category.id] = (total[article.category.id] ?? 0) + 1;
-        return total;
-      }, {}),
-    [articles],
-  );
+  const category = categories.find((item) => item.id === categorySlug);
+
+  // The API filters by category, so only the search runs client-side.
+  const articles = useMemo(() => (blogsQuery.data?.blogs ?? []).map(toArticle), [blogsQuery.data]);
 
   const query = search.trim().toLowerCase();
 
   const categoryArticles = useMemo(
     () =>
-      articles
-        .filter((article) => article.category.id === categorySlug)
-        .filter(
-          (article) =>
-            query.length === 0 ||
-            article.title.toLowerCase().includes(query) ||
-            article.excerpt.toLowerCase().includes(query),
-        ),
-    [articles, categorySlug, query],
+      articles.filter(
+        (article) =>
+          query.length === 0 ||
+          article.title.toLowerCase().includes(query) ||
+          article.excerpt.toLowerCase().includes(query),
+      ),
+    [articles, query],
   );
+
+  // Categories arrive asynchronously — do not claim "not found" before they land.
+  if (!category && (categoriesQuery.isPending || blogsQuery.isPending)) {
+    return (
+      <main className="bg-white pb-16 pt-6 sm:pt-8">
+        <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10">
+          <CategorySkeleton />
+        </div>
+      </main>
+    );
+  }
 
   if (!category) {
     return (
@@ -84,7 +89,7 @@ const BlogCategoryPage = () => {
   }
 
   const Icon = category.icon;
-  const total = counts[category.id] ?? 0;
+  const total = blogsQuery.data?.total ?? articles.length;
 
   return (
     <main className="bg-white pb-16 pt-6 text-slate-950 sm:pt-8">
@@ -161,7 +166,7 @@ const BlogCategoryPage = () => {
             <ArrowLeft size={14} aria-hidden="true" /> All articles
           </Link>
 
-          {BLOG_CATEGORIES.map((item) => {
+          {categories.map((item) => {
             const isActive = item.id === category.id;
             return (
               <Link
@@ -175,7 +180,7 @@ const BlogCategoryPage = () => {
                 }`}
               >
                 {item.label}
-                <span className={isActive ? "text-blue-100" : "text-slate-400"}>{counts[item.id] ?? 0}</span>
+                <span className={isActive ? "text-blue-100" : "text-slate-400"}>{item.count}</span>
               </Link>
             );
           })}

@@ -1,10 +1,10 @@
 import { ArrowRight, BookOpen, CalendarDays, Clock3, Mail, RefreshCw, Search, Sparkles, X } from "lucide-react";
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useBlogs } from "../../react-query/hooks";
 import { ArticleCard, CategoryBadge } from "../../components/blog/article";
 import { Article, toArticle } from "../../components/blog/article-model";
-import { BLOG_CATEGORIES, BlogCategory, formatDate } from "./data";
+import { BlogCategory, formatDate, toBlogCategory } from "./data";
 
 /* ---------------------------------- hero ---------------------------------- */
 
@@ -65,15 +65,7 @@ const BlogHero = ({ search, onSearchChange }: { search: string; onSearchChange: 
 
 /* ------------------------------ category strip ----------------------------- */
 
-const CategoryStrip = ({
-  counts,
-  active,
-  onSelect,
-}: {
-  counts: Record<string, number>;
-  active: string | null;
-  onSelect: (categoryId: string | null) => void;
-}) => (
+const CategoryStrip = ({ categories, counts }: { categories: BlogCategory[]; counts: Record<string, number> }) => (
   <nav
     aria-label="Blog categories"
     className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.12)] sm:p-7"
@@ -85,31 +77,27 @@ const CategoryStrip = ({
     </div>
 
     <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
-      {BLOG_CATEGORIES.map((category) => {
+      {categories.map((category) => {
         const Icon = category.icon;
-        const isActive = active === category.id;
         const count = counts[category.id] ?? 0;
 
         return (
           <li key={category.id}>
-            <button
-              type="button"
-              onClick={() => onSelect(isActive ? null : category.id)}
-              aria-pressed={isActive}
+            <Link
+              to={`/blog/category/${category.id}`}
               title={category.description}
-              className={`flex h-full w-full flex-col items-center gap-2.5 rounded-2xl border px-2 py-4 text-center transition focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 ${
-                isActive
-                  ? "border-blue-700 bg-blue-700 text-white shadow-lg shadow-blue-700/20"
-                  : "border-slate-200 bg-white text-blue-900 hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
-              } ${count === 0 && !isActive ? "opacity-60" : ""}`}
+              className={`flex h-full w-full flex-col items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-2 py-4 text-center text-blue-900 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 ${
+                count === 0 ? "opacity-60" : ""
+              }`}
             >
-              <span
-                className={`grid size-11 place-items-center rounded-xl ${isActive ? "bg-white/15 text-white" : category.iconClassName}`}
-              >
+              <span className={`grid size-11 place-items-center rounded-xl ${category.iconClassName}`}>
                 <Icon size={22} aria-hidden="true" />
               </span>
               <span className="text-xs font-bold leading-4 sm:text-[13px]">{category.label}</span>
-            </button>
+              <span className="text-[11px] font-normal text-slate-500">
+                {count} {count === 1 ? "article" : "articles"}
+              </span>
+            </Link>
           </li>
         );
       })}
@@ -154,7 +142,7 @@ const FeaturedArticle = ({ article }: { article: Article }) => (
 
         <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-normal text-slate-500">
           <span className="inline-flex items-center gap-1.5">
-            <Clock3 size={14} aria-hidden="true" /> {article.readTime} min read
+            <Clock3 size={14} aria-hidden="true" /> {article.readTime}
           </span>
           <span className="inline-flex items-center gap-1.5">
             <CalendarDays size={14} aria-hidden="true" /> Updated {formatDate(article.updatedAt)}
@@ -297,84 +285,72 @@ const BlogSkeleton = () => (
 
 /* ---------------------------------- page ---------------------------------- */
 
-const ARTICLES_PER_ROW = 4;
-
 const BlogPage = () => {
   const blogsQuery = useBlogs();
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const articlesRef = useRef<HTMLDivElement>(null);
 
-  const articles = useMemo(
-    () =>
-      (blogsQuery.data?.blogs ?? [])
-        .map(toArticle)
-        .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()),
+  // The API builds the whole landing payload: the featured pick, the category
+  // chips with their counts, and the per-category rows. Nothing is derived here.
+  const categories = useMemo(
+    () => (blogsQuery.data?.categories ?? []).map(toBlogCategory),
     [blogsQuery.data],
   );
 
-  const featured = useMemo(() => articles.find((article) => article.pinned) ?? articles[0], [articles]);
-
   const counts = useMemo(
     () =>
-      articles.reduce<Record<string, number>>((total, article) => {
-        total[article.category.id] = (total[article.category.id] ?? 0) + 1;
+      (blogsQuery.data?.categories ?? []).reduce<Record<string, number>>((total, category) => {
+        total[category.slug] = category.blogs_count;
         return total;
       }, {}),
-    [articles],
+    [blogsQuery.data],
   );
 
-  const query = search.trim().toLowerCase();
-  const isFiltering = query.length > 0 || activeCategory !== null;
+  const articles = useMemo(() => (blogsQuery.data?.blogs ?? []).map(toArticle), [blogsQuery.data]);
 
-  const filtered = useMemo(
-    () =>
-      articles.filter((article) => {
-        const matchesCategory = activeCategory === null || article.category.id === activeCategory;
-        const matchesQuery =
-          query.length === 0 ||
-          article.title.toLowerCase().includes(query) ||
-          article.excerpt.toLowerCase().includes(query) ||
-          article.category.label.toLowerCase().includes(query);
-
-        return matchesCategory && matchesQuery;
-      }),
-    [articles, activeCategory, query],
+  const featured = useMemo(
+    () => (blogsQuery.data?.featured ? toArticle(blogsQuery.data.featured) : undefined),
+    [blogsQuery.data],
   );
 
   const rows = useMemo(
     () =>
-      BLOG_CATEGORIES.map((category) => ({
-        category,
-        articles: articles
-          .filter((article) => article.category.id === category.id && article.id !== featured?.id)
-          .slice(0, ARTICLES_PER_ROW),
-      })).filter((row) => row.articles.length > 0),
-    [articles, featured],
+      (blogsQuery.data?.sections ?? [])
+        .map((section) => ({
+          category: toBlogCategory(section.category),
+          articles: section.blogs.map(toArticle).filter((article) => article.id !== featured?.id),
+        }))
+        .filter((row) => row.articles.length > 0),
+    [blogsQuery.data, featured],
   );
 
-  const activeCategoryLabel = BLOG_CATEGORIES.find((category) => category.id === activeCategory)?.label;
+  const query = search.trim().toLowerCase();
+  // Category browsing now lives on /blog/category/{slug}; search is the only
+  // filter applied in place.
+  const isFiltering = query.length > 0;
 
-  /** Keeps the reader next to the articles when a category replaces the browsing view. */
-  const selectCategory = (categoryId: string | null) => {
-    setActiveCategory(categoryId);
-    requestAnimationFrame(() => articlesRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
-  };
+  const filtered = useMemo(
+    () =>
+      articles.filter(
+        (article) =>
+          query.length === 0 ||
+          article.title.toLowerCase().includes(query) ||
+          article.excerpt.toLowerCase().includes(query) ||
+          article.category.label.toLowerCase().includes(query),
+      ),
+    [articles, query],
+  );
 
-  const clearFilters = () => {
-    setSearch("");
-    setActiveCategory(null);
-  };
+  const clearFilters = () => setSearch("");
 
   return (
     <main className="bg-white text-slate-950">
       <BlogHero search={search} onSearchChange={setSearch} />
 
       <div className="relative z-10 mx-auto -mt-16 max-w-7xl px-5 sm:px-8 lg:-mt-20 lg:px-10">
-        <CategoryStrip counts={counts} active={activeCategory} onSelect={selectCategory} />
+        <CategoryStrip categories={categories} counts={counts} />
       </div>
 
-      <div ref={articlesRef} className="mx-auto max-w-7xl scroll-mt-24 px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
+      <div className="mx-auto max-w-7xl scroll-mt-24 px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
         {blogsQuery.isPending && <BlogSkeleton />}
 
         {blogsQuery.isError && (
@@ -413,7 +389,7 @@ const BlogPage = () => {
             <div className="mb-5 flex flex-col gap-3 border-b border-slate-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-xl font-bold tracking-tight text-slate-950 sm:text-2xl">
-                  {activeCategoryLabel ?? "Search results"}
+                  Search results
                 </h2>
                 <p className="mt-1 text-sm font-normal text-slate-600">
                   {filtered.length} {filtered.length === 1 ? "article" : "articles"}

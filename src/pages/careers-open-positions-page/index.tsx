@@ -3,10 +3,22 @@ import { Link } from "react-router-dom";
 
 import CareerHero from "../../components/careers/career-hero";
 import CareersBreadcrumb from "../../components/careers/careers-breadcrumb";
-import { OPEN_POSITIONS, positionPath, SEND_PROFILE_PATH } from "../../components/careers/data";
+import { departmentIcon, positionPath, SEND_PROFILE_PATH } from "../../components/careers/data";
+import { useCareerOpenings } from "../../react-query/hooks";
+
+const ListSkeleton = () => (
+  <ul className="mt-6 grid gap-4 lg:grid-cols-2" aria-label="Loading open positions" aria-busy="true">
+    {[0, 1].map((item) => (
+      <li key={item} className="h-56 animate-pulse rounded-2xl border border-[#dce7fb] bg-white" />
+    ))}
+  </ul>
+);
 
 const CareersOpenPositionsPage = () => {
-  const count = OPEN_POSITIONS.length;
+  const { data, isPending, isError, refetch } = useCareerOpenings();
+
+  const openings = data?.openings ?? [];
+  const count = openings.length;
 
   return (
     <main className="bg-[#f8fbff] pb-14 pt-5 sm:pt-6">
@@ -25,16 +37,39 @@ const CareersOpenPositionsPage = () => {
             </h2>
             <span aria-hidden="true" className="mx-auto mt-2 block h-[3px] w-11 rounded-full bg-[#0b3fc4]" />
             <p className="mx-auto mt-3 max-w-2xl text-xs leading-6 text-[#63739a] sm:text-[13px]">
-              {count > 0
-                ? `${count} ${count === 1 ? "role is" : "roles are"} open right now. Pick one to see the details and apply.`
-                : "We do not have any active openings at the moment."}
+              {isPending
+                ? "Loading the latest roles…"
+                : count > 0
+                  ? `${count} ${count === 1 ? "role is" : "roles are"} open right now. Pick one to see the details and apply.`
+                  : "We do not have any active openings at the moment."}
             </p>
           </div>
 
-          {count > 0 ? (
+          {isPending ? (
+            <ListSkeleton />
+          ) : isError ? (
+            <div className="mt-6 rounded-3xl border border-[#f3d6b8] bg-[#fff8ef] p-8 text-center sm:p-10" role="alert">
+              <h3 className="text-sm font-extrabold text-[#7a5a1f] sm:text-[15px]">
+                We could not load the open positions
+              </h3>
+              <p className="mx-auto mt-2 max-w-md text-xs leading-6 text-[#7a5a1f]">
+                Please try again, or send us your profile and we will be in touch.
+              </p>
+              <button
+                type="button"
+                onClick={() => void refetch()}
+                className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#0b3fc4] px-6 text-[12px] font-extrabold uppercase tracking-[0.08em] text-white transition hover:bg-[#0932a0]"
+              >
+                Try again
+              </button>
+            </div>
+          ) : count > 0 ? (
             <ul className="mt-6 grid gap-4 lg:grid-cols-2">
-              {OPEN_POSITIONS.map(({ slug, title, icon: Icon, department, location, type, summary }) => (
-                <li key={slug}>
+              {openings.map(({ id, slug, title, department, location, type, summary }) => {
+                const Icon = departmentIcon(department);
+
+                return (
+                <li key={id}>
                   <Link
                     to={positionPath(slug)}
                     className="group flex h-full flex-col rounded-2xl border border-[#dce7fb] bg-white p-5 transition hover:border-[#bfd5fb] hover:shadow-[0_16px_34px_-26px_rgba(11,63,196,0.8)] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100 sm:p-6"
@@ -67,7 +102,8 @@ const CareersOpenPositionsPage = () => {
                     </span>
                   </Link>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           ) : (
             <div className="mt-6 rounded-3xl border border-[#dce7fb] bg-white p-8 text-center sm:p-10">

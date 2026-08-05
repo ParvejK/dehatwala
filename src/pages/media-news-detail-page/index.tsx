@@ -17,14 +17,15 @@ import toast from "react-hot-toast";
 import ArticleLinkIcon from "../../components/media/article-link-icon";
 import PressCta from "../../components/media/press-cta";
 import {
-  COVERAGE,
-  CoverageItem,
-  findCoverage,
   formatMediaDate,
+  formatReadTime,
   isRealUrl,
   mediaArticlePath,
-  publicationClass,
+  mediaImage,
+  toParagraphs,
 } from "../media-news-page/data";
+import { useMediaNewsDetail } from "../../react-query/hooks";
+import { MediaNewsItem } from "../../types";
 
 const NEWS_LIST_PATH = "/media-news/news";
 
@@ -87,7 +88,7 @@ const ShareRow = ({ title }: { title: string }) => {
   );
 };
 
-const SidebarArticle = ({ article }: { article: CoverageItem }) => (
+const SidebarArticle = ({ article }: { article: MediaNewsItem }) => (
   <li>
     <Link
       to={mediaArticlePath(article.slug)}
@@ -95,7 +96,7 @@ const SidebarArticle = ({ article }: { article: CoverageItem }) => (
     >
       <span className="h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-[#eef4ff]">
         <img
-          src={article.image}
+          src={mediaImage(article.image)}
           alt=""
           loading="lazy"
           className="size-full object-cover transition duration-500 group-hover:scale-105"
@@ -107,18 +108,18 @@ const SidebarArticle = ({ article }: { article: CoverageItem }) => (
           {article.title}
         </span>
         <span className="mt-1 block text-[10px] font-normal text-[#8fa2c8]">
-          {article.source} &middot; {formatMediaDate(article.date)}
+          {article.source} &middot; {formatMediaDate(article.published_at)}
         </span>
       </span>
     </Link>
   </li>
 );
 
-const RelatedCard = ({ article }: { article: CoverageItem }) => (
+const RelatedCard = ({ article }: { article: MediaNewsItem }) => (
   <article className="group flex flex-col overflow-hidden rounded-2xl border border-[#dce7fb] bg-white transition hover:border-[#bfd5fb] hover:shadow-[0_12px_28px_-18px_rgba(20,61,141,0.5)]">
     <Link to={mediaArticlePath(article.slug)} className="relative block h-36 overflow-hidden bg-[#eef4ff]">
       <img
-        src={article.image}
+        src={mediaImage(article.image)}
         alt=""
         loading="lazy"
         className="size-full object-cover transition duration-500 group-hover:scale-105"
@@ -138,13 +139,13 @@ const RelatedCard = ({ article }: { article: CoverageItem }) => (
       <div className="mt-auto flex items-end justify-between gap-3 border-t border-[#eef2f9] pt-3">
         <div className="min-w-0">
           <p className="truncate text-[11px] font-bold text-[#40517b]">{article.source}</p>
-          <p className="mt-0.5 text-[11px] font-normal text-[#8fa2c8]">{formatMediaDate(article.date)}</p>
+          <p className="mt-0.5 text-[11px] font-normal text-[#8fa2c8]">{formatMediaDate(article.published_at)}</p>
         </div>
         <ArticleLinkIcon
           slug={article.slug}
           title={article.title}
           source={article.source}
-          externalUrl={article.externalUrl}
+          externalUrl={article.external_url ?? ""}
         />
       </div>
     </div>
@@ -156,9 +157,24 @@ const MediaNewsDetailPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
-  const article = findCoverage(slug);
+  const { data, isPending, isError } = useMediaNewsDetail(slug);
+  const article = data?.article;
 
-  if (!article) {
+  if (isPending) {
+    return (
+      <main className="bg-white pb-14 pt-5 sm:pt-6">
+        <div className="mx-auto w-full max-w-7xl animate-pulse px-4 sm:px-8 lg:px-10">
+          <div className="h-4 w-72 rounded bg-[#eaf1fd]" />
+          <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.4fr)]">
+            <div className="h-[42rem] rounded-2xl bg-[#eaf1fd]" />
+            <div className="h-80 rounded-2xl bg-[#eaf1fd]" />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (isError || !article) {
     return (
       <main className="bg-white pb-14 pt-5 sm:pt-6">
         <div className="mx-auto w-full max-w-3xl px-4 text-center sm:px-8">
@@ -179,7 +195,7 @@ const MediaNewsDetailPage = () => {
     );
   }
 
-  const others = COVERAGE.filter((item) => item.slug !== article.slug);
+  const others = (data?.related ?? []).filter((item) => item.slug !== article.slug);
   const sidebarArticles = others.slice(0, 3);
   const relatedArticles = others.slice(0, 3);
 
@@ -237,22 +253,22 @@ const MediaNewsDetailPage = () => {
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-b border-[#eef2f9] pb-4">
               <div className="flex flex-wrap items-center gap-3 text-[11px] font-medium text-[#8fa2c8]">
-                <span className={publicationClass(article.source)}>{article.source}</span>
+                <span className="text-[15px] font-extrabold tracking-tight text-slate-900">{article.source}</span>
                 <span aria-hidden="true" className="text-[#cdd8ee]">
                   |
                 </span>
-                <time dateTime={article.date}>{formatMediaDate(article.date)}</time>
+                <time dateTime={article.published_at}>{formatMediaDate(article.published_at)}</time>
                 <span aria-hidden="true" className="text-[#cdd8ee]">
                   |
                 </span>
-                <span>{article.readTime}</span>
+                <span>{formatReadTime(article.read_time)}</span>
               </div>
 
               <ShareRow title={article.title} />
             </div>
 
             <img
-              src={article.image}
+              src={mediaImage(article.image)}
               alt={article.title}
               className="mt-5 h-56 w-full rounded-xl object-cover sm:h-72 lg:h-80"
             />
@@ -260,17 +276,17 @@ const MediaNewsDetailPage = () => {
             <p className="mt-6 text-[13px] font-extrabold leading-6 text-[#0f1e57] sm:text-sm">{article.lead}</p>
 
             <div className="mt-4 space-y-4">
-              {article.body.map((paragraph, index) => {
+              {toParagraphs(article.body, article.body_list).map((paragraph, index) => {
                 // The pull quote sits after the second paragraph, as in the design.
-                const showQuote = article.quote && index === 1;
+                const showQuote = !!article.quote_text && index === 1;
 
                 return (
                   <div key={paragraph} className="space-y-4">
                     <p className="text-xs leading-6 text-[#5a6a90] sm:text-[13px]">{paragraph}</p>
                     {showQuote && (
                       <blockquote className="border-l-2 border-[#0b3fc4] pl-4 text-xs italic leading-6 text-[#40517b] sm:text-[13px]">
-                        &ldquo;{article.quote?.text}&rdquo;
-                        <footer className="mt-1 not-italic font-bold text-[#0f1e57]">— {article.quote?.author}</footer>
+                        &ldquo;{article.quote_text}&rdquo;
+                        <footer className="mt-1 not-italic font-bold text-[#0f1e57]">— {article.quote_author}</footer>
                       </blockquote>
                     )}
                   </div>
@@ -278,7 +294,7 @@ const MediaNewsDetailPage = () => {
               })}
             </div>
 
-            {isRealUrl(article.externalUrl) ? (
+            {isRealUrl(article.external_url) ? (
               <div className="mt-7 flex flex-col gap-4 rounded-xl bg-[#f2f6fe] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-3.5">
                   <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white text-[#0b3fc4] shadow-sm">
@@ -292,7 +308,7 @@ const MediaNewsDetailPage = () => {
                   </div>
                 </div>
                 <a
-                  href={article.externalUrl}
+                  href={article.external_url ?? undefined}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#0b3fc4] px-5 text-[13px] font-bold text-white transition hover:bg-[#0932a0] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"

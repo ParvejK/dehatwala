@@ -14,7 +14,7 @@ export const CategoryBadge = ({ category }: { category: BlogCategory }) => (
 export const ArticleMeta = ({ article, className = "" }: { article: Article; className?: string }) => (
   <div className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-normal text-slate-500 ${className}`}>
     <span className="inline-flex items-center gap-1.5">
-      <Clock3 size={14} aria-hidden="true" /> {article.readTime} min read
+      <Clock3 size={14} aria-hidden="true" /> {article.readTime}
     </span>
     <span className="hidden text-slate-300 sm:inline" aria-hidden="true">
       •
