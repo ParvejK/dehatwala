@@ -20,9 +20,16 @@ export interface BookingDetailsState {
   timeSlot: string;
 
   /** Step 2 — worksite address. */
+  addressLabel: string;
+  /** Row id from `save-user-address`, sent with the booking. */
+  addressId: number | null;
   address: string;
   stateId: string;
   cityId: string;
+  /** Captured alongside the ids so the payment summary can print a readable
+   *  address without re-fetching the state and city lists. */
+  stateName: string;
+  cityName: string;
   pincode: string;
   instructions: string;
 
@@ -36,8 +43,12 @@ export interface BookingDetailsState {
   setSchedule: (schedule: { bookDate: string; timeSlot: string }) => void;
   setAddress: (address: {
     address: string;
+    addressLabel: string;
+    addressId: number | null;
     stateId: string;
     cityId: string;
+    stateName: string;
+    cityName: string;
     pincode: string;
     instructions: string;
     serviceAreaId: number | null;
@@ -58,8 +69,12 @@ const initialState = {
   timeSlot: "09:00",
 
   address: "",
+  addressLabel: "Worksite",
+  addressId: null,
   stateId: "",
   cityId: "",
+  stateName: "",
+  cityName: "",
   pincode: "",
   instructions: "",
 
@@ -84,8 +99,12 @@ export const useBookingStore = create<BookingDetailsState>()(
       setAddress: (address) =>
         set({
           address: address.address,
+          addressLabel: address.addressLabel,
+          addressId: address.addressId,
           stateId: address.stateId,
           cityId: address.cityId,
+          stateName: address.stateName,
+          cityName: address.cityName,
           pincode: address.pincode,
           instructions: address.instructions,
           serviceAreaId: address.serviceAreaId,

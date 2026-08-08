@@ -1,13 +1,25 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, CalendarDays, ChevronRight, Clock3, Home, LocateFixed, MapPin, ShieldCheck } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  AlertCircle,
+  ArrowRight,
+  CalendarDays,
+  ChevronRight,
+  Clock3,
+  Home,
+  LocateFixed,
+  MapPin,
+  ShieldCheck,
+} from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import BookingSteps from "../../../components/booking/booking-steps";
 import { bookingPath } from "../../../components/booking/steps";
-import { checkAvailability, getCities, getStates } from "../../../react-query/apis";
+import { checkAvailability, getCities, getStates, saveUserAddress } from "../../../react-query/apis";
+import { useUserAddresses } from "../../../react-query/hooks";
+import { useAuthStore } from "../../../store/auth-store";
 import { useBookingStore } from "../../../store/booking-store";
-import { CitiesResponse, StateProps } from "../../../types";
+import { CitiesResponse, StateProps, UserAddress } from "../../../types";
 
 const NOTICES = [
   { icon: CalendarDays, copy: "Cancellation charges may apply after dispatch." },
@@ -34,12 +46,14 @@ const BookingDetailsPage = () => {
   const navigate = useNavigate();
 
   const booking = useBookingStore();
+  const { user } = useAuthStore();
 
   const [bookDate, setBookDate] = useState(booking.bookDate);
   // Start time is no longer collected — workers are scheduled by the ops team.
   // The stored slot still travels in the booking payload so its shape is unchanged.
   const timeSlot = booking.timeSlot || DEFAULT_TIME_SLOT;
   const [address, setAddress] = useState(booking.address);
+  const [addressLabel, setAddressLabel] = useState(booking.addressLabel);
   const [stateId, setStateId] = useState(booking.stateId);
   const [cityId, setCityId] = useState(booking.cityId);
   const [pincode, setPincode] = useState(booking.pincode);
@@ -48,6 +62,13 @@ const BookingDetailsPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLocating, setIsLocating] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  /**
+   * Why Save & Continue did not go through, shown beneath the button.
+   * Field-level problems stay on their own inputs; this covers the whole-form
+   * reasons — failed validation and anything the availability check reports —
+   * which previously only appeared as a toast that vanished after a few seconds.
+   */
+  const [formError, setFormError] = useState("");
 
   const { data: states, isLoading: isLoadingStates } = useQuery<StateProps, Error>({
     queryKey: ["states"],
@@ -61,6 +82,33 @@ const BookingDetailsPage = () => {
     enabled: !!stateId,
     staleTime: Infinity,
   });
+
+  const { data: savedAddresses } = useUserAddresses(user?.id);
+  const saved = savedAddresses?.addresses ?? [];
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
+
+  const applySavedAddress = (item: UserAddress) => {
+    setSelectedAddressId(item.id);
+    setAddressLabel(item.label);
+    setAddress(item.address);
+    setStateId(item.state_id ? String(item.state_id) : "");
+    setCityId(item.city_id ? String(item.city_id) : "");
+    setPincode(item.pincode ?? "");
+    setInstructions(item.instructions ?? "");
+    setErrors({});
+    setFormError("");
+  };
+
+  // Pre-fill the default worksite the first time this step is opened, but never
+  // overwrite an address the visitor has already started entering.
+  useEffect(() => {
+    if (address.trim() || selectedAddressId !== null || saved.length === 0) return;
+
+    const preferred = saved.find((item) => item.is_default) ?? saved[0];
+    if (preferred) applySavedAddress(preferred);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saved.length]);
 
   // A worker cannot be booked for a past date.
   const [minDate] = useState(() => new Date().toISOString().split("T")[0]);
@@ -121,27 +169,79 @@ const BookingDetailsPage = () => {
     if (!/^\d{6}$/.test(pincode)) nextErrors.pincode = "Enter a valid 6-digit pincode.";
 
     setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+
+    const count = Object.keys(nextErrors).length;
+
+    return {
+      valid: count === 0,
+      count,
+      // Fields are validated in the order they appear, so the first key is the
+      // topmost problem on the page.
+      firstField: count ? document.querySelector<HTMLElement>(`[data-field="${Object.keys(nextErrors)[0]}"]`) : null,
+    };
   };
 
   const saveAndContinue = async () => {
-    if (!validate()) return;
+    setFormError("");
+
+    const invalid = validate();
+
+    if (!invalid.valid) {
+      setFormError(
+        invalid.count === 1
+          ? "Please correct the highlighted field above."
+          : `Please correct the ${invalid.count} highlighted fields above.`
+      );
+      // Bring the first problem into view — on mobile the fields sit well above
+      // the button, so the message alone points at something off-screen.
+      invalid.firstField?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
 
     setIsChecking(true);
     try {
       const availability = await checkAvailability({ state_id: stateId, city_id: cityId, pincode });
 
       if (!availability.available) {
-        toast.error(availability.message || "We do not serve this location yet.");
+        setFormError(availability.message || "We do not serve this location yet.");
         setIsChecking(false);
         return;
+      }
+
+      // Persist the worksite so it appears under Saved Addresses, and carry its
+      // row id into the booking payload. A failed save must never block the
+      // booking, so the error is swallowed and the id simply stays null.
+      let addressId = selectedAddressId;
+
+      if (user?.id) {
+        try {
+          const saveResult = await saveUserAddress({
+            user_id: user.id,
+            label: addressLabel.trim() || "Worksite",
+            address: address.trim(),
+            state_id: stateId,
+            city_id: cityId,
+            pincode,
+            instructions: instructions.trim(),
+            service_area_id: availability.service_area?.id ?? null,
+          });
+          addressId = saveResult.address?.id ?? addressId;
+          // Keep Saved Addresses and this picker in step with what was just stored.
+          queryClient.invalidateQueries({ queryKey: ["user-addresses", user.id] });
+        } catch (error) {
+          console.error("Could not save the worksite address:", error);
+        }
       }
 
       booking.setSchedule({ bookDate, timeSlot });
       booking.setAddress({
         address: address.trim(),
+        addressLabel: addressLabel.trim() || "Worksite",
+        addressId,
         stateId,
         cityId,
+        stateName: states?.states?.find((item) => String(item.id) === stateId)?.name ?? "",
+        cityName: cities?.cites?.find((item) => String(item.id) === cityId)?.name ?? "",
         pincode,
         instructions: instructions.trim(),
         serviceAreaId: availability.service_area?.id ?? null,
@@ -150,7 +250,7 @@ const BookingDetailsPage = () => {
       navigate(bookingPath(slug ?? "", "payment"));
     } catch (error) {
       console.error("Availability check failed:", error);
-      toast.error("We could not verify service availability for this address.");
+      setFormError("We could not verify service availability for this address. Please try again.");
     } finally {
       setIsChecking(false);
     }
@@ -217,6 +317,7 @@ const BookingDetailsPage = () => {
                   min={minDate}
                   value={bookDate}
                   onChange={(event) => setBookDate(event.target.value)}
+                  data-field="bookDate"
                   aria-invalid={!!errors.bookDate}
                   className={fieldClass}
                 />
@@ -252,6 +353,74 @@ const BookingDetailsPage = () => {
             </div>
 
             <div className="mt-5 space-y-4">
+              {saved.length > 0 && (
+                <div>
+                  <p className={labelClass}>Saved addresses</p>
+                  <ul className="mt-2 grid gap-2.5 sm:grid-cols-2">
+                    {saved.map((item) => {
+                      const isSelected = selectedAddressId === item.id;
+
+                      return (
+                        <li key={item.id}>
+                          <button
+                            type="button"
+                            onClick={() => applySavedAddress(item)}
+                            aria-pressed={isSelected}
+                            className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left transition focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100 ${
+                              isSelected
+                                ? "border-[#0b3fc4] bg-[#eef4ff]"
+                                : "border-[#d8e4f8] bg-white hover:border-[#bfd5fb] hover:bg-[#f6f9ff]"
+                            }`}
+                          >
+                            <span
+                              className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg ${
+                                isSelected ? "bg-[#0b3fc4] text-white" : "bg-[#eef4ff] text-[#0b3fc4]"
+                              }`}
+                            >
+                              <MapPin size={15} aria-hidden="true" />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="flex flex-wrap items-center gap-2 text-[13px] font-extrabold text-[#0f1e57]">
+                                {item.label}
+                                {item.is_default && (
+                                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold text-emerald-700">
+                                    Default
+                                  </span>
+                                )}
+                              </span>
+                              <span className="mt-0.5 line-clamp-2 block text-[11px] leading-5 text-[#63739a]">
+                                {[item.address, item.city_name, item.state_name, item.pincode]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <p className="mt-2 text-xs font-normal text-[#7080a4]">
+                    Pick one to fill the form below, or enter a new address.
+                  </p>
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="address-label" className={labelClass}>
+                  Label <span className="font-medium normal-case tracking-normal text-[#8fa2c8]">(Optional)</span>
+                </label>
+                <input
+                  id="address-label"
+                  value={addressLabel}
+                  onChange={(event) => setAddressLabel(event.target.value)}
+                  placeholder="Home, Office, Site – Sector 66"
+                  className={fieldClass}
+                />
+                <p className="mt-1 text-xs font-normal text-[#7080a4]">
+                  Saved under this name so you can reuse it on your next booking.
+                </p>
+              </div>
+
               <div>
                 <label htmlFor="address" className={labelClass}>
                   Address
@@ -260,8 +429,14 @@ const BookingDetailsPage = () => {
                   id="address"
                   rows={3}
                   value={address}
-                  onChange={(event) => setAddress(event.target.value)}
+                  onChange={(event) => {
+                    setAddress(event.target.value);
+                    // Editing the line makes this a different worksite, so it is
+                    // no longer the saved row the customer picked.
+                    setSelectedAddressId(null);
+                  }}
                   placeholder="House / building, street, area and landmark"
+                  data-field="address"
                   aria-invalid={!!errors.address}
                   className={`${fieldClass} py-3`}
                 />
@@ -280,7 +455,8 @@ const BookingDetailsPage = () => {
                       setStateId(event.target.value);
                       setCityId("");
                     }}
-                    aria-invalid={!!errors.stateId}
+                    data-field="stateId"
+                  aria-invalid={!!errors.stateId}
                     className={fieldClass}
                   >
                     <option value="">{isLoadingStates ? "Loading…" : "Select state"}</option>
@@ -302,7 +478,8 @@ const BookingDetailsPage = () => {
                     value={cityId}
                     onChange={(event) => setCityId(event.target.value)}
                     disabled={!stateId}
-                    aria-invalid={!!errors.cityId}
+                    data-field="cityId"
+                  aria-invalid={!!errors.cityId}
                     className={`${fieldClass} disabled:cursor-not-allowed disabled:bg-[#f1f4fa]`}
                   >
                     <option value="">
@@ -327,36 +504,34 @@ const BookingDetailsPage = () => {
                     inputMode="numeric"
                     maxLength={6}
                     value={pincode}
-                    onChange={(event) => setPincode(event.target.value.replace(/\D/g, ""))}
+                    onChange={(event) => {
+                      setPincode(event.target.value.replace(/\D/g, ""));
+                      setSelectedAddressId(null);
+                    }}
                     placeholder="6-digit pincode"
-                    aria-invalid={!!errors.pincode}
+                    data-field="pincode"
+                  aria-invalid={!!errors.pincode}
                     className={fieldClass}
                   />
                   {errors.pincode && <p className="mt-1 text-xs font-semibold text-red-600">{errors.pincode}</p>}
                 </div>
               </div>
-            </div>
-          </section>
 
-          <section
-            aria-labelledby="instructions-heading"
-            className="rounded-3xl border border-[#dce7fb] bg-[#f6f9ff] p-5 sm:p-7"
-          >
-            <h2 id="instructions-heading" className="text-lg font-extrabold text-[#0f1e57] sm:text-xl">
-              Additional Instructions <span className="text-sm font-semibold text-[#0b3fc4]">(Optional)</span>
-            </h2>
-            <label htmlFor="instructions" className="sr-only">
-              Additional instructions
-            </label>
-            <textarea
-              id="instructions"
-              rows={3}
-              value={instructions}
-              onChange={(event) => setInstructions(event.target.value)}
-              placeholder="Share any gate number, parking details, landmark or special instructions for the worker."
-              className={`${fieldClass} py-3`}
-            />
-            <p className="mt-2 text-xs font-normal text-[#7080a4]">This helps our workers reach your site easily.</p>
+              <div>
+                <label htmlFor="instructions" className={labelClass}>
+                  Instructions <span className="font-medium normal-case tracking-normal text-[#8fa2c8]">(Optional)</span>
+                </label>
+                <textarea
+                  id="instructions"
+                  rows={3}
+                  value={instructions}
+                  onChange={(event) => setInstructions(event.target.value)}
+                  placeholder="Share any gate number, parking details, landmark or special instructions for the worker."
+                  className={`${fieldClass} py-3`}
+                />
+                <p className="mt-1 text-xs font-normal text-[#7080a4]">This helps our workers reach your site easily.</p>
+              </div>
+            </div>
           </section>
 
           <section
@@ -411,15 +586,29 @@ const BookingDetailsPage = () => {
           >
             Back
           </Link>
-          <button
-            type="button"
-            onClick={saveAndContinue}
-            disabled={isChecking}
-            className="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-[#0b3fc4] px-7 text-sm font-bold text-white transition hover:bg-[#0932a0] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isChecking ? "Checking availability…" : "Save & Continue"}
-            <ArrowRight size={17} aria-hidden="true" />
-          </button>
+          <div className="flex flex-col items-stretch gap-2 sm:items-end">
+            <button
+              type="button"
+              onClick={saveAndContinue}
+              disabled={isChecking}
+              aria-describedby={formError ? "booking-form-error" : undefined}
+              className="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-[#0b3fc4] px-7 text-sm font-bold text-white transition hover:bg-[#0932a0] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isChecking ? "Checking availability…" : "Save & Continue"}
+              <ArrowRight size={17} aria-hidden="true" />
+            </button>
+
+            {formError && (
+              <p
+                id="booking-form-error"
+                role="alert"
+                className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs font-semibold leading-5 text-red-700 sm:max-w-sm"
+              >
+                <AlertCircle size={15} className="mt-px shrink-0" aria-hidden="true" />
+                {formError}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </main>

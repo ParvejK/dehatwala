@@ -1,25 +1,22 @@
-import { useEffect } from "react";
+
 import { useAuthStore } from "../../store/auth-store";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+
+import { Navigate } from "react-router-dom";
 import { useBookedService } from "../../react-query/auth-booked-service-api";
 import Table from "../../components/table";
 import Container from "../../components/shared/container";
 
 const BookedServicePage = () => {
-  const navigate = useNavigate();
   const { token, user } = useAuthStore();
 
   const userId = user?.id;
+  const isSignedIn = !!token && !!userId;
 
-  useEffect(() => {
-    if (!token || !userId) {
-      toast.error("Access denied. Please log in to continue.");
-      navigate("/");
-    }
-  }, [token, userId, navigate]);
+  const { data, isLoading, error, refetch } = useBookedService(token || "");
 
-  const { data, isLoading, error, refetch } = useBookedService(userId, token || "");
+  // Send the visitor to sign-in *before* rendering, and bring them back here
+  // afterwards. Rendering first passed an undefined userId/token into <Table>.
+  if (!isSignedIn) return <Navigate to="/sign-in?path=/booked-services" replace />;
 
   if (isLoading)
     return (
@@ -60,7 +57,7 @@ const BookedServicePage = () => {
       bookDate: service.book_date,
       timeSlot: service.time_slot,
       serviceTitle: service.service_title,
-      instantService: service.instant_service_obj,
+      serviceWorkers: service.service_worker_obj,
       rowData: [
         service.id,
         service.service_title || "N/A",

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Layout from "./layout";
 import HomePage from "./pages/home-page";
 import ErrorPage from "./pages/error-page";
@@ -15,6 +15,13 @@ import JoinUsPage from "./pages/joinus-page";
 import JoinUsSuccessPage from "./pages/joinus-success-page";
 import JobListingsPage from "./pages/job-listings-page";
 import CareersPage from "./pages/careers-page";
+import DashboardLayout from "./components/dashboard/dashboard-layout";
+import DashboardBookings from "./pages/dashboard/bookings";
+import DashboardBookingDetail from "./pages/dashboard/booking-detail";
+import DashboardAddresses from "./pages/dashboard/addresses";
+import DashboardReviews from "./pages/dashboard/reviews";
+import DashboardSettings from "./pages/dashboard/settings";
+import DashboardSupport from "./pages/dashboard/support";
 import CareersOpenPositionsPage from "./pages/careers-open-positions-page";
 import CareersApplyPage from "./pages/careers-apply-page";
 import CareersSendProfilePage from "./pages/careers-send-profile-page";
@@ -149,6 +156,19 @@ const router = createBrowserRouter([
       {
         path: "/become-a-part-of-dehatwala/success",
         element: <JoinUsSuccessPage />,
+      },
+      {
+        path: "/dashboard",
+        element: <DashboardLayout />,
+        children: [
+          { index: true, element: <Navigate to="/dashboard/bookings" replace /> },
+          { path: "bookings", element: <DashboardBookings /> },
+          { path: "bookings/:id", element: <DashboardBookingDetail /> },
+          { path: "addresses", element: <DashboardAddresses /> },
+          { path: "reviews", element: <DashboardReviews /> },
+          { path: "settings", element: <DashboardSettings /> },
+          { path: "support", element: <DashboardSupport /> },
+        ],
       },
       {
         path: "/careers",

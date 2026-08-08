@@ -21,6 +21,7 @@ import ServiceCard from "../../components/services/service-card";
 import ServiceSearch from "../../components/services/service-search";
 import ServiceSearchResults from "../../components/services/service-search-results";
 import TawkMessenger from "../../components/shared/TawkMessenger";
+import RemoteAvatar from "../../components/shared/remote-avatar";
 import {
   benefits,
   impact,
@@ -603,7 +604,9 @@ const HomePage = () => {
               className="customer-stories-carousel !overflow-visible !pb-12 [&_.swiper-slide]:h-auto"
               aria-label="Customer stories"
             >
-              {clientsQuery.data.clients.slice(0, 3).map((client, clientIndex) => (
+              {/* No slice: it is a carousel, so every story the API returns is
+                  reachable. Capping at 3 silently dropped the rest. */}
+              {clientsQuery.data.clients.map((client, clientIndex) => (
                 <SwiperSlide key={client.id}>
                   <figure
                     className={`flex min-h-72 h-full flex-col rounded-[1.75rem] border p-6 sm:p-7 ${clientIndex === 1 ? "border-[var(--home-color-brand-deep)] bg-[var(--home-color-brand-deep)] text-white shadow-xl shadow-blue-950/15" : "border-[var(--home-color-border)] bg-white text-[var(--home-color-ink)] shadow-sm"}`}
@@ -628,19 +631,13 @@ const HomePage = () => {
                     <figcaption
                       className={`mt-7 flex items-center gap-3 border-t pt-5 ${clientIndex === 1 ? "border-white/10" : "border-slate-100"}`}
                     >
-                      {client.client_image ? (
-                        <img
-                          src={`${VITE_IMAGE_PATH_URL}/client/${client.client_image}`}
-                          alt={`${client.name}, customer`}
-                          className="size-11 rounded-full object-cover ring-2 ring-white/30"
-                        />
-                      ) : (
-                        <span
-                          className={`grid size-11 place-items-center rounded-full font-black ${clientIndex === 1 ? "bg-white/10 text-white" : "bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)]"}`}
-                        >
-                          {client.name.charAt(0)}
-                        </span>
-                      )}
+                      <RemoteAvatar
+                        folder="client"
+                        file={client.client_image}
+                        name={client.name}
+                        className="size-11 rounded-full object-cover ring-2 ring-white/30"
+                        fallbackClassName={`grid size-11 shrink-0 place-items-center rounded-full font-black ${clientIndex === 1 ? "bg-white/10 text-white" : "bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)]"}`}
+                      />
                       <span>
                         <strong className="block text-sm">{client.name}</strong>
                         <span className={`text-xs ${clientIndex === 1 ? "text-slate-400" : "text-slate-500"}`}>

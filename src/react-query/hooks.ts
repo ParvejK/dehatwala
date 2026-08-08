@@ -8,6 +8,7 @@ import {
   MediaPhotosResponse,
   MediaPublicationsResponse,
   MediaVideosResponse,
+  UserAddressesResponse,
   BlogCategoriesResponse,
   BlogListProps,
   BlogProps,
@@ -54,6 +55,7 @@ import {
   fetchServices,
   fetchSingleBlog,
   fetchSubCategories,
+  fetchUserAddresses,
   getClients,
   getFaqCategories,
   getFaqs,
@@ -358,6 +360,16 @@ export function useMediaPhotos() {
   return useQuery<MediaPhotosResponse, Error>({
     queryKey: ["media-photos"],
     queryFn: fetchMediaPhotos,
+    staleTime: 10 * 1000,
+  });
+}
+
+// Saved addresses
+export function useUserAddresses(userId?: number) {
+  return useQuery<UserAddressesResponse, Error>({
+    queryKey: ["user-addresses", userId],
+    queryFn: () => fetchUserAddresses(userId ?? 0),
+    enabled: !!userId,
     staleTime: 10 * 1000,
   });
 }

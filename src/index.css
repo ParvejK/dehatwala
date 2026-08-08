@@ -77,6 +77,18 @@ html {
   background-color: var(--secondary-color) !important;
 }
 
+/* Worker testimonials sit on a solid blue panel, where the default bullet
+   colour is invisible. Scoped so no other carousel is affected. */
+.worker-testimonials-carousel .swiper-pagination-bullet {
+  background-color: #ffffff !important;
+  opacity: 0.45;
+}
+
+.worker-testimonials-carousel .swiper-pagination-bullet-active {
+  background-color: #ffffff !important;
+  opacity: 1;
+}
+
 .clip-rect {
   clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
 }

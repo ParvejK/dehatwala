@@ -494,10 +494,13 @@ interface LabourTestimonial {
   id: number;
   user_id: number | null;
   name: string;
-  company: string;
-  designation: string;
-  content: string;
-  labour_image: string;
+  /** The worker's trade, e.g. "Mason". The API calls this `post`. */
+  post: string | null;
+  /** Shown beside the trade on the card. */
+  city: string | null;
+  /** The quote itself. The API calls this `description`. */
+  description: string | null;
+  labour_image: string | null;
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
@@ -905,4 +908,50 @@ export interface MediaVideosResponse {
 export interface MediaPhotosResponse {
   success: boolean;
   photos: MediaPhoto[];
+}
+
+/**
+ * @type
+ *  Saved worksite addresses
+ */
+export interface SaveUserAddressPayload {
+  user_id: number;
+  /** "Home", "Office", "Site – Sector 66". Optional; the API falls back to a default. */
+  label?: string;
+  address: string;
+  state_id: string | number;
+  city_id: string | number;
+  pincode: string;
+  /** Gate number, floor, whom to contact — the free-text box on booking step 2. */
+  instructions?: string;
+  /** Resolved by `check-availability` when the address was verified. */
+  service_area_id?: number | null;
+  is_default?: boolean;
+}
+
+export interface UserAddress {
+  id: number;
+  user_id: number;
+  label: string;
+  address: string;
+  state_id: number;
+  city_id: number;
+  state_name?: string | null;
+  city_name?: string | null;
+  pincode: string;
+  instructions: string | null;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SaveUserAddressResponse {
+  success: boolean;
+  message: string;
+  address: UserAddress;
+}
+
+export interface UserAddressesResponse {
+  success: boolean;
+  addresses: UserAddress[];
 }

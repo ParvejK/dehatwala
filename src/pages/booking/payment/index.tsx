@@ -1,15 +1,17 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
   BadgeCheck,
   ChevronRight,
   Clock3,
   CreditCard,
+  CalendarDays,
   Headphones,
   Heart,
   Home,
   Lock,
+  MapPin,
   Pencil,
   ShieldCheck,
   Wallet,
@@ -20,6 +22,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import BookingSteps from "../../../components/booking/booking-steps";
 import { bookingPath } from "../../../components/booking/steps";
+import { buildServiceWorkerObj } from "../../../components/booking/service-worker-obj";
+import SuccessBridge from "../../../components/booking/success-bridge";
 import { API_URL, RAZORPAY_KEY_ID } from "../../../react-query/constants";
 import { useAuthStore } from "../../../store/auth-store";
 import { useBookingStore } from "../../../store/booking-store";
@@ -31,6 +35,26 @@ const TIP_PRESETS = [50, 100, 200];
 const formatPrice = (value: number) => new Intl.NumberFormat("en-IN").format(Math.round(value));
 
 type PaymentMode = "Online" | "Offline";
+
+/**
+ * Readable text from a failed booking call.
+ *
+ * The API answers 422 with `{ errors: { field: [msg] } }` and 500 with
+ * `{ message }`. Without unpacking the first, every validation failure showed
+ * up as a bare "Request failed with status code 422".
+ */
+const bookingErrorMessage = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    if (error.response?.status === 401) return "Your session has expired. Please sign in again.";
+
+    const data = error.response?.data as { message?: string; errors?: Record<string, string[]> } | undefined;
+    const firstError = data?.errors ? Object.values(data.errors)[0]?.[0] : undefined;
+
+    return firstError ?? data?.message ?? error.message;
+  }
+
+  return (error as Error)?.message ?? "Something went wrong.";
+};
 
 const TRUST_POINTS = [
   { icon: ShieldCheck, title: "Verified Workers", copy: "Background-checked professionals", tone: "text-[#0b3fc4]" },
@@ -45,11 +69,18 @@ const PaymentPage = () => {
   const navigate = useNavigate();
 
   const { token, user } = useAuthStore();
+  const queryClient = useQueryClient();
   const booking = useBookingStore();
   const day = useDayRateStore();
 
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("Online");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  /**
+   * Set once the API confirms the booking; drives the confirmation screen.
+   * Wrapped in an object so a booking whose id the API omitted still counts as
+   * placed — a bare `null` id would read as "not placed yet".
+   */
+  const [placed, setPlaced] = useState<{ id: number | null } | null>(null);
 
   const [couponInput, setCouponInput] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState("");
@@ -66,12 +97,14 @@ const PaymentPage = () => {
     }
   }, [token, navigate]);
 
-  // Guard against landing on step 3 without completing step 2.
+  // Guard against landing on step 3 without completing step 2. Stands down once
+  // the booking is placed, since the confirmation screen clears the address on
+  // its way out and would otherwise trip this on the way past.
   useEffect(() => {
-    if (token && slug && !booking.address) {
+    if (token && slug && !booking.address && !placed) {
       navigate(bookingPath(slug, "booking-details"), { replace: true });
     }
-  }, [token, slug, booking.address, navigate]);
+  }, [token, slug, booking.address, placed, navigate]);
 
   // `totalDayPrice` already includes the tip, per the day-rate store.
   const subtotal = day.totalDayPrice;
@@ -125,6 +158,21 @@ const PaymentPage = () => {
     day.setTipPrice(Number(digitsOnly) || 0);
   };
 
+  // City/state may be blank on a booking restored from an older persisted store,
+  // so every part is filtered out before joining.
+  const addressLine = [booking.address, booking.cityName, booking.stateName, booking.pincode]
+    .filter(Boolean)
+    .join(", ");
+
+  const bookDateLabel = booking.bookDate
+    ? `${new Date(`${booking.bookDate}T00:00:00`).toLocaleDateString("en-IN", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })} · ${booking.timeSlot}`
+    : "Date not selected";
+
   const buildPayload = () => ({
     state_id: booking.stateId,
     city_id: booking.cityId,
@@ -132,6 +180,9 @@ const PaymentPage = () => {
     time_slot: booking.timeSlot,
     pincode: booking.pincode,
     address: booking.address,
+    /** Row in `user_addresses`; null when the booking was made signed-out. */
+    address_id: booking.addressId,
+    address_label: booking.addressLabel,
     user_id: user?.id,
     service_id: booking.serviceId ?? undefined,
     mode: "day" as const,
@@ -143,82 +194,119 @@ const PaymentPage = () => {
     coupon_code: appliedCoupon,
     coupon_discounted: discount,
     instruction: booking.instructions,
-    instant_service_obj: {
-      worker_1_label: booking.workerLabel,
-      worker_2_label: booking.helperLabel,
-      MasonDayCount: day.MasonDayCount,
-      helperDayCount: day.helperDayCount,
-      MasonRate: day.MasonRate,
-      helperRate: day.helperRate,
-      MasonOvertimeCount: day.MasonOvertimeCount,
-      helperOvertimeCount: day.helperOvertimeCount,
-      MasonOvertimeRate: day.MasonOvertimeRate,
-      helperOvertimeRate: day.helperOvertimeRate,
-      totalMasonDayRate: day.totalMasonDayRate,
-      totalHelperDayRate: day.totalHelperDayRate,
-      totalMasonOvertimeRate: day.totalMasonOvertimeRate,
-      totalHelperOvertimeRate: day.totalHelperOvertimeRate,
-      totalDayPrice: day.totalDayPrice,
-      tipValue: day.tipValue,
-    },
-    status: "1" as const,
+    service_worker_obj: buildServiceWorkerObj(day, {
+      workerLabel: booking.workerLabel,
+      helperLabel: booking.helperLabel,
+    }),
+    // `status` is deliberately not sent — the API starts every booking as
+    // `pending` and only the admin moves it on from there.
     transaction_id: "",
     payment_mode: paymentMode,
   });
 
-  const onBookingSaved = () => {
-    toast.success("Booking saved successfully!");
+  /**
+   * The booking is saved at this point. The stores are deliberately NOT cleared
+   * yet: the step-2 guard above redirects as soon as `booking.address` is empty,
+   * which would tear the confirmation off the screen. `leaveToBookings` clears
+   * them at the moment we actually navigate away.
+   */
+  const onBookingSaved = (bookingId?: number) => {
+    // The dashboard list we are about to land on caches for 10s, so without
+    // this the brand-new booking can be missing from it on arrival.
+    queryClient.invalidateQueries({ queryKey: ["bookedService"] });
+    setPlaced({ id: bookingId ?? null });
+  };
+
+  const leaveToBookings = () => {
     day.resetDayState();
     booking.resetBooking();
-    navigate("/booked-services");
+    navigate("/dashboard/bookings", { replace: true });
   };
+
+  // Both checkout endpoints sit behind auth:sanctum, so the token has to travel
+  // with them — the API files the booking against the token holder, not the
+  // user_id in the body.
+  const authHeaders = () => ({ headers: { Authorization: `Bearer ${token}` } });
 
   const payAfterService = async () => {
     setIsSubmitting(true);
     try {
-      await axios.post(`${API_URL}/save-pay-after-service`, buildPayload());
-      onBookingSaved();
+      const { data } = await axios.post(`${API_URL}/save-pay-after-service`, buildPayload(), authHeaders());
+      onBookingSaved(data?.book_service?.id);
     } catch (error) {
       console.error("Failed to save booking:", error);
-      toast.error("We could not save your booking. Please try again.");
+      toast.error(bookingErrorMessage(error));
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const payOnline = () => {
+  /**
+   * Online checkout, in three server-anchored steps.
+   *
+   * 1. The server prices the booking from the database and opens a Razorpay
+   *    order. The amount below is only ever displayed — it is never sent.
+   * 2. Razorpay is opened against that signed order id.
+   * 3. The server verifies the signature and writes the booking itself.
+   *
+   * Nothing is recorded on the browser's say-so at any point.
+   */
+  const payOnline = async () => {
     if (!window.Razorpay) {
       toast.error("Payment gateway failed to load. Please refresh and try again.");
       return;
     }
 
     setIsSubmitting(true);
-    const payload = buildPayload();
 
+    // ---- Step 1: server creates the order ----
+    let order;
+    try {
+      const { data } = await axios.post(`${API_URL}/payment/create-order`, buildPayload(), authHeaders());
+
+      if (!data?.success || !data?.order_id) {
+        throw new Error(data?.message || "Could not start payment");
+      }
+      order = data;
+    } catch (error) {
+      console.error("Could not start payment:", error);
+      toast.error(bookingErrorMessage(error));
+      setIsSubmitting(false);
+      return;
+    }
+
+    // ---- Step 2: Razorpay, against the server's order ----
     const razorpay = new window.Razorpay({
-      key: RAZORPAY_KEY_ID,
-      amount: (100 * payableTotal).toFixed(2),
-      currency: "INR",
+      // The server hands back its own key id, so the build no longer needs one.
+      key: order.key || RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency || "INR",
+      order_id: order.order_id,
       name: "Dehatwala",
       description: booking.serviceTitle || "Labour service booking",
-      handler: async (response: { razorpay_payment_id: string }) => {
-        if (!response.razorpay_payment_id) return;
-
-        const formData = new FormData();
-        Object.entries({ ...payload, transaction_id: response.razorpay_payment_id }).forEach(([key, value]) => {
-          formData.append(key, typeof value === "object" ? JSON.stringify(value) : String(value));
-        });
-
+      handler: async (response: {
+        razorpay_order_id: string;
+        razorpay_payment_id: string;
+        razorpay_signature: string;
+      }) => {
+        // ---- Step 3: server verifies and records ----
         try {
-          const result = await fetch(`${API_URL}/save-book-service`, { method: "POST", body: formData });
-          if (!result.ok) {
-            const errorData = await result.json().catch(() => null);
-            throw new Error(errorData?.message || result.statusText);
-          }
-          onBookingSaved();
+          const { data } = await axios.post(
+            `${API_URL}/payment/verify`,
+            {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            },
+            authHeaders()
+          );
+
+          if (!data?.success) throw new Error(data?.message || "Payment verification failed");
+
+          onBookingSaved(data?.book_service?.id);
         } catch (error) {
-          console.error("Failed to save booking:", error);
-          toast.error(`Failed to save booking: ${(error as Error).message}`);
+          console.error("Payment verification failed:", error);
+          toast.error(bookingErrorMessage(error));
         } finally {
           setIsSubmitting(false);
         }
@@ -272,6 +360,21 @@ const PaymentPage = () => {
 
   return (
     <main className="bg-white pb-16 pt-6 sm:pt-8">
+      {placed && (
+        <SuccessBridge
+          headline="Your booking is confirmed"
+          refLabel={placed.id ? `Booking ref DW-${String(placed.id).padStart(6, "0")}` : undefined}
+          amountText={`₹${formatPrice(payableTotal)}`}
+          nextText={
+            paymentMode === "Online"
+              ? "Payment received. We're assigning your workers — taking you to your bookings…"
+              : "Pay the worker after the job is done. Taking you to your bookings…"
+          }
+          ctaLabel="View my bookings"
+          onDone={leaveToBookings}
+        />
+      )}
+
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-10">
         <nav aria-label="Breadcrumb" className="mb-5">
           <ol className="flex flex-wrap items-center gap-2 text-xs font-semibold text-[#5a6a90] sm:text-[13px]">
@@ -517,6 +620,37 @@ const PaymentPage = () => {
               >
                 <Pencil size={13} aria-hidden="true" /> Edit Workers
               </Link>
+            </div>
+
+            {/* ---------- Where the workers are going ---------- */}
+            <div className="mt-5 rounded-2xl border border-[#dce7fb] bg-[#f8fbff] p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-[#0b3fc4] shadow-sm">
+                    <MapPin size={17} aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[12px] font-extrabold text-[#0f1e57]">
+                      {booking.addressLabel || "Worksite"}
+                    </p>
+                    <p className="mt-0.5 text-[11px] leading-5 text-[#63739a]">{addressLine}</p>
+                    {booking.instructions && (
+                      <p className="mt-1 text-[11px] leading-5 text-[#8fa2c8]">{booking.instructions}</p>
+                    )}
+                  </div>
+                </div>
+                <Link
+                  to={bookingPath(slug ?? "", "booking-details")}
+                  className="inline-flex shrink-0 items-center gap-1.5 text-xs font-bold text-[#0b3fc4] hover:underline"
+                >
+                  <Pencil size={13} aria-hidden="true" /> Edit
+                </Link>
+              </div>
+
+              <p className="mt-3 flex items-center gap-1.5 border-t border-[#dce7fb] pt-2.5 text-[11px] font-semibold text-[#40517b]">
+                <CalendarDays size={13} className="text-[#0b3fc4]" aria-hidden="true" />
+                {bookDateLabel}
+              </p>
             </div>
 
             <dl className="mt-6 space-y-5">

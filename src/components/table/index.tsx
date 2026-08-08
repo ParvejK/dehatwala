@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NoDataFound from "../no-data-found";
-import { InstantServiceObj } from "../../react-query/booking-type";
 import { API_URL } from "../../react-query/constants";
+import { readServiceWorkerObj, ServiceWorkerObj } from "../booking/service-worker-obj";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -12,7 +12,8 @@ interface TableRow {
   bookDate?: string;
   timeSlot?: string;
   serviceTitle?: string;
-  instantService: InstantServiceObj;
+  /** Raw column value — may still be the legacy shape or a JSON string. */
+  serviceWorkers: ServiceWorkerObj | Record<string, unknown> | string | null;
   rowData: (string | number)[];
 }
 
@@ -268,57 +269,35 @@ const Table: React.FC<TableProps> = ({ headers, rows, userId, token, refetch }) 
                     </td>
                   <td className="max-w-[320px] align-top">
                     {(() => {
-                      const raw = row.instantService as unknown;
-                      const obj =
-                        typeof raw === "string"
-                          ? (() => {
-                              try {
-                                return JSON.parse(raw);
-                              } catch {
-                                return null;
-                              }
-                            })()
-                          : raw;
-                      if (!obj || typeof obj !== "object") {
+                      // Handles both the current array shape and the legacy flat
+                      // object still written by /service-letter.
+                      const obj = readServiceWorkerObj(row.serviceWorkers);
+
+                      if (obj.workers.length === 0) {
                         return <span className="text-xs text-gray-500">N/A</span>;
                       }
-                      const o = obj as Record<string, number | string | undefined>;
-                      const worker1 = (o.worker_1_label as string | undefined)?.trim() || "Mason";
-                      const worker2 = (o.worker_2_label as string | undefined)?.trim() || "Helper";
-
-                      const f = (v: unknown) => {
-                        const n = parseFloat(String(v ?? 0));
-                        return Number.isFinite(n) ? n : 0;
-                      };
-                      const sumTotal =
-                        f(o.totalMasonDayRate) +
-                        f(o.totalHelperDayRate) +
-                        f(o.totalMasonOvertimeRate) +
-                        f(o.totalHelperOvertimeRate);
 
                       return (
                         <div className="text-xs space-y-1">
-                          <div>
-                            <strong>{worker1}:</strong> {o.MasonDayCount ?? 0}{" "}
-                            <span className="text-gray-500">*</span> {o.MasonRate ?? 0}
-                          </div>
-                          <div>
-                            <strong>{worker2}:</strong> {o.helperDayCount ?? 0}{" "}
-                            <span className="text-gray-500">*</span> {o.helperRate ?? 0}
-                          </div>
-                          <div>
-                            <strong>{worker1} Overtime:</strong> {o.MasonOvertimeCount ?? 0}{" "}
-                            <span className="text-gray-500">*</span> {o.MasonOvertimeRate ?? 0}
-                          </div>
-                          <div>
-                            <strong>{worker2} Overtime:</strong> {o.helperOvertimeCount ?? 0}{" "}
-                            <span className="text-gray-500">*</span> {o.helperOvertimeRate ?? 0}
-                          </div>
+                          {obj.workers.map((worker) => (
+                            <div key={worker.key}>
+                              <div>
+                                <strong>{worker.label}:</strong> {worker.day_count}{" "}
+                                <span className="text-gray-500">*</span> {worker.day_rate}
+                              </div>
+                              {worker.overtime_count > 0 && (
+                                <div>
+                                  <strong>{worker.label} Overtime:</strong> {worker.overtime_count}{" "}
+                                  <span className="text-gray-500">*</span> {worker.overtime_rate}
+                                </div>
+                              )}
+                            </div>
+                          ))}
                           <div className="pt-1 border-t border-base-300 mt-1">
-                            <strong>Total:</strong> {sumTotal}
+                            <strong>Total:</strong> {obj.workers_total}
                           </div>
-                          <div>Tip: {f(o.tipValue)}</div>
-                          <div className="font-semibold">Total Price: {f(o.totalDayPrice)}</div>
+                          <div>Tip: {obj.tip}</div>
+                          <div className="font-semibold">Total Price: {obj.grand_total}</div>
                         </div>
                       );
                     })()}

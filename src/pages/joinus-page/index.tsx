@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import RegistrationForm from "../../components/joinus/registration-form";
+import WorkerTestimonials from "../../components/joinus/worker-testimonials";
 
 const SUPPORT_PHONE = "+918600999922";
 
@@ -166,20 +167,8 @@ const JoinUs = () => (
         </div>
       </div>
 
-      {/* ---------- Bottom info bar ---------- */}
-      <section className="mt-5 flex items-start gap-4 rounded-2xl border border-[#dce7fb] bg-[#f2f6fe] px-5 py-4 sm:items-center sm:px-6">
-        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white text-[#0b3fc4] shadow-sm">
-          <MapPin size={20} aria-hidden="true" />
-        </span>
-        <div>
-          <h2 className="text-[13px] font-extrabold leading-snug text-[#0f1e57] sm:text-sm">
-            वर्कर्स आपके नज़दीकी लोकेशन से असाइन किए जाएंगे
-          </h2>
-          <p className="mt-1 text-[11px] leading-5 text-[#63739a] sm:text-xs">
-            हम सुनिश्चित करते हैं कि आपको सबसे जल्दी और भरोसेमंद वर्कर मिलें।
-          </p>
-        </div>
-      </section>
+      {/* ---------- What workers say ---------- */}
+      <WorkerTestimonials />
 
       {/* ---------- Page footer strip ---------- */}
       <div className="mt-5 flex flex-col items-center justify-between gap-3 border-t border-[#e6edf9] pt-5 text-[11px] font-medium text-[#8fa2c8] sm:flex-row sm:text-xs">

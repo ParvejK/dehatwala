@@ -42,6 +42,9 @@ import {
   MediaPhotosResponse,
   MediaPublicationsResponse,
   MediaVideosResponse,
+  SaveUserAddressPayload,
+  SaveUserAddressResponse,
+  UserAddressesResponse,
 } from "../types";
 import { API_URL } from "./constants";
 
@@ -233,6 +236,17 @@ export const getLabourTestimonials = async () => {
 };
 
 /**
+ * @Addresses
+ * Saved worksite addresses. Written from booking step 2 and managed on the
+ * dashboard. A failed save never blocks a booking.
+ */
+export const saveUserAddress = (payload: SaveUserAddressPayload) =>
+  axios.post<SaveUserAddressResponse>(`${API_URL}/save-user-address`, payload).then((res) => res.data);
+
+export const fetchUserAddresses = (userId: number) =>
+  axios.get<UserAddressesResponse>(`${API_URL}/user-addresses/${userId}`).then((res) => res.data);
+
+/**
  * @CheckAvailability
  * Check if service is available for the given state / city / pincode
  */
@@ -316,3 +330,12 @@ export const fetchMediaNewsDetail = (slug: string) =>
 export const fetchMediaVideos = () => axios.get<MediaVideosResponse>(`${API_URL}/media/videos`).then((res) => res.data);
 
 export const fetchMediaPhotos = () => axios.get<MediaPhotosResponse>(`${API_URL}/media/photos`).then((res) => res.data);
+
+export const updateUserAddress = (id: number, payload: SaveUserAddressPayload) =>
+  axios.put<SaveUserAddressResponse>(`${API_URL}/user-addresses/${id}`, payload).then((res) => res.data);
+
+export const deleteUserAddress = (id: number) =>
+  axios.delete<{ success: boolean; message: string }>(`${API_URL}/user-addresses/${id}`).then((res) => res.data);
+
+export const setDefaultUserAddress = (id: number) =>
+  axios.patch<SaveUserAddressResponse>(`${API_URL}/user-addresses/${id}/default`).then((res) => res.data);
