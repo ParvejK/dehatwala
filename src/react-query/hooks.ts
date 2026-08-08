@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import {
   CareerContentResponse,
   CareerOpeningResponse,
@@ -49,6 +49,7 @@ import {
   fetchPermanentService,
   fetchServiceDetail,
   fetchServices,
+  fetchServicesPage,
   fetchSingleBlog,
   fetchSubCategories,
   fetchUserAddresses,
@@ -96,6 +97,37 @@ export function useServices() {
   return useQuery<ServicesProps, Error>({
     queryKey: ["services"],
     queryFn: fetchHomeServices,
+    staleTime: 10 * 1000,
+  });
+}
+
+/** How many services each scroll step pulls in. */
+const SERVICES_PER_PAGE = 9;
+
+/**
+ * Services for a category, one page at a time.
+ *
+ * The listing used to fetch every service in one request and render them all —
+ * 35 rows and 35 full-size images on first paint, which only gets worse as the
+ * catalogue grows. Pages are appended as the visitor scrolls.
+ */
+export function useInfiniteServicesByCategory(categorySlug?: string, subCategorySlug?: string) {
+  return useInfiniteQuery({
+    queryKey: ["services-infinite", categorySlug, subCategorySlug ?? ""],
+    queryFn: ({ pageParam }) =>
+      fetchServicesPage({
+        category_slug: categorySlug ?? "",
+        sub_category_slug: subCategorySlug ?? "",
+        keyword: "",
+        page: pageParam,
+        per_page: SERVICES_PER_PAGE,
+      }),
+    initialPageParam: 1,
+    // `has_more` comes from the API; without meta there is nothing more to ask
+    // for, which is also the correct answer for an unpaged response.
+    getNextPageParam: (lastPage) =>
+      lastPage.meta?.has_more ? lastPage.meta.current_page + 1 : undefined,
+    enabled: !!categorySlug,
     staleTime: 10 * 1000,
   });
 }

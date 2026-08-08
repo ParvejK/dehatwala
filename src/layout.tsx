@@ -4,6 +4,8 @@ import Header from "./components/shared/header";
 import Footer from "./components/shared/footer";
 import SmallHeader from "./components/shared/small-header";
 import ScrollToTop from "./components/shared/scroll-to-top";
+import SeoHead from "./components/shared/seo-head";
+import { useSeo, useSeoDefaults, withSeoDefaults } from "./react-query/seo-api";
 
 /**
  * Scrolls to `#section` links.
@@ -33,11 +35,32 @@ const useHashScroll = () => {
   }, [pathname, hash]);
 };
 
+/**
+ * SEO here is for meta tags only — it deliberately does not decide what is a
+ * 404.
+ *
+ * Gating the 404 on `matched: false` sounds right but is wrong in practice: it
+ * reports false for any URL shape the resolver does not model, not just for
+ * dead records. That took real pages off the site — `/service/detail/{slug}`
+ * and `/blog/category/{slug}` both render fine but resolve to nothing.
+ *
+ * The pages that own the data already handle a missing record ("Service not
+ * found", "Article not found") and they cannot be wrong about it, because they
+ * are asking the endpoint that actually holds the record.
+ */
 const Layout = () => {
   useHashScroll();
 
+  const { pathname } = useLocation();
+  const { data: seo } = useSeo(pathname);
+  const { data: seoDefaults } = useSeoDefaults();
+
+  // A page with no record of its own still gets a real title and description.
+  const meta = withSeoDefaults(seo, seoDefaults);
+
   return (
     <>
+      <SeoHead seo={meta} />
       <SmallHeader />
       <Header />
       <Outlet />

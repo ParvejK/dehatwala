@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useRef } from "react";
 import {
   ArrowRight,
   BadgeIndianRupee,
@@ -14,7 +15,7 @@ import {
 import { Link, useParams } from "react-router-dom";
 import { formatPrice, primaryWorkerRate } from "../../components/services/pricing";
 import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
-import { useCategories, useServicesByCategory } from "../../react-query/hooks";
+import { useCategories, useInfiniteServicesByCategory } from "../../react-query/hooks";
 import { Category, Service, SubCategory } from "../../types";
 
 const FALLBACK_HERO_IMAGE = "/images/services/loading-material-handling/hero.jpg";
@@ -166,9 +167,13 @@ const ServiceCard = ({ service }: { service: Service }) => {
   return (
     <article className="group overflow-hidden rounded-2xl border border-[#e0eafb] bg-white shadow-[0_4px_14px_rgba(26,64,135,0.06)] transition duration-300 hover:border-[#bfd5fb] hover:shadow-[0_12px_28px_-12px_rgba(26,64,135,0.35)] md:grid md:h-[206px] md:grid-cols-[36%_64%]">
       <Link to={detailUrl} tabIndex={-1} aria-hidden="true" className="block h-52 overflow-hidden md:h-full">
+        {/* Lazy + async decoding: the browser skips images still below the
+            fold, which is most of the list, and never blocks paint on them. */}
         <img
           src={serviceImage(service)}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="size-full object-cover transition duration-500 group-hover:scale-[1.04]"
           onError={(event) => {
             event.currentTarget.src = FALLBACK_HERO_IMAGE;
@@ -217,7 +222,7 @@ const ServiceCard = ({ service }: { service: Service }) => {
               <strong className="mt-1 block text-sm font-bold leading-none">
                 {price ? (
                   <>
-                    {price} <span className="text-[10px] font-medium">/ Worker</span>
+                    {price} <span className="text-[10px] font-medium">/ Day</span>
                   </>
                 ) : (
                   "On Request"
@@ -317,16 +322,50 @@ const TrustSection = () => (
 
 const ServiceListingPage = () => {
   const { category_slug, sub_category_slug } = useParams();
-  const { data, isLoading, isError } = useServicesByCategory(category_slug, sub_category_slug);
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteServicesByCategory(category_slug, sub_category_slug);
 
   // /services/all has no category to render from, so fall back to the category
   // list for the filter chips.
   const isAllCategories = category_slug?.toLowerCase() === ALL_SLUG;
   const { data: categoryData } = useCategories();
 
-  const category = data?.category;
-  const services = data?.services ?? [];
-  const subCategories = data?.sub_categories ?? [];
+  // Category and sub-categories are identical on every page, so the first is
+  // as good as any; only the service rows accumulate.
+  const firstPage = data?.pages?.[0];
+  const category = firstPage?.category;
+  const services = useMemo(() => (data?.pages ?? []).flatMap((page) => page.services ?? []), [data]);
+  const totalServices = firstPage?.meta?.total ?? services.length;
+  const subCategories = firstPage?.sub_categories ?? [];
+
+  /**
+   * Loads the next page when the sentinel below the grid scrolls into view.
+   *
+   * `rootMargin` starts the request before the sentinel is actually visible, so
+   * the next rows are usually in place by the time the visitor reaches them.
+   */
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node || !hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingNextPage) fetchNextPage();
+      },
+      { rootMargin: "400px" }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
   const activeSubCategory =
     sub_category_slug && sub_category_slug.toLowerCase() !== ALL_SLUG
       ? subCategories.find((subCategory) => subCategory.slug === sub_category_slug)
@@ -354,8 +393,11 @@ const ServiceListingPage = () => {
                   {activeSubCategory ? activeSubCategory.name : category ? `${category.name} Services` : "All Services"}
                 </h2>
                 <p className="mt-1 text-xs font-normal text-[#5a6a90] sm:text-sm">
-                  {services.length > 0
-                    ? `${services.length} service${services.length > 1 ? "s" : ""} available — choose the one you need`
+                  {/* The API's total, not the number loaded so far — otherwise
+                      this would read "9 services available" until the visitor
+                      scrolled to the end. */}
+                  {totalServices > 0
+                    ? `${totalServices} service${totalServices > 1 ? "s" : ""} available — choose the one you need`
                     : "Choose the service you need"}
                 </p>
               </div>
@@ -375,6 +417,38 @@ const ServiceListingPage = () => {
                   {services.map((service) => (
                     <ServiceCard key={service.id} service={service} />
                   ))}
+
+                  {/* The observer watches this. A button is kept alongside so
+                      the rest stays reachable without a scroll event — for
+                      keyboard users, and if IntersectionObserver never fires. */}
+                  <div ref={sentinelRef} aria-hidden="true" />
+
+                  {hasNextPage && (
+                    <div className="pt-2 text-center">
+                      <button
+                        type="button"
+                        onClick={() => fetchNextPage()}
+                        disabled={isFetchingNextPage}
+                        className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#cfe0fb] bg-white px-6 text-[13px] font-bold text-[#0b3fc4] transition hover:bg-[#eef4ff] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {isFetchingNextPage ? "Loading…" : "Load more services"}
+                      </button>
+                    </div>
+                  )}
+
+                  {isFetchingNextPage && (
+                    <p role="status" className="sr-only">
+                      Loading more services
+                    </p>
+                  )}
+
+                  {/* Only worth saying once more than one page has loaded;
+                      on a short list it states the obvious. */}
+                  {!hasNextPage && (data?.pages?.length ?? 0) > 1 && (
+                    <p className="pt-2 text-center text-xs font-semibold text-[#8fa2c8]">
+                      You have seen all {totalServices} services.
+                    </p>
+                  )}
                 </div>
               ) : (
                 <EmptyState

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, MapPin, X } from "lucide-react";
 import MediaPageHeader from "../../components/media/media-page-header";
 import { formatMediaDate, mediaImage } from "../media-news-page/data";
+import { SkeletonGrid } from "../../components/skeleton/skeleton";
 import { useMediaPhotos } from "../../react-query/hooks";
 
 const MediaPhotosPage = () => {
@@ -48,6 +49,15 @@ const MediaPhotosPage = () => {
           count={EVENT_PHOTOS.length}
           countLabel={EVENT_PHOTOS.length === 1 ? "photo" : "photos"}
         />
+
+        {photosQuery.isLoading && (
+          <SkeletonGrid
+            count={8}
+            className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            aspect="aspect-[3/2]"
+            label="Loading event photos"
+          />
+        )}
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {EVENT_PHOTOS.map((photo, index) => (

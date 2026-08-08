@@ -33,6 +33,9 @@ import PendingPaymentsModal from "../../components/dashboard/pending-payments-mo
 
 const formatAmount = (value: number) => `₹${new Intl.NumberFormat("en-IN").format(Math.round(value || 0))}`;
 
+/** Mirrors the API's own refusal, so the tooltip and the toast agree. */
+const WORK_STARTED_HINT = "Work has already started. Please contact support to change or cancel this booking.";
+
 const formatDate = (value?: string) =>
   value ? new Date(value).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "";
 
@@ -301,7 +304,11 @@ const DashboardBookings = () => {
             const tone = statusTone(booking.status);
             const isPaid = !!booking.transaction_id;
             const awaitingPayment = isAwaitingPayment(booking);
+            // Actionable only before work starts — the API refuses otherwise.
             const canCancel = booking.status === "pending" || booking.status === "confirmed";
+            // Still worth showing (disabled) while a job is under way; a
+            // finished or cancelled booking has nothing left to change.
+            const isChangeable = canCancel || booking.status === "in_progress";
             const canReview = booking.status === "completed";
             // The API sums this from the snapshot; fall back for legacy rows.
             const workers = booking.worker_count ?? totalWorkerCount(readServiceWorkerObj(booking.service_worker_obj));
@@ -533,21 +540,28 @@ const DashboardBookings = () => {
                         <Repeat2 size={13} aria-hidden="true" /> Book Again
                       </button>
 
-                      {/* Both only while the booking can still be changed — the
-                          API refuses either once work has started. */}
-                      {canCancel && (
+                      {/* Shown on any booking that has not finished, and
+                          disabled once work is under way rather than removed.
+                          Hiding them made a live booking look unchangeable with
+                          no explanation; the API refuses at this point and says
+                          why, so the reason is surfaced here instead. */}
+                      {isChangeable && (
                         <>
                           <button
                             type="button"
                             onClick={() => setRescheduleFor(booking)}
-                            className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-[#cfe0fb] bg-white px-4 text-[11px] font-extrabold text-[#0b3fc4] transition hover:bg-[#eef4ff]"
+                            disabled={!canCancel}
+                            title={canCancel ? undefined : WORK_STARTED_HINT}
+                            className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-[#cfe0fb] bg-white px-4 text-[11px] font-extrabold text-[#0b3fc4] transition hover:bg-[#eef4ff] disabled:cursor-not-allowed disabled:border-[#e6edf9] disabled:text-[#a8b6d4] disabled:hover:bg-white"
                           >
                             <CalendarClock size={13} aria-hidden="true" /> Reschedule
                           </button>
                           <button
                             type="button"
                             onClick={() => setPendingCancel(booking.id)}
-                            className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-red-200 bg-white px-4 text-[11px] font-extrabold text-red-600 transition hover:bg-red-50"
+                            disabled={!canCancel}
+                            title={canCancel ? undefined : WORK_STARTED_HINT}
+                            className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-red-200 bg-white px-4 text-[11px] font-extrabold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:border-[#e6edf9] disabled:text-[#a8b6d4] disabled:hover:bg-white"
                           >
                             <XCircle size={13} aria-hidden="true" /> Cancel
                           </button>

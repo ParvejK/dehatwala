@@ -4,6 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import ArticleLinkIcon from "../../components/media/article-link-icon";
 import MediaPageHeader from "../../components/media/media-page-header";
 import { formatMediaDate, mediaArticlePath, mediaImage } from "../media-news-page/data";
+import { SkeletonGrid } from "../../components/skeleton/skeleton";
 import { useMediaNews } from "../../react-query/hooks";
 
 const ALL = "All";
@@ -85,7 +86,16 @@ const MediaNewsListPage = () => {
           </label>
         </div>
 
-        {articles.length > 0 ? (
+        {/* Loading is checked before the empty state: while the request is in
+            flight the list is legitimately empty, and "no articles found" is
+            the wrong thing to show. */}
+        {newsQuery.isLoading ? (
+          <SkeletonGrid
+            count={6}
+            className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            label="Loading articles"
+          />
+        ) : articles.length > 0 ? (
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {articles.map(({ id, slug, tag: itemTag, title, source, published_at, image, external_url, excerpt }) => (
               <article

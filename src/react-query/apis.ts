@@ -220,6 +220,24 @@ export const fetchServices = async (filters: { category_slug: string; sub_catego
   return response.data;
 };
 
+/**
+ * One page of services.
+ *
+ * `per_page` is what switches the API into paged mode; the page number rides in
+ * the query string because Laravel's paginator reads it from there.
+ */
+export const fetchServicesPage = async (filters: {
+  category_slug: string;
+  sub_category_slug: string;
+  keyword: string;
+  page: number;
+  per_page: number;
+}) => {
+  const { page, ...body } = filters;
+  const response = await axios.post<ServiceApiResponse>(`${API_URL}/get-services?page=${page}`, body);
+  return response.data;
+};
+
 export const fetchServiceDetail = (slug: string) =>
   axios.get<ServiceDetailApiResponse>(`${API_URL}/get-service-detail/${slug}`).then((res) => res.data);
 

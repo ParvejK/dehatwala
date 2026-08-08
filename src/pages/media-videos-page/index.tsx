@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Play, Search, X } from "lucide-react";
 import MediaPageHeader from "../../components/media/media-page-header";
 import { formatMediaDate, mediaImage } from "../media-news-page/data";
+import { SkeletonGrid } from "../../components/skeleton/skeleton";
 import { useMediaVideos } from "../../react-query/hooks";
 
 const ALL = "All";
@@ -81,7 +82,15 @@ const MediaVideosPage = () => {
           </label>
         </div>
 
-        {videos.length > 0 ? (
+        {/* Loading before empty: an in-flight request is not "no videos". */}
+        {videosQuery.isLoading ? (
+          <SkeletonGrid
+            count={6}
+            className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            aspect="aspect-video"
+            label="Loading videos"
+          />
+        ) : videos.length > 0 ? (
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {videos.map(({ id, title, subtitle, duration, thumbnail, video_url, channel: videoChannel, published_at }) => (
               <a

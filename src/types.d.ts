@@ -520,6 +520,14 @@ interface ServiceApiResponse {
   services: Service[];
   category: Category;
   sub_categories: SubCategory[];
+  /** Present only when the request asked for a page. */
+  meta?: {
+    total: number;
+    per_page: number;
+    current_page: number;
+    last_page: number;
+    has_more: boolean;
+  };
 }
 
 interface Category {

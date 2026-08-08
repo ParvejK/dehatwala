@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -6,13 +6,37 @@ import axios, { AxiosError } from "axios";
 import { RotateCw, ShieldCheck } from "lucide-react";
 import { getCities, getStates, stepFormeData } from "../../react-query/apis";
 import { API_URL } from "../../react-query/constants";
-import { useJoinUsCategories } from "../../react-query/hooks";
 import { ApiErrorResponse, CitiesResponse, StateProps } from "../../types";
 import { FormJoinUsType } from "../../schema/step-form";
 
 const OTP_RESEND_SECONDS = 59;
 
 const OTHER_WORK = "अन्य";
+
+/**
+ * The work types, fixed to the approved design.
+ *
+ * These were read from `/get-join-us-category`, but that endpoint returns
+ * English names with `hindi_name: null` — plus a junk "lstt" row — so the form
+ * rendered a list that matched neither the design nor its own language. The
+ * labels are submitted as free text into `direct_joins.skills`, so holding them
+ * here is enough; nothing downstream needs a category id.
+ */
+const WORK_OPTIONS = [
+  "राज मिस्त्री (Building Work)",
+  "टाइल्स कार्य",
+  "लेबर / हेल्पर",
+  "फिनिशिंग कार्य",
+  "लोडिंग / अनलोडिंग",
+  "शटरिंग कार्य",
+  "पेंटर",
+  "स्टील बेंडर",
+  "इलेक्ट्रीशियन",
+  "कारपेंटर",
+  "प्लंबर",
+  OTHER_WORK,
+  "सफाई कार्य",
+];
 
 const EXPERIENCE_OPTIONS = [
   { value: "0-1", label: "1 साल से कम" },
@@ -69,21 +93,6 @@ const RegistrationForm = () => {
     staleTime: Infinity,
   });
 
-  const { data: workCategories, isPending: isLoadingWorks } = useJoinUsCategories();
-
-  /**
-   * `direct_joins.skills` stores the labels as free text, so the option label is
-   * what gets submitted. `hindi_name` is preferred — this form is in Hindi — and
-   * "अन्य" is appended locally because the API has no equivalent row.
-   */
-  const workOptions = useMemo(
-    () => [
-      ...(workCategories?.categories ?? []).map((category) => category.hindi_name?.trim() || category.name),
-      OTHER_WORK,
-    ],
-    [workCategories],
-  );
-
   // Resend countdown.
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -118,11 +127,22 @@ const RegistrationForm = () => {
       if (!response.ok) throw new Error("Failed to send OTP");
 
       const data = await response.json();
-      setServerOtp(data.otp ? String(data.otp) : null);
+      const issued = data.otp ? String(data.otp) : null;
+
+      setServerOtp(issued);
       setOtpSent(true);
       setSecondsLeft(OTP_RESEND_SECONDS);
       setErrors((prev) => ({ ...prev, mobile: "" }));
-      toast.success("ओटीपी भेज दिया गया है।");
+
+      // Filled in automatically while there is no SMS gateway — the API hands
+      // the code back in the response. Once SMS is live the API should stop
+      // returning `otp`, and this fills nothing without any change here.
+      if (issued) {
+        setOtp(issued);
+        setErrors((prev) => ({ ...prev, otp: "" }));
+      }
+
+      toast.success(issued ? `ओटीपी भेज दिया गया है — ${issued}` : "ओटीपी भेज दिया गया है।");
     } catch (error) {
       console.error(error);
       toast.error("ओटीपी नहीं भेजा जा सका। कृपया दोबारा कोशिश करें।");
@@ -260,10 +280,8 @@ const RegistrationForm = () => {
             <span className="font-medium text-[#8fa2c8]">(एक या एक से अधिक चुनें)</span>
           </legend>
 
-          {isLoadingWorks && <p className="mt-2.5 text-[13px] text-[#8fa2c8]">कार्य सूची लोड हो रही है…</p>}
-
           <div className="mt-2.5 grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
-            {workOptions.map((work) => (
+            {WORK_OPTIONS.map((work) => (
               <label key={work} className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#40517b]">
                 <input
                   type="checkbox"

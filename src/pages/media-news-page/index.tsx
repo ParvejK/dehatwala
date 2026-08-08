@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import ArticleLinkIcon from "../../components/media/article-link-icon";
 import PressCta from "../../components/media/press-cta";
 import { formatMediaDate, isRealUrl, mediaArticlePath, mediaImage, publicationLogo } from "./data";
+import { Skeleton, SkeletonGrid } from "../../components/skeleton/skeleton";
 import { useMediaNews, useMediaPhotos, useMediaPublications, useMediaVideos } from "../../react-query/hooks";
 
 const SectionHeader = ({ title, linkLabel, to }: { title: string; linkLabel: string; to: string }) => (
@@ -20,10 +21,15 @@ const SectionHeader = ({ title, linkLabel, to }: { title: string; linkLabel: str
 );
 
 const MediaNewsPage = () => {
-  const publications = useMediaPublications().data?.publications ?? [];
-  const coverage = useMediaNews().data?.news ?? [];
-  const videos = useMediaVideos().data?.videos ?? [];
-  const photos = useMediaPhotos().data?.photos ?? [];
+  const publicationsQuery = useMediaPublications();
+  const coverageQuery = useMediaNews();
+  const videosQuery = useMediaVideos();
+  const photosQuery = useMediaPhotos();
+
+  const publications = publicationsQuery.data?.publications ?? [];
+  const coverage = coverageQuery.data?.news ?? [];
+  const videos = videosQuery.data?.videos ?? [];
+  const photos = photosQuery.data?.photos ?? [];
   const stripRef = useRef<HTMLDivElement>(null);
 
   const scrollStrip = (direction: -1 | 1) => {
@@ -91,6 +97,15 @@ const MediaNewsPage = () => {
             Featured In
           </h2>
 
+          {publicationsQuery.isLoading && (
+            <div role="status" aria-busy="true" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+              <span className="sr-only">Loading publications</span>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton key={index} className="min-h-[62px] rounded-xl" />
+              ))}
+            </div>
+          )}
+
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {publications.map(({ id, name, logo, website_url }) => {
               const tile = logo ? (
@@ -126,6 +141,14 @@ const MediaNewsPage = () => {
         {/* ---------- Latest media coverage ---------- */}
         <section id="coverage" aria-labelledby="coverage-heading" className="mt-6 scroll-mt-24">
           <SectionHeader title="Latest Media Coverage" linkLabel="View all news" to="/media-news/news" />
+
+          {coverageQuery.isLoading && (
+            <SkeletonGrid
+              count={3}
+              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+              label="Loading latest media coverage"
+            />
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {coverage.slice(0, 3).map(({ id, slug, tag, title, source, published_at, image, external_url }) => (
@@ -176,6 +199,15 @@ const MediaNewsPage = () => {
         <section id="videos" aria-labelledby="videos-heading" className="mt-7 scroll-mt-24">
           <SectionHeader title="Videos & Interviews" linkLabel="View all videos" to="/media-news/videos" />
 
+          {videosQuery.isLoading && (
+            <SkeletonGrid
+              count={3}
+              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+              aspect="aspect-video"
+              label="Loading videos and interviews"
+            />
+          )}
+
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {videos.slice(0, 3).map(({ id, title, subtitle, duration, thumbnail, video_url }) => (
               <a
@@ -215,7 +247,18 @@ const MediaNewsPage = () => {
         <section id="photos" aria-labelledby="photos-heading" className="mt-7 scroll-mt-24">
           <SectionHeader title="Latest Event Photos" linkLabel="View all photos" to="/media-news/photos" />
 
-          <div className="relative">
+          {photosQuery.isLoading && (
+            <SkeletonGrid
+              count={4}
+              className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+              aspect="aspect-[3/2]"
+              label="Loading event photos"
+            />
+          )}
+
+          {/* Hidden while loading, so the scroll arrows are not left hovering
+              over an empty strip beside the skeleton. */}
+          <div className={`relative ${photosQuery.isLoading ? "hidden" : ""}`}>
             <div
               ref={stripRef}
               className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
