@@ -16,7 +16,35 @@ export type AccountUser = {
   name: string;
   email: string | null;
   mobile_no: string;
+  /** Bare filename under the `user` storage folder; null when none is set. */
+  profile_img?: string | null;
 };
+
+/**
+ * Uploads or replaces the profile photo.
+ *
+ * POST with FormData rather than PUT: PHP only fills `$_FILES` for POST, so a
+ * multipart PUT reaches the API with no file attached. Content-Type is left
+ * unset so the browser adds the multipart boundary itself.
+ */
+export const useUploadProfileImage = (token: string) =>
+  useMutation({
+    mutationFn: async (file: File) => {
+      const form = new FormData();
+      form.append("profile_img", file);
+
+      const { data } = await axios.post(`${API_URL}/account/profile-image`, form, auth(token));
+      return data as { success: boolean; profile_img: string; user: AccountUser; message?: string };
+    },
+  });
+
+export const useDeleteProfileImage = (token: string) =>
+  useMutation({
+    mutationFn: async () => {
+      const { data } = await axios.delete(`${API_URL}/account/profile-image`, auth(token));
+      return data as { success: boolean; user: AccountUser; message?: string };
+    },
+  });
 
 export const useUpdateProfile = (token: string) =>
   useMutation({

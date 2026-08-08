@@ -6,21 +6,14 @@ import {
   BlogListProps,
   BlogProps,
   CategoriesProps,
-  CateGoryApiResponse,
   CitiesResponse,
   ClientsApiResponse,
   FaqApiResponse,
   FaqCategoriesApiResponse,
-  FormInputs,
   InstantApiResponse,
-  JobApiResponse,
-  JobCategoryApiResponse,
-  JobDetailApiResponse,
-  JobSliderProps,
   PartnersApiResponse,
   PermanentServiceResponse,
   PolicyApiResponse,
-  SearchPostProps,
   ServiceApiResponse,
   ServiceDetailApiResponse,
   ServicesProps,
@@ -88,13 +81,6 @@ export const fetchBlogsByCategory = (categorySlug: string) =>
 export const fetchHeroCarousel = () => axios.get<SliderProps>(`${API_URL}/get-sliders`).then((res) => res.data);
 
 /**
- * @JobSlider
- * Get Slider data.
- */
-
-export const fetchJobCarousel = () => axios.get<JobSliderProps>(`${API_URL}/job-sliders`).then((res) => res.data);
-
-/**
  * @InstantService
  * Get Slider data.
  */
@@ -121,52 +107,6 @@ export const postEmployeeData = async (data: EmployeeFormData) => {
  */
 export const stepFormeData = async (data: FormJoinUsType) => {
   const response = await axios.post(`${API_URL}/save-join-us-data`, data);
-  return response.data;
-};
-
-/**
- * @JobCategory
- * Post User Data
- */
-export const jobsCategory = async () => {
-  const response = await axios.get<CateGoryApiResponse>(`${API_URL}/get-jobs-category`);
-  return response.data;
-};
-
-export const jobsCategoryBySlug = async (slug: string) => {
-  const response = await axios.get<JobCategoryApiResponse>(`${API_URL}/get-job-category/${slug}`);
-  return response.data;
-};
-
-export const searchCategory = async () => {
-  const response = await axios.post<SearchPostProps>(`${API_URL}/get-job-category`);
-  return response.data;
-};
-
-export const jobs = async () => {
-  const response = await axios.post<JobApiResponse>(`${API_URL}/get-jobs`);
-  return response.data;
-};
-
-export const fetchJobs = async (filters: Record<string, string>) => {
-  const response = await axios.post(`${API_URL}/get-jobs`, filters);
-  return response.data;
-};
-
-export const jobsBySlug = async (slug: string) => {
-  if (!slug) {
-    throw new Error("No slug provided");
-  }
-  const response = await axios.get<JobDetailApiResponse>(`${API_URL}/get-job-detail/${slug}`);
-  return response.data;
-};
-
-/**
- * @Apply Job
- */
-
-export const applyJob = async (data: FormInputs) => {
-  const response = await axios.post(`${API_URL}/save-apply-job`, data);
   return response.data;
 };
 

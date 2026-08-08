@@ -328,7 +328,12 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section id="how-it-works" className="relative isolate overflow-hidden bg-[#f8faff] py-16 sm:py-20 lg:py-24">
+      {/* scroll-mt clears the sticky header when arriving from a #how-it-works
+          link, which would otherwise tuck the heading underneath it. */}
+      <section
+        id="how-it-works"
+        className="relative isolate scroll-mt-24 overflow-hidden bg-[#f8faff] py-16 sm:py-20 lg:py-24"
+      >
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_12%_10%,rgba(37,99,235,0.06),transparent_28%),radial-gradient(circle_at_92%_88%,rgba(37,99,235,0.05),transparent_25%)]" />
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="max-w-xl">
@@ -445,37 +450,49 @@ const HomePage = () => {
 
       <section className="bg-white py-14 lg:py-20">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="overflow-hidden rounded-[2rem] bg-[#f7f7f5] p-5 sm:p-7">
-            <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-6">
-              <div className="lg:py-2">
-                <h2 className="text-[34px] font-black leading-[1.08] tracking-tight text-[var(--home-color-ink)] sm:text-[40px]">
-                  Become a
-                  <br />
-                  <span className="relative inline-block text-[var(--home-color-brand)]">
-                    Worker
-                    <span
-                      aria-hidden="true"
-                      className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-amber-400"
-                    />
-                  </span>
+          {/* Roomier padding: the reference leaves a clear margin before
+              "Become a" rather than sitting tight to the card edge. */}
+          <div className="overflow-hidden rounded-[2rem] bg-[#f7f7f5] p-5 sm:p-7 lg:p-9">
+            {/* No column gap on desktop: the photo's diagonal edge is the
+                transition, and a gutter on top of it left a dead strip
+                between the copy and the image. */}
+            {/* Top-aligned, not centred: "Become a" is level with the top of
+                the photo in the reference. Centring against a 31rem image
+                pushed the heading down and opened a gap above it. */}
+            {/* ~46/54 split, measured off the reference where the photo's
+                left edge falls a little past the halfway point. */}
+            <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.18fr)] lg:gap-0">
+              <div className="lg:pr-6">
+                {/* "Worker" is set larger than "Become a" in the reference,
+                    not the same size. */}
+                <h2 className="font-black leading-[0.98] tracking-tight text-[var(--home-color-ink)]">
+                  <span className="block text-[32px] sm:text-[40px]">Become a</span>
+                  <span className="block text-[40px] text-[var(--home-color-brand)] sm:text-[52px]">Worker</span>
                 </h2>
 
-                <p className="mt-6 text-lg font-extrabold text-[var(--home-color-ink)]">
-                  क्या आप काम की तलाश में है ?
+                {/* The gold rule sits under the opening words, not the whole
+                    line, matching the reference. */}
+                <p className="mt-6 text-lg font-extrabold text-[var(--home-color-ink)] sm:text-xl">
+                  <span className="relative inline-block">
+                    क्या आप
+                    <span
+                      aria-hidden="true"
+                      className="absolute -bottom-0.5 left-0 h-[3px] w-full rounded-full bg-amber-400"
+                    />
+                  </span>{" "}
+                  काम की तलाश में है ?
                 </p>
-                <p className="mt-1 max-w-xs text-sm leading-6 text-slate-600">
-                  आज ही देहातवाला से जुड़ें और काम के अपडेट पाएं।
+                <p className="mt-2.5 max-w-[17rem] text-sm leading-6 text-slate-600">
+                  आज ही देहातवाला से जुड़ें और काम के अपडेट पायें।
                 </p>
 
-                <div className="mt-4">
+                <div className="mt-5">
                   <Link
                     to="/become-a-part-of-dehatwala"
-                    className="inline-flex min-h-11 items-center gap-3 rounded-lg bg-[var(--home-color-brand)] py-2.5 pl-5 pr-2.5 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
+                    className="inline-flex min-h-12 items-center gap-8 rounded-xl bg-[var(--home-color-brand)] px-6 text-[15px] font-bold text-white shadow-lg shadow-blue-700/25 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
                   >
                     अभी रजिस्टर करे
-                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white text-[var(--home-color-brand)]">
-                      <ArrowRight size={15} aria-hidden="true" />
-                    </span>
+                    <ArrowRight size={18} aria-hidden="true" />
                   </Link>
                 </div>
 
@@ -484,12 +501,15 @@ const HomePage = () => {
                   क्यों जुड़ें देहातवाला से?
                 </p>
 
-                <ul className="mt-3.5 space-y-3.5">
+                <ul className="mt-4 space-y-4">
                   {workerBenefits.map(({ icon: Icon, title, copy }) => (
-                    <li key={title} className="flex items-start gap-3">
-                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)]">
-                        <Icon size={17} aria-hidden="true" />
+                    <li key={title} className="flex items-center gap-3">
+                      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-white text-[var(--home-color-brand)] shadow-[0_2px_10px_-4px_rgba(15,42,95,0.35)]">
+                        <Icon size={19} aria-hidden="true" />
                       </span>
+                      {/* Gold rule separating the icon from its label, as in
+                          the reference. Stretches to the row's height. */}
+                      <span aria-hidden="true" className="h-9 w-[3px] shrink-0 rounded-full bg-amber-400" />
                       <span className="min-w-0">
                         <strong className="block text-[13px] font-extrabold text-[var(--home-color-ink)]">
                           {title}
@@ -501,23 +521,31 @@ const HomePage = () => {
                 </ul>
               </div>
 
-              <div className="overflow-hidden rounded-[1.5rem] lg:-mr-3 lg:-mt-3 lg:rounded-bl-[7rem] lg:rounded-tl-[7rem]">
+              {/* Rounded corners come from this wrapper and the diagonal from
+                  the image's own clip-path — a clip-path alone would discard
+                  the radius. The exposed wedge shows the card behind. */}
+              {/* Negative margins cancel the card's own padding so the photo
+                  reaches the card's top and right edges, as in the reference,
+                  and the top-right radius matches the card's own. */}
+              <div className="overflow-hidden rounded-[1.5rem]">
                 <img
                   src="/images/dehatwala-worker-join.png"
                   alt="Dehatwala workers in blue uniforms and yellow safety helmets on a construction site"
-                  className="h-[20rem] w-full object-cover object-[center_25%] sm:h-[24rem] lg:h-[30rem]"
+                  className="worker-photo-angled h-[20rem] w-full object-cover object-[center_25%] sm:h-[24rem] lg:h-[34rem]"
                 />
               </div>
             </div>
 
-            <ul className="mt-6 grid gap-5 rounded-[1.25rem] bg-white px-5 py-5 shadow-sm sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
+            {/* Centred columns with hairline dividers. `divide-x` only reads
+                correctly on the single row, so it is scoped to lg. */}
+            <ul className="mt-6 grid gap-6 rounded-[1.25rem] bg-white px-5 py-6 shadow-sm sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-slate-200">
               {workerAssurances.map(({ icon: Icon, title, copy }) => (
-                <li key={title} className="flex items-start gap-2.5">
-                  <Icon size={22} className="mt-0.5 shrink-0 text-[var(--home-color-brand)]" aria-hidden="true" />
-                  <span className="min-w-0">
-                    <strong className="block text-[13px] font-extrabold text-[var(--home-color-ink)]">{title}</strong>
-                    <span className="mt-0.5 block text-[11px] leading-4 text-slate-500">{copy}</span>
-                  </span>
+                <li key={title} className="flex flex-col items-center px-4 text-center">
+                  <Icon size={30} className="shrink-0 text-[var(--home-color-brand)]" aria-hidden="true" />
+                  <strong className="mt-3 block text-[13px] font-extrabold leading-5 text-[var(--home-color-ink)]">
+                    {title}
+                  </strong>
+                  <span className="mt-1 block max-w-[12rem] text-[11px] leading-4 text-slate-500">{copy}</span>
                 </li>
               ))}
             </ul>
@@ -601,7 +629,9 @@ const HomePage = () => {
                 640: { slidesPerView: 2, spaceBetween: 20 },
                 1024: { slidesPerView: 3, spaceBetween: 20 },
               }}
-              className="customer-stories-carousel !overflow-visible !pb-12 [&_.swiper-slide]:h-auto"
+              // Not `!overflow-visible`: that let the neighbouring slides bleed
+              // in on both sides, so a row of 3 read as 5 with two clipped.
+              className="customer-stories-carousel !pb-12 [&_.swiper-slide]:h-auto"
               aria-label="Customer stories"
             >
               {/* No slice: it is a carousel, so every story the API returns is
@@ -626,7 +656,10 @@ const HomePage = () => {
                     <blockquote
                       className={`mt-7 flex-1 text-base font-medium leading-7 ${clientIndex === 1 ? "text-slate-100" : "text-slate-700"}`}
                     >
-                      “{client.content}”
+                      {/* The stored text already carries its own quotes, so
+                          wrapping it raw produced ""…"". Strip both straight
+                          and curly forms, then add exactly one pair. */}
+                      &ldquo;{(client.content ?? "").replace(/["“”]/g, "").trim()}&rdquo;
                     </blockquote>
                     <figcaption
                       className={`mt-7 flex items-center gap-3 border-t pt-5 ${clientIndex === 1 ? "border-white/10" : "border-slate-100"}`}

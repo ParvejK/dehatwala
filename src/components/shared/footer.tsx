@@ -4,8 +4,12 @@ import { Link } from "react-router-dom";
 const linkGroups = [
   { title: "Company", links: [["About us", "/about-us"], ["Contact us", "/contact"], ["Media & news", "/media-news"], ["Careers", "/careers"], ["Blog", "/blog"]] },
   { title: "Legal", links: [["Privacy policy", "/privacy-policy"], ["Terms & conditions", "/terms-and-conditions"], ["Cancellation policy", "/cancellation-policy"], ["Refund policy", "/refund-policy"]] },
-  { title: "For workers", links: [["Join Dehatwala", "/become-a-part-of-dehatwala"], ["Worker Agreement", "/terms-and-conditions"], ["Worker FAQs", "/faqs"], ["Find work opportunities", "/jobs"]] },
-  { title: "For customers", links: [["Book a worker", "/#book-a-worker"], ["Explore services", "/#book-a-worker"], ["How it works", "/#how-it-works"], ["Customer FAQs", "/faqs"], ["Contact support", "/contact"]] },
+  { title: "For workers", links: [["Join Dehatwala", "/become-a-part-of-dehatwala"], ["Worker Agreement", "/terms-and-conditions"], ["Worker FAQs", "/faqs"], ["Find work opportunities", "/careers/open-positions"]] },
+  // "Book a worker" goes to the service listing, matching the header button.
+  // "Explore services" keeps the home search panel, so the two are not the
+  // same destination twice. The `#` links rely on the hash scrolling wired up
+  // in layout.tsx.
+  { title: "For customers", links: [["Book a worker", "/services/all"], ["Explore services", "/#book-a-worker"], ["How it works", "/#how-it-works"], ["Customer FAQs", "/faqs"], ["Contact support", "/contact"]] },
 ];
 
 const Footer = () => (

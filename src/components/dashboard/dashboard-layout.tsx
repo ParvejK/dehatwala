@@ -5,7 +5,8 @@ import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/auth-store";
 import LogoutButton from "../auth/logout";
 import DashboardSignedOut from "../../pages/dashboard/signed-out";
-import { DASHBOARD_LINKS, formatMobile, initialsOf } from "./nav";
+import { DASHBOARD_LINKS, formatMobile } from "./nav";
+import RemoteAvatar from "../shared/remote-avatar";
 
 const linkClass = (isActive: boolean) =>
   `flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-bold transition focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100 ${
@@ -59,9 +60,13 @@ const DashboardLayout = () => {
           {/* ---------- Sidebar ---------- */}
           <aside className="rounded-2xl border border-[#dce7fb] bg-white p-4 lg:sticky lg:top-24">
             <div className="flex items-center gap-3.5 border-b border-[#eef2f9] pb-4 lg:flex-col lg:text-center">
-              <span className="grid size-14 shrink-0 place-items-center rounded-full bg-[#0b3fc4] text-lg font-extrabold text-white">
-                {initialsOf(user.name)}
-              </span>
+              <RemoteAvatar
+                folder="user"
+                file={user.profile_img}
+                name={user.name}
+                className="size-14 shrink-0 rounded-full object-cover ring-2 ring-[#dce7fb]"
+                fallbackClassName="grid size-14 shrink-0 place-items-center rounded-full bg-[#0b3fc4] text-lg font-extrabold text-white"
+              />
               <div className="min-w-0">
                 <p className="truncate text-sm font-extrabold text-[#0f1e57]">{user.name}</p>
                 <p className="mt-0.5 text-xs font-medium text-[#63739a]">{formatMobile(user.mobile_no)}</p>

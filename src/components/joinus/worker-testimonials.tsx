@@ -70,11 +70,11 @@ const WorkerTestimonials = () => {
                   <p className="truncate text-[14px] font-extrabold leading-tight text-[#0f1e57]">{testimonial.name}</p>
                   {/* Trade and city on one line, as "राज मिस्त्री • गुरुग्राम".
                     The separator only appears when both halves exist. */}
-                  {(testimonial.post || testimonial.city) && (
+                  {(testimonial.post || testimonial.location) && (
                     <p className="mt-1 flex items-center gap-1 truncate text-[11px] font-semibold text-[#63739a]">
                       <MapPin size={11} className="shrink-0 text-[#0b3fc4]" aria-hidden="true" />
                       <span className="truncate">
-                        {[testimonial.post, testimonial.city].filter(Boolean).join(" • ")}
+                        {[testimonial.post, testimonial.location].filter(Boolean).join(" • ")}
                       </span>
                     </p>
                   )}

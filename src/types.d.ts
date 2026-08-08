@@ -283,90 +283,6 @@ interface InstantApiResponse {
   service: Service;
 }
 
-interface CategoryProps {
-  id: number;
-  name: string;
-  hindi_name: string | null;
-  slug: string;
-  parent_id: number;
-  description: string;
-  cat_img: string;
-  image_link: string | null;
-  meta_title: string | null;
-  meta_keyword: string | null;
-  meta_description: string | null;
-  status: string;
-  is_join_us: number;
-  deleted_at: string | null;
-  created_at: string;
-  updated_at: string;
-  jobs_count: number;
-}
-
-interface CateGoryApiResponse {
-  categories: CategoryProps[];
-}
-
-interface JobProps {
-  id: number;
-  user_id: number;
-  category_id: number;
-  meta_title: string;
-  meta_keyword: string;
-  meta_description: string;
-  title: string;
-  post: string;
-  vaccancy: string;
-  slug: string;
-  experience: string;
-  salary: number;
-  facilities: string;
-  description: string;
-  skill: string;
-  location: string;
-  last_date: string;
-  jobimg: string;
-  recruitment_letter: string;
-  image_link: string;
-  special_priority: string;
-  priority: string;
-  status: number;
-  deleted_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface JobApiResponse {
-  jobs: JobProps[];
-}
-interface JobDetailApiResponse {
-  job: JobProps;
-}
-interface JobCategoryApiResponse {
-  job: JobProps[];
-}
-
-// Apply job
-export type FormInputs = {
-  name: string;
-  email: string;
-  city_id: string;
-  state_id: string;
-  job_id: number;
-  skill: string;
-  mobile_number: string;
-  aboutYourself?: string;
-};
-
-// Search
-
-export interface SearchPostProps {
-  experience: string;
-  location: string;
-  category: string;
-  salary: string;
-}
-
 // CITY STATE
 interface State {
   id: number;
@@ -496,8 +412,8 @@ interface LabourTestimonial {
   name: string;
   /** The worker's trade, e.g. "Mason". The API calls this `post`. */
   post: string | null;
-  /** Shown beside the trade on the card. */
-  city: string | null;
+  /** Free text beside the trade on the card, e.g. "गुरुग्राम". */
+  location: string | null;
   /** The quote itself. The API calls this `description`. */
   description: string | null;
   labour_image: string | null;
@@ -751,26 +667,6 @@ interface SliderSlogan {
 // API RESPONSE ERROR
 interface ApiErrorResponse {
   message: string;
-}
-
-// JOB Slider
-export interface SliderApiResponse {
-  id: number;
-  category_id: number;
-  title: string;
-  tagline: string;
-  rlink: string;
-  slider_img: string;
-  status: string;
-  slider_page: string | null;
-  image_link: string;
-  deleted_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface JobSliderProps {
-  sliders: SliderApiResponse[];
 }
 
 /**

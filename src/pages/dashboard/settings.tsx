@@ -4,6 +4,7 @@ import { BadgeCheck, Bell, ChevronRight, Pencil, Smartphone, Trash2, UserRound }
 import { Link } from "react-router-dom";
 
 import SectionHeader from "../../components/dashboard/section-header";
+import ProfilePhoto from "../../components/dashboard/profile-photo";
 import { formatMobile } from "../../components/dashboard/nav";
 import {
   ChangeMobileModal,
@@ -104,7 +105,9 @@ const DashboardSettings = () => {
           </button>
         }
       >
-        <dl className="grid gap-4 sm:grid-cols-2">
+        <ProfilePhoto />
+
+        <dl className="mt-5 grid gap-4 border-t border-[#eef2f9] pt-5 sm:grid-cols-2">
           <div>
             <dt className="text-[11px] font-semibold text-[#63739a]">Name</dt>
             <dd className="mt-0.5 text-[13px] font-extrabold text-[#0f1e57]">{user?.name || "—"}</dd>

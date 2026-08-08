@@ -23,8 +23,8 @@ const JoinUsSuccessPage = () => {
             <Link to="/" className="btn btn-primary min-w-[160px]">
               Back to Home
             </Link>
-            <Link to="/jobs" className="btn btn-outline min-w-[160px]">
-              Browse Jobs
+            <Link to="/careers/open-positions" className="btn btn-outline min-w-[160px]">
+              View Open Positions
             </Link>
           </div>
         </div>

@@ -13,7 +13,6 @@ import CartPage from "./pages/cart-page";
 import ServiceLetterPage from "./pages/service-letter";
 import JoinUsPage from "./pages/joinus-page";
 import JoinUsSuccessPage from "./pages/joinus-success-page";
-import JobListingsPage from "./pages/job-listings-page";
 import CareersPage from "./pages/careers-page";
 import DashboardLayout from "./components/dashboard/dashboard-layout";
 import DashboardBookings from "./pages/dashboard/bookings";
@@ -25,12 +24,8 @@ import DashboardSupport from "./pages/dashboard/support";
 import CareersOpenPositionsPage from "./pages/careers-open-positions-page";
 import CareersApplyPage from "./pages/careers-apply-page";
 import CareersSendProfilePage from "./pages/careers-send-profile-page";
-import JobCategoriesPage from "./pages/job-categories-page";
-import DetailedJobListingPage from "./pages/detailed-job-listing-page";
-import JobDetailedViewPage from "./pages/detailed-job-view-page";
 import BlogDetailPage from "./pages/blog-detail-page";
 import BlogCategoryPage from "./pages/blog-category-page";
-import ApplyJobPage from "./pages/apply-job-page";
 import PolicyPage from "./pages/policy-page";
 import SignIn from "./pages/sign-in-page";
 import ForgotPassword from "./pages/forgot-password-page";
@@ -185,26 +180,6 @@ const router = createBrowserRouter([
       {
         path: "/careers/send-profile",
         element: <CareersSendProfilePage />,
-      },
-      {
-        path: "/jobs",
-        element: <JobListingsPage />,
-      },
-      {
-        path: "/more-jobs",
-        element: <JobCategoriesPage />,
-      },
-      {
-        path: "/more-jobs/:slug",
-        element: <DetailedJobListingPage />,
-      },
-      {
-        path: "/job-detail/:slug",
-        element: <JobDetailedViewPage />,
-      },
-      {
-        path: "/job-detail/:slug/:id",
-        element: <ApplyJobPage />,
       },
       {
         path: "/sign-in",
