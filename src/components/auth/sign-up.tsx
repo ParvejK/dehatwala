@@ -72,7 +72,6 @@ interface SignUpProps {
 }
 
 export default function SignUp({ className }: SignUpProps) {
-  const [otp, setOtp] = useState(null);
   const [step, setStep] = useState(1); // Tracks the current step
   const [mobileNumber, setMobileNumber] = useState(""); // Store the mobile number after Step 1
   const { postData, loading, error } = useApi();
@@ -105,13 +104,11 @@ export default function SignUp({ className }: SignUpProps) {
   const handleMobileSubmit: SubmitHandler<FormDataStep1> = async (data) => {
     const result = await postData(`${API_URL}/register-otp`, data);
     if (result) {
-      setOtp(result.otp);
       setMobileNumber(data.mobile_no);
       setStep(2);
 
       // Programmatically set the OTP value in the input field
       setValue("otp", result.otp.toString());
-      console.log(otp);
     }
   };
 

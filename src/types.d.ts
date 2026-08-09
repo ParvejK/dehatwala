@@ -48,9 +48,6 @@ interface SubCategory {
   updated_at: string;
 }
 
-interface SubCategoryProps {
-  sub_category: SubCategory[];
-}
 interface SubCategoryCardProps {
   data: SubCategory;
 }
@@ -231,57 +228,9 @@ interface Slider {
   updated_at: string;
 }
 
-interface SliderProps {
-  sliders: Slider[];
-}
-
 /**
  * @Instant Services
  */
-
-interface InstantService {
-  id: number;
-  service_id: number;
-  instant_service_id: number;
-  worker_1_label?: string;
-  worker_2_label?: string;
-  per_day_meason_rate: number;
-  per_day_helper_rate: number;
-  per_day: number;
-  per_hour_meason_rate: number;
-  per_hour_helper_rate: number;
-  per_hour: number;
-  overtime_meason_rate: number;
-  overtime_helper_rate: number;
-  overtime_per_hour: number;
-  includes_instument: string;
-  excludes_instument: string;
-  labour_chowk_id?: string[];
-  created_at: string;
-  updated_at: string;
-}
-
-interface InstantServiceSliderSlogan {
-  id: number;
-  category_id: number;
-  slogan: string;
-  slogan_image: string;
-  service_type: string;
-  status: string;
-  ref_link: string;
-  slogan_image_link: string;
-  deleted_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface InstantApiResponse {
-  instant_service: InstantService;
-  slider_slogans: SliderSlogan[];
-  instant_service: ServiceNotes;
-  permanent_service: ServiceNotes;
-  service: Service;
-}
 
 // CITY STATE
 interface State {
@@ -384,10 +333,6 @@ interface Partner {
   updated_at: string;
 }
 
-interface PartnersApiResponse {
-  partners: Partner[];
-}
-
 // Top Companies
 interface TopCompany {
   id: number;
@@ -398,11 +343,6 @@ interface TopCompany {
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
-}
-
-interface TopCompaniesApiResponse {
-  success: boolean;
-  top_companies: TopCompany[];
 }
 
 // Labour Testimonials
@@ -639,11 +579,6 @@ export interface ServiceDetailApiResponse {
 
 // Permanet service
 
-interface PermanentServiceResponse {
-  permanent_service: PermanentService;
-  slider_slogans: SliderSlogan[];
-}
-
 interface PermanentService {
   id: number;
   service_id: number;
@@ -728,11 +663,6 @@ export interface CareerOpeningsResponse {
 export interface CareerOpeningResponse {
   success: boolean;
   opening: CareerOpeningDetail;
-}
-
-export interface CareerContentResponse {
-  success: boolean;
-  careers_email: string;
 }
 
 /**

@@ -6,11 +6,7 @@ import BlogPage from "./pages/blog-page";
 import ContactUsPage from "./pages/contact-page";
 import AboutPage from "./pages/about-page";
 import FaqsPage from "./pages/faqs-page";
-import InstantServices from "./pages/instant-services";
-import PermanentServices from "./pages/permanent-services";
 import ServicesDetailsPage from "./pages/service-detail-page";
-import CartPage from "./pages/cart-page";
-import ServiceLetterPage from "./pages/service-letter";
 import JoinUsPage from "./pages/joinus-page";
 import JoinUsSuccessPage from "./pages/joinus-success-page";
 import CareersPage from "./pages/careers-page";
@@ -32,7 +28,6 @@ import ForgotPassword from "./pages/forgot-password-page";
 import ServiceListingPage from "./pages/service-listing-page";
 import SignUp from "./pages/sign-up-page";
 import ProtectedRoute from "./protected-route";
-import BookedServicePage from "./pages/booked-service-page";
 import InstantServiceReviewsPage from "./pages/service-review-page";
 import AddReviewsPage from "./pages/instant-service-reviews-page";
 import MediaNewsPage from "./pages/media-news-page";
@@ -100,14 +95,8 @@ const router = createBrowserRouter([
         path: "/blog/:slug",
         element: <BlogDetailPage />,
       },
-      {
-        path: "/service/instant/:slug",
-        element: <InstantServices />,
-      },
-      {
-        path: "/service/permanent/:slug",
-        element: <PermanentServices />,
-      },
+      
+      
       {
         path: "/service/detail/:slug",
         element: <ServicesDetailsPage />,
@@ -124,10 +113,7 @@ const router = createBrowserRouter([
         path: "/book/:slug/payment",
         element: <PaymentPage />,
       },
-      {
-        path: "/booked-services",
-        element: <BookedServicePage />,
-      },
+      
       {
         path: "/service-reviews",
         element: <InstantServiceReviewsPage />,
@@ -136,14 +122,8 @@ const router = createBrowserRouter([
         path: "/service-reviews/:bookedServiceId?/:serviceId?",
         element: <AddReviewsPage />,
       },
-      {
-        path: "/cart",
-        element: <CartPage />,
-      },
-      {
-        path: "/service-letter",
-        element: <ServiceLetterPage />,
-      },
+      
+      
       {
         path: "/become-a-part-of-dehatwala",
         element: <JoinUsPage />,

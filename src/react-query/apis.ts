@@ -1,5 +1,4 @@
 import axios from "axios";
-import { EmployeeFormData } from "../schema/permanent-service/schema";
 import { FormJoinUsType } from "../schema/step-form";
 import {
   BlogCategoriesResponse,
@@ -10,24 +9,17 @@ import {
   ClientsApiResponse,
   FaqApiResponse,
   FaqCategoriesApiResponse,
-  InstantApiResponse,
-  PartnersApiResponse,
-  PermanentServiceResponse,
   PolicyApiResponse,
   ServiceApiResponse,
   ServiceDetailApiResponse,
   ServicesProps,
   SingleBlogProps,
-  SliderProps,
   StateProps,
-  SubCategoryProps,
-  TopCompaniesApiResponse,
   LabourTestimonialsApiResponse,
   CheckAvailabilityPayload,
   CheckAvailabilityResponse,
   CareerApplicationPayload,
   CareerApplicationResponse,
-  CareerContentResponse,
   CareerOpeningResponse,
   CareerOpeningsResponse,
   MediaNewsDetailResponse,
@@ -47,13 +39,7 @@ import { API_URL } from "./constants";
  */
 export const fetchCategories = () => axios.get<CategoriesProps>(`${API_URL}/get-categories`).then((res) => res.data);
 
-export const fetchSubCategories = (categoryId: number) =>
-  axios.get<SubCategoryProps>(`${API_URL}/get-sub-category/${categoryId}`).then((res) => res.data);
-
 /** Work types offered on the worker registration form. */
-export const fetchJoinUsCategories = () =>
-  axios.get<CategoriesProps>(`${API_URL}/get-join-us-category`).then((res) => res.data);
-
 /**
  * @Blog
  * Get Blog data.
@@ -78,28 +64,10 @@ export const fetchBlogsByCategory = (categorySlug: string) =>
  * Get Slider data.
  */
 
-export const fetchHeroCarousel = () => axios.get<SliderProps>(`${API_URL}/get-sliders`).then((res) => res.data);
-
 /**
  * @InstantService
  * Get Slider data.
  */
-
-export const fetchInstantService = (slug: string) =>
-  axios.get<InstantApiResponse>(`${API_URL}/get-instant-service/${slug}`).then((res) => res.data);
-
-export const fetchPermanentService = (slug: string) =>
-  axios.get<PermanentServiceResponse>(`${API_URL}/get-permanent-service/${slug}`).then((res) => res.data);
-
-/**
- * @PermanentService
- * Post User Data
- */
-
-export const postEmployeeData = async (data: EmployeeFormData) => {
-  const response = await axios.post(`${API_URL}/save-query-permanent-service`, data);
-  return response.data;
-};
 
 /**
  * @PermanentService
@@ -152,19 +120,9 @@ export const getClients = async () => {
  * @Apply Partners
  */
 
-export const getPartners = async () => {
-  const response = await axios.get<PartnersApiResponse>(`${API_URL}/get-partners`);
-  return response.data;
-};
-
 /**
  * @Apply Top Companies
  */
-
-export const getTopCompanies = async () => {
-  const response = await axios.get<TopCompaniesApiResponse>(`${API_URL}/get-top-companies`);
-  return response.data;
-};
 
 /**
  * @Labour Testimonials
@@ -215,11 +173,6 @@ export const getPolicies = async (slug: string) => {
 
 export const fetchHomeServices = () => axios.get<ServicesProps>(`${API_URL}/get-services`).then((res) => res.data);
 
-export const fetchServices = async (filters: { category_slug: string; sub_category_slug: string; keyword: string }) => {
-  const response = await axios.post<ServiceApiResponse>(`${API_URL}/get-services`, filters);
-  return response.data;
-};
-
 /**
  * One page of services.
  *
@@ -250,9 +203,6 @@ export const fetchCareerOpenings = () =>
 
 export const fetchCareerOpening = (slug: string) =>
   axios.get<CareerOpeningResponse>(`${API_URL}/career-openings/${slug}`).then((res) => res.data);
-
-export const fetchCareerContent = () =>
-  axios.get<CareerContentResponse>(`${API_URL}/career-content`).then((res) => res.data);
 
 /** Submit a career application (with CV) as multipart/form-data. */
 export const submitCareerApplication = async (payload: CareerApplicationPayload) => {

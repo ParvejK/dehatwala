@@ -65,7 +65,6 @@ interface SignInProps {
   className?: string;
 }
 const SignIn: FC<SignInProps> = ({ className }) => {
-  const [otp, setOtp] = useState(null);
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const redirectPath = searchParams.get("path") ? decodeURIComponent(searchParams.get("path")) : "/";
@@ -92,14 +91,12 @@ const SignIn: FC<SignInProps> = ({ className }) => {
   const handleMobileSubmit: SubmitHandler<FormDataStep1> = async (data) => {
     const result = await postData(`${API_URL}/request-otp`, data);
     if (result) {
-      setOtp(result.otp);
       setMobileNumber(data.mobile_no);
       setStep(2);
 
       // Programmatically set the OTP value in the input field
       setValue("otp", result.otp.toString());
     }
-    console.log(otp);
   };
 
   const mutation = useMutation({
