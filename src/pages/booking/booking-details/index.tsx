@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import BookingSteps from "../../../components/booking/booking-steps";
 import { bookingPath } from "../../../components/booking/steps";
 import { checkAvailability, getCities, getStates, saveUserAddress } from "../../../react-query/apis";
+import { apiErrorMessage, isUnauthorized } from "../../../react-query/http";
 import { useUserAddresses } from "../../../react-query/hooks";
 import { useAuthStore } from "../../../store/auth-store";
 import { useBookingStore } from "../../../store/booking-store";
@@ -46,7 +47,7 @@ const BookingDetailsPage = () => {
   const navigate = useNavigate();
 
   const booking = useBookingStore();
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
 
   const [bookDate, setBookDate] = useState(booking.bookDate);
   // Start time is no longer collected — workers are scheduled by the ops team.
@@ -208,45 +209,72 @@ const BookingDetailsPage = () => {
         return;
       }
 
-      // Persist the worksite so it appears under Saved Addresses, and carry its
-      // row id into the booking payload. A failed save must never block the
-      // booking, so the error is swallowed and the id simply stays null.
-      let addressId = selectedAddressId;
+      // Everything typed so far is kept whatever happens next, so a trip through
+      // sign-in — or a failed save — comes back to a filled-in form rather than
+      // an empty one.
+      const remember = (addressId: number | null) => {
+        booking.setSchedule({ bookDate, timeSlot });
+        booking.setAddress({
+          address: address.trim(),
+          addressLabel: addressLabel.trim() || "Worksite",
+          addressId,
+          stateId,
+          cityId,
+          stateName: states?.states?.find((item) => String(item.id) === stateId)?.name ?? "",
+          cityName: cities?.cites?.find((item) => String(item.id) === cityId)?.name ?? "",
+          pincode,
+          instructions: instructions.trim(),
+          serviceAreaId: availability.service_area?.id ?? null,
+        });
+      };
 
-      if (user?.id) {
-        try {
-          const saveResult = await saveUserAddress({
-            user_id: user.id,
-            label: addressLabel.trim() || "Worksite",
-            address: address.trim(),
-            state_id: stateId,
-            city_id: cityId,
-            pincode,
-            instructions: instructions.trim(),
-            service_area_id: availability.service_area?.id ?? null,
-          });
-          addressId = saveResult.address?.id ?? addressId;
-          // Keep Saved Addresses and this picker in step with what was just stored.
-          queryClient.invalidateQueries({ queryKey: ["user-addresses", user.id] });
-        } catch (error) {
-          console.error("Could not save the worksite address:", error);
-        }
+      // The worksite is stored against the customer's account and the booking
+      // records only its row id, so there is nothing to attach it to until they
+      // are signed in. Send them to sign in and straight back here.
+      if (!token || !user?.id) {
+        remember(null);
+        const here = window.location.pathname + window.location.search;
+        navigate(`/sign-in?path=${encodeURIComponent(here)}`);
+        return;
       }
 
-      booking.setSchedule({ bookDate, timeSlot });
-      booking.setAddress({
-        address: address.trim(),
-        addressLabel: addressLabel.trim() || "Worksite",
-        addressId,
-        stateId,
-        cityId,
-        stateName: states?.states?.find((item) => String(item.id) === stateId)?.name ?? "",
-        cityName: cities?.cites?.find((item) => String(item.id) === cityId)?.name ?? "",
-        pincode,
-        instructions: instructions.trim(),
-        serviceAreaId: availability.service_area?.id ?? null,
-      });
+      // The address must reach the database before step 3: its id is the only
+      // record of where the job is, and a booking placed without one leaves the
+      // crew with no site to go to. A failure keeps the visitor on this page.
+      let addressId = selectedAddressId;
 
+      try {
+        const saveResult = await saveUserAddress({
+          user_id: user.id,
+          label: addressLabel.trim() || "Worksite",
+          address: address.trim(),
+          state_id: stateId,
+          city_id: cityId,
+          pincode,
+          instructions: instructions.trim(),
+          service_area_id: availability.service_area?.id ?? null,
+        });
+
+        addressId = saveResult.address?.id ?? null;
+
+        if (!addressId) throw new Error("The API accepted the address but returned no id.");
+
+        // Keep Saved Addresses and this picker in step with what was just stored.
+        queryClient.invalidateQueries({ queryKey: ["user-addresses", user.id] });
+      } catch (error) {
+        console.error("Could not save the worksite address:", error);
+        remember(null);
+
+        setFormError(
+          isUnauthorized(error)
+            ? "Your session has expired, so the address could not be saved. Please sign in again to continue."
+            : apiErrorMessage(error, "We could not save this worksite address. Please check the details and try again.")
+        );
+        setIsChecking(false);
+        return;
+      }
+
+      remember(addressId);
       navigate(bookingPath(slug ?? "", "payment"));
     } catch (error) {
       console.error("Availability check failed:", error);

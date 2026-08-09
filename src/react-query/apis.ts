@@ -32,6 +32,10 @@ import {
   UserAddressesResponse,
 } from "../types";
 import { API_URL } from "./constants";
+// Installs the interceptor that signs API calls with the customer's token.
+// Imported here rather than in `main.tsx` so it cannot be missed: nothing calls
+// the API without going through this module.
+import "./http";
 
 /**
  * @Categories

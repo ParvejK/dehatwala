@@ -100,11 +100,15 @@ const PaymentPage = () => {
   // Guard against landing on step 3 without completing step 2. Stands down once
   // the booking is placed, since the confirmation screen clears the address on
   // its way out and would otherwise trip this on the way past.
+  //
+  // A missing `addressId` counts as incomplete: the worksite reached this
+  // browser but never the database, so the booking would record no site for the
+  // crew to go to. Step 2 saves it and hands the id over.
   useEffect(() => {
-    if (token && slug && !booking.address && !placed) {
+    if (token && slug && !placed && (!booking.address || !booking.addressId)) {
       navigate(bookingPath(slug, "booking-details"), { replace: true });
     }
-  }, [token, slug, booking.address, placed, navigate]);
+  }, [token, slug, booking.address, booking.addressId, placed, navigate]);
 
   // `totalDayPrice` already includes the tip, per the day-rate store.
   const subtotal = day.totalDayPrice;
