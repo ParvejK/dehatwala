@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 import SectionHeader from "../../components/dashboard/section-header";
 
-const SUPPORT_PHONE = "+918600999922";
+const SUPPORT_PHONE = "+91 9997982419";
 const SUPPORT_EMAIL = "support@dehatwala.com";
-const WHATSAPP_URL = "https://wa.me/918600999922";
+const WHATSAPP_URL = "https://wa.me/919997982419";
 
 const CHANNELS = [
   {

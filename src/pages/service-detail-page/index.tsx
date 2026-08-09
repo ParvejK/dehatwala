@@ -21,8 +21,8 @@ import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
 import { useServiceDetail } from "../../react-query/hooks";
 import { Review, Service } from "../../types";
 
-const SUPPORT_PHONE = "+918600999922";
-const WHATSAPP_URL = "https://wa.me/918600999922";
+const SUPPORT_PHONE = "+91 9997982419";
+const WHATSAPP_URL = "https://wa.me/919997982419";
 const FALLBACK_IMAGE = "/images/services/loading-material-handling/hero.jpg";
 
 const heroFeatures = [
@@ -34,7 +34,7 @@ const heroFeatures = [
 const benefits = [
   { icon: ShieldCheck, title: "Verified Workers", copy: "Every worker is background checked before deployment." },
   { icon: Wrench, title: "Right Equipment", copy: "Workers arrive with the tools the job needs." },
-  { icon: Clock, title: "On-Time Service", copy: "Timely manpower to keep your work on schedule." },
+  { icon: Clock, title: "On-Time Service", copy: "Reliable workers to keep your work on schedule." },
   { icon: HardHat, title: "Skilled Workers", copy: "Experienced and trained workers for every site." },
 ];
 
@@ -264,13 +264,6 @@ const AboutSection = ({ service }: { service: Service }) => (
           service.short_description && (
             <p className="mt-3 text-sm font-normal leading-6 text-[#5a6a90]">{service.short_description}</p>
           )
-        )}
-
-        {service.category?.description && (
-          <p className="mt-4 border-l-2 border-[#dce7fb] pl-3.5 text-xs font-normal leading-5 text-[#66779e]">
-            <span className="font-bold capitalize text-[#0f1e57]">{service.category.name}:</span>{" "}
-            {service.category.description}
-          </p>
         )}
       </div>
 

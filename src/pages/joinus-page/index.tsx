@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import RegistrationForm from "../../components/joinus/registration-form";
 import WorkerTestimonials from "../../components/joinus/worker-testimonials";
 
-const SUPPORT_PHONE = "+918600999922";
+const SUPPORT_PHONE = "+91 9997982419";
 
 const HERO_HIGHLIGHTS = [
   { icon: MapPin, title: "नज़दीक के काम", copy: "आपके आसपास उपलब्ध काम" },

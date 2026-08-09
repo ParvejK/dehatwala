@@ -217,7 +217,7 @@ const ServiceCard = ({ service }: { service: Service }) => {
           <div className="flex flex-wrap items-center gap-3">
             <div className="rounded-lg bg-[#0b3fc4] px-3.5 py-1.5 text-white">
               <span className="block text-[9px] font-medium leading-none text-blue-200">
-                {price ? "Starting from" : "Pricing"}
+                {price ? "Pricing" : "Pricing"}
               </span>
               <strong className="mt-1 block text-sm font-bold leading-none">
                 {price ? (

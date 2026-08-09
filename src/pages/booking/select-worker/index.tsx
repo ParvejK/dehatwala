@@ -298,8 +298,8 @@ const SelectWorkerPage = () => {
               ) : (
                 <p className="mt-5 rounded-2xl border border-[#f3d6b8] bg-[#fff8ef] px-4 py-3.5 text-xs leading-5 text-[#7a5a1f]">
                   Pricing for this service is on request. Call us on{" "}
-                  <a href="tel:+918600999922" className="font-extrabold text-[#0b3fc4] hover:underline">
-                    +91 86009 99922
+                  <a href="tel:+91 9997982419" className="font-extrabold text-[#0b3fc4] hover:underline">
+                    +91 9997982419
                   </a>{" "}
                   and our team will quote it for you.
                 </p>

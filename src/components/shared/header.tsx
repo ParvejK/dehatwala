@@ -39,10 +39,7 @@ const Header = () => {
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
           {[
             ["/", "Home"],
-            ["/about-us", "About us"],
-            ["/media-news", "Media & news"],
-            ["/blog", "Blogs"],
-            ["/contact", "Contact"],
+            ["/about-us", "About us"]
           ].map(([to, label]) => (
             <NavLink
               key={to}
@@ -71,9 +68,27 @@ const Header = () => {
               {data?.categories.map((category) => <li key={category.id}><Link className="rounded-lg" to={`/services/${category.slug}`}>{category.name}</Link></li>)}
             </ul>
           </div>
+          {[
+            ["/media-news", "Media & news"],
+            ["/become-a-part-of-dehatwala", "Join Dehatwala"],
+            ["/contact", "Contact"],
+          ].map(([to, label]) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === "/"}
+              className={({ isActive }) =>
+                `rounded-lg px-3 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100 ${
+                  isActive ? "bg-blue-50 text-blue-700" : "text-slate-700 hover:bg-slate-50 hover:text-blue-700"
+                }`
+              }
+            >
+              {label}
+            </NavLink>
+          ))}
         </nav>
         <div className="flex items-center gap-2">
-          <a href="tel:+918600999922" aria-label="Call booking support" className="hidden size-10 items-center justify-center rounded-xl border border-slate-200 text-blue-700 transition hover:border-blue-200 hover:bg-blue-50 xl:inline-flex"><Headphones size={18} aria-hidden="true" /></a>
+          <a href="tel:+91 9997982419" aria-label="Call booking support" className="hidden size-10 items-center justify-center rounded-xl border border-slate-200 text-blue-700 transition hover:border-blue-200 hover:bg-blue-50 xl:inline-flex"><Headphones size={18} aria-hidden="true" /></a>
           {!hideBookCta && (
             <Link to={SERVICE_LISTING_PATH} className="hidden min-h-11 items-center gap-2 rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 sm:inline-flex">Book a worker <ArrowRight size={16} aria-hidden="true" /></Link>
           )}

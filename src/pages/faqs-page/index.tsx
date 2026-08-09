@@ -235,7 +235,7 @@ const SupportCard = () => (
       </div>
       <div className="flex flex-col gap-3 sm:flex-row">
         <a
-          href="https://wa.me/918600999922"
+          href="https://wa.me/919997982419"
           target="_blank"
           rel="noreferrer"
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 focus:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200"

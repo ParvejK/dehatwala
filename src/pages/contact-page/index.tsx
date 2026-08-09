@@ -31,9 +31,9 @@ const contactDetails = [
   {
     icon: Phone,
     label: "Call our team",
-    value: "+91 90008 780999",
+    value: "+91 9997982419",
     supportingText: "For bookings and general support",
-    href: "tel:+919000878099",
+    href: "tel:+919997982419",
   },
   {
     icon: Mail,
@@ -178,10 +178,10 @@ const ContactUsPage = () => {
                   <Headphones size={18} aria-hidden="true" /> Prefer to speak with us?
                 </p>
                 <a
-                  href="tel:+919000878099"
+                  href="tel:+919997982419"
                   className="mt-3 inline-flex items-center gap-2 text-sm text-blue-100 hover:text-white"
                 >
-                  Call +91 90008 780999 <ArrowRight size={16} aria-hidden="true" />
+                  Call +91 9997982419 <ArrowRight size={16} aria-hidden="true" />
                 </a>
               </div>
             </aside>

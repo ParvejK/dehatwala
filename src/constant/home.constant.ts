@@ -6,6 +6,7 @@ import {
   CreditCard,
   Headphones,
   IndianRupee,
+  Landmark,
   LocateFixed,
   Lock,
   MapPin,
@@ -85,25 +86,32 @@ export const trustAssurances = [
   { icon: Smartphone, label: "Digital Booking" },
 ];
 
+/**
+ * The external registrations, on the right of "Trust and Recognised".
+ *
+ * These four repeated `trustAssurances` word for word, so the section made the
+ * same claim twice and the government recognitions the heading promises were
+ * nowhere on the page. Left = what we guarantee, right = who recognises us.
+ */
 export const recognition = [
   {
+    icon: Landmark,
+    title: "DPIIT recognised",
+    copy: "A recognised startup building dependable workforce access.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Udyam registered",
+    copy: "Registered enterprise supporting local jobs and businesses.",
+  },
+  {
+    icon: LocateFixed,
+    title: "Startup UP recognised",
+    copy: "Part of a growing ecosystem for entrepreneurship and impact.",
+  },
+  {
     icon: ShieldCheck,
-    title: "Verified Credentials",
-    copy: "Every worker is background checked before they are sent to a site.",
-  },
-  {
-    icon: Lock,
-    title: "Secure Platform",
-    copy: "Bookings and payments run over protected, trusted technology.",
-  },
-  {
-    icon: MapPin,
-    title: "Local Workforce",
-    copy: "Workers matched from your own area, so they reach you sooner.",
-  },
-  {
-    icon: Smartphone,
-    title: "Digital Booking",
-    copy: "Raise a request, track it and pay — all from your phone.",
+    title: "Secure online payments",
+    copy: "Protected transactions through trusted payment technology.",
   },
 ];
