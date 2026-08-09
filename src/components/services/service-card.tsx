@@ -1,7 +1,7 @@
 import { ArrowRight, Headphones, Sparkles, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
+import RemoteImage from "../shared/remote-image";
 import { formatPrice, primaryWorkerRate, WorkerPricedService } from "./pricing";
 
 /**
@@ -36,10 +36,10 @@ const ServiceCard = ({ service, badge }: ServiceCardProps) => {
           aria-hidden="true"
           className="relative block overflow-hidden focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-blue-400"
         >
-          <img
-            src={`${VITE_IMAGE_PATH_URL}/service/${service.service_image}`}
+          <RemoteImage
+            folder="service"
+            file={service.service_image}
             alt=""
-            loading="lazy"
             className="h-52 w-full object-cover transition duration-500 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-transparent" />

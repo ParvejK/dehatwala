@@ -21,6 +21,7 @@ import ServiceSearch from "../../components/services/service-search";
 import ServiceSearchResults from "../../components/services/service-search-results";
 import TawkMessenger from "../../components/shared/TawkMessenger";
 import RemoteAvatar from "../../components/shared/remote-avatar";
+import RemoteImage from "../../components/shared/remote-image";
 import {
   benefits,
   impact,
@@ -30,7 +31,6 @@ import {
   workerAssurances,
   workerBenefits,
 } from "../../constant/home.constant";
-import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
 import { useCategories, useFetchClients, useServices } from "../../react-query/hooks";
 import { Service } from "../../types";
 
@@ -263,8 +263,9 @@ const HomePage = () => {
                   className="group relative flex min-h-[25rem] overflow-hidden rounded-[2rem] bg-[var(--home-color-brand-deep)] shadow-xl shadow-blue-950/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
                   aria-label={`Explore ${category.name} services`}
                 >
-                  <img
-                    src={`${VITE_IMAGE_PATH_URL}/category/${category.cat_img}`}
+                  <RemoteImage
+                    folder="category"
+                    file={category.cat_img}
                     alt={`${category.name} services`}
                     className="absolute inset-0 h-full w-full object-cover opacity-75 transition duration-500 group-hover:scale-105"
                   />
@@ -297,8 +298,9 @@ const HomePage = () => {
                   >
                     <div className="flex w-full flex-col">
                       <div className="relative min-h-28 flex-1 overflow-hidden rounded-[1rem] bg-[var(--home-color-surface-soft)]">
-                        <img
-                          src={`${VITE_IMAGE_PATH_URL}/category/${category.cat_img}`}
+                        <RemoteImage
+                          folder="category"
+                          file={category.cat_img}
                           alt=""
                           className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
                         />

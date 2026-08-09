@@ -6,11 +6,18 @@ export const mediaArticlePath = (slug: string) => `/media-news/news/${slug}`;
 /** Placeholder hrefs must not render as outbound links. */
 export const isRealUrl = (url?: string | null) => !!url && /^https?:\/\//i.test(url);
 
+/**
+ * A placeholder rather than "" when the row has no image: an empty `src` makes
+ * the browser re-request the current page, which is both a wasted round trip
+ * and a broken-looking box.
+ */
+const FALLBACK = "/images/services/loading-material-handling/hero.jpg";
+
 export const mediaImage = (filename?: string | null) =>
-  filename ? `${VITE_IMAGE_PATH_URL}/media/${filename}` : "";
+  filename ? `${VITE_IMAGE_PATH_URL}/media/${encodeURIComponent(filename)}` : FALLBACK;
 
 export const publicationLogo = (filename?: string | null) =>
-  filename ? `${VITE_IMAGE_PATH_URL}/publication/${filename}` : "";
+  filename ? `${VITE_IMAGE_PATH_URL}/publication/${encodeURIComponent(filename)}` : FALLBACK;
 
 export const formatMediaDate = (value: string) =>
   new Date(value).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
