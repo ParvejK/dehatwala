@@ -311,7 +311,7 @@ const DashboardBookings = () => {
         <ul className="space-y-4">
           {bookings.map((booking) => {
             const tone = statusTone(booking.status);
-            const isPaid = !!booking.transaction_id;
+            const isPaid = booking.billing ? booking.billing.amount_due <= 0 : !!booking.transaction_id;
             const awaitingPayment = isAwaitingPayment(booking);
             const isPending = booking.status === "pending" || booking.status === "confirmed";
             const inProgress = booking.status === "in_progress";

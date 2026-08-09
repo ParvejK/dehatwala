@@ -45,5 +45,17 @@ export const STATUS_FILTERS: { key: BookingStatus | "all"; label: string }[] = [
 ];
 
 /** A booking still owing money — cancelled ones are not chased for payment. */
-export const isAwaitingPayment = (booking: { transaction_id?: string; status?: string }) =>
-  !booking.transaction_id && booking.status !== "cancelled" && booking.status !== "rejected";
+export const isAwaitingPayment = (booking: {
+  transaction_id?: string;
+  status?: string;
+  billing?: { amount_due: number };
+}) => {
+  if (booking.status === "cancelled" || booking.status === "rejected") return false;
+
+  // `billing.amount_due` is authoritative: `transaction_id` holds one
+  // reference, so a booking half-paid in two instalments looked fully settled
+  // the moment the first one landed.
+  if (booking.billing) return booking.billing.amount_due > 0;
+
+  return !booking.transaction_id;
+};

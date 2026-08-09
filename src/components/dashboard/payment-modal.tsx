@@ -45,9 +45,11 @@ const PaymentModal = ({
   const [method, setMethod] = useState<(typeof METHODS)[number]["key"]>("upi");
   const [isPaying, setIsPaying] = useState(false);
 
-  const total = Number(booking.total_amount || 0);
-  const paid = booking.transaction_id ? total : 0;
-  const due = total - paid;
+  // From the API's billing block, not from `transaction_id` — that holds a
+  // single reference, so a booking paid in two parts would read as unpaid.
+  const total = booking.billing?.total_amount ?? Number(booking.total_amount || 0);
+  const paid = booking.billing?.amount_paid ?? (booking.transaction_id ? total : 0);
+  const due = booking.billing?.amount_due ?? total - paid;
 
   const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
 
@@ -75,6 +77,8 @@ const PaymentModal = ({
     try {
       const { data } = await axios.post(
         `${API_URL}/payment/create-order`,
+        // No amount sent: the server charges the full outstanding balance,
+        // so the figure is never taken from the browser.
         { booking_id: booking.id },
         authHeaders
       );

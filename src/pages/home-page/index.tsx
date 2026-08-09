@@ -8,7 +8,6 @@ import {
   LayoutGrid,
   MapPin,
   MessageCircleMore,
-  ShieldCheck,
   Sparkles,
   Star,
   TrendingUp,
@@ -27,6 +26,7 @@ import {
   impact,
   recognition,
   steps,
+  trustAssurances,
   workerAssurances,
   workerBenefits,
 } from "../../constant/home.constant";
@@ -557,18 +557,30 @@ const HomePage = () => {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-300 to-transparent" />
         <div className="relative mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 lg:px-10">
           <div>
-            <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-[var(--home-color-brand)]">
-              <BadgeCheck size={15} aria-hidden="true" /> Recognised by
-            </p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--home-color-ink)] sm:text-4xl lg:text-5xl">
+            {/* The "Recognised by" eyebrow is gone: it repeated the heading
+                directly beneath it. */}
+            <h2 className="text-3xl font-extrabold tracking-tight text-[var(--home-color-ink)] sm:text-4xl lg:text-5xl">
               Trust and <span className="text-[var(--home-color-brand)]">Recognised</span>
             </h2>
             <p className="mt-5 max-w-md text-base leading-7 text-slate-600">
               Backed by Government Recognition &amp; Secure Technology.
             </p>
-            <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-[var(--home-color-border)] bg-white px-4 py-3 text-sm font-bold text-[var(--home-color-ink)] shadow-sm">
-              <ShieldCheck size={22} className="text-emerald-600" aria-hidden="true" /> Trusted by 1,00,000+ workers
-            </div>
+
+            {/* What the platform itself guarantees, beside the external
+                registrations on the right. */}
+            <ul className="mt-8 grid max-w-md gap-3 sm:grid-cols-2">
+              {trustAssurances.map(({ icon: Icon, label }) => (
+                <li
+                  key={label}
+                  className="flex items-center gap-2.5 rounded-2xl border border-[var(--home-color-border)] bg-white px-3.5 py-3 text-[13px] font-bold text-[var(--home-color-ink)] shadow-sm"
+                >
+                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)]">
+                    <Icon size={16} aria-hidden="true" />
+                  </span>
+                  {label}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {recognition.map(({ icon: Icon, title, copy }) => (

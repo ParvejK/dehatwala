@@ -24,6 +24,7 @@ import { readServiceWorkerObj } from "../../components/booking/service-worker-ob
 import { isAwaitingPayment, STAGES, statusTone } from "../../components/dashboard/booking-status";
 import PaymentModal from "../../components/dashboard/payment-modal";
 import RefundSummary from "../../components/dashboard/refund-summary";
+import PaymentHistory from "../../components/dashboard/payment-history";
 import { SkeletonBookingCard, SkeletonListRow } from "../../components/skeleton/skeleton";
 
 const formatAmount = (value: number) => `₹${new Intl.NumberFormat("en-IN").format(Math.round(value || 0))}`;
@@ -115,7 +116,7 @@ const DashboardBookingDetail = () => {
   }
 
   const tone = statusTone(booking.status);
-  const isPaid = !!booking.transaction_id;
+  const isPaid = booking.billing ? booking.billing.amount_due <= 0 : !!booking.transaction_id;
   const awaitingPayment = isAwaitingPayment(booking);
   // Cancel stays offered once work is under way — the customer may still need
   // to call it off, and the API replies with how. Matches the bookings list.
@@ -322,6 +323,9 @@ const DashboardBookingDetail = () => {
         />
         {booking.transaction_id && <Row label="Transaction ID" value={booking.transaction_id} />}
       </Panel>
+
+      {/* Every instalment taken, with the running total. */}
+      <PaymentHistory billing={booking.billing} />
 
       {/* Only present on a cancelled booking that had money against it. */}
       <RefundSummary refund={booking.refund} />

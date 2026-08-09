@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import Modal from "./modal";
 import RefundSummary from "./refund-summary";
+import PaymentHistory from "./payment-history";
 import { BookedService } from "../../react-query/booking-type";
 import { readServiceWorkerObj } from "../booking/service-worker-obj";
 import { isAwaitingPayment, statusTone } from "./booking-status";
@@ -49,7 +50,9 @@ const BookingDetailsModal = ({
   const tip = Number(booking.tip || 0);
   const discount = Number(booking.coupon_discounted || 0);
   const total = Number(booking.total_amount || 0);
-  const paid = booking.transaction_id ? total : 0;
+  // From billing, so a part-paid booking shows what was actually taken.
+  const paid = booking.billing?.amount_paid ?? (booking.transaction_id ? total : 0);
+  const due = booking.billing?.amount_due ?? total - paid;
 
   // Cash bookings carry a convenience charge that is not stored as its own
   // column. Without deriving it the rows above simply did not add up to the
@@ -123,10 +126,15 @@ const BookingDetailsModal = ({
         {convenienceFee > 0 && <Row label="Cash Convenience Charge" value={formatAmount(convenienceFee)} />}
         <Row label="Total Amount" value={formatAmount(total)} />
         <Row label="Paid Amount" value={formatAmount(paid)} />
-        <Row label="Pending Amount" value={formatAmount(total - paid)} strong={total - paid > 0} />
+        <Row label="Pending Amount" value={formatAmount(due)} strong={due > 0} />
         <Row label="Payment Mode" value={booking.payment_mode === "offline" ? "Pay after service" : "Online"} />
         {booking.transaction_id && <Row label="Transaction ID" value={booking.transaction_id} />}
       </Group>
+
+      {/* Every instalment taken, with the running total. */}
+      <div className="mt-4">
+        <PaymentHistory billing={booking.billing} />
+      </div>
 
       {/* Only present on a cancelled booking that had money against it. */}
       <div className="mt-4">

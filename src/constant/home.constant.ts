@@ -71,6 +71,20 @@ export const workerAssurances = [
   { icon: Headphones, title: "सहायता हमेशा साथ", copy: "हमारी टीम हमेशा आपके साथ है" },
 ];
 
+/**
+ * The four assurances beside the "Trust and Recognised" heading.
+ *
+ * Distinct from `recognition` on the right of that section: those are the
+ * external registrations (DPIIT, Udyam), these are what the platform itself
+ * guarantees.
+ */
+export const trustAssurances = [
+  { icon: BadgeCheck, label: "Verified Credentials" },
+  { icon: Lock, label: "Secure Platform" },
+  { icon: MapPin, label: "Local Workforce" },
+  { icon: Smartphone, label: "Digital Booking" },
+];
+
 export const recognition = [
   {
     icon: ShieldCheck,

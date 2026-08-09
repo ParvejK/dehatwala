@@ -22,6 +22,10 @@ export interface BookedService {
   worksite_label?: string | null;
   /** Only on cancelled bookings that had money against them. */
   refund?: BookingRefund | null;
+  /** Totals and instalments — the source of truth for paid vs due. */
+  billing?: BookingBilling;
+  amount_due?: number;
+  is_fully_paid?: boolean;
   /** Row in `user_addresses`; null when the booking was made signed-out. */
   address_id?: number | null;
   instruction?: string;
@@ -70,6 +74,38 @@ export interface BookingRefund {
   /** Customer-facing wording, built by the API. */
   reason_label: string;
   processed_at: string | null;
+}
+
+/** One instalment taken against a booking. */
+export interface BookingPayment {
+  id: number;
+  amount: number;
+  method: string;
+  method_label: string;
+  kind: string;
+  kind_label: string;
+  reference: string | null;
+  /** Staff member who took a cash payment; null for online. */
+  collected_by: string | null;
+  note: string | null;
+  paid_at: string;
+}
+
+/**
+ * The money side of a booking, computed by the API.
+ *
+ * Use this rather than deriving paid/unpaid from `transaction_id` — that only
+ * ever holds one reference, so a booking paid in two parts reads as unpaid.
+ */
+export interface BookingBilling {
+  total_amount: number;
+  amount_paid: number;
+  amount_due: number;
+  payment_status: "unpaid" | "partial" | "paid" | "overpaid";
+  payment_status_label: string;
+  can_make_payment: boolean;
+  can_pay_after_service: boolean;
+  payments: BookingPayment[];
 }
 
 /** Mirrors `BookService::STATUSES` in the API. */
