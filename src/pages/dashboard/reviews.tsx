@@ -2,6 +2,7 @@ import { PenLine, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import SectionHeader from "../../components/dashboard/section-header";
+import { SkeletonList, SkeletonListRow } from "../../components/skeleton/skeleton";
 import StatTile from "../../components/dashboard/stat-tile";
 import { useServiceReview } from "../../react-query/auth-service-review-api";
 import { useAuthStore } from "../../store/auth-store";
@@ -47,11 +48,9 @@ const DashboardReviews = () => {
       </div>
 
       {isPending ? (
-        <div className="space-y-4" aria-busy="true">
-          {[0, 1, 2].map((item) => (
-            <div key={item} className="h-32 animate-pulse rounded-2xl border border-[#dce7fb] bg-white" />
-          ))}
-        </div>
+        <SkeletonList count={3} label="Loading your reviews">
+          {(index) => <SkeletonListRow key={index} lines={3} />}
+        </SkeletonList>
       ) : isError ? (
         <div className="rounded-2xl border border-[#f3d6b8] bg-[#fff8ef] p-8 text-center" role="alert">
           <h3 className="text-sm font-extrabold text-[#7a5a1f]">We could not load your reviews</h3>

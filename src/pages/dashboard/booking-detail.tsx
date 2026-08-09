@@ -23,6 +23,8 @@ import { BookedService } from "../../react-query/booking-type";
 import { readServiceWorkerObj } from "../../components/booking/service-worker-obj";
 import { isAwaitingPayment, STAGES, statusTone } from "../../components/dashboard/booking-status";
 import PaymentModal from "../../components/dashboard/payment-modal";
+import RefundSummary from "../../components/dashboard/refund-summary";
+import { SkeletonBookingCard, SkeletonListRow } from "../../components/skeleton/skeleton";
 
 const formatAmount = (value: number) => `₹${new Intl.NumberFormat("en-IN").format(Math.round(value || 0))}`;
 
@@ -77,7 +79,19 @@ const DashboardBookingDetail = () => {
   const workers = useMemo(() => readServiceWorkerObj(booking?.service_worker_obj), [booking]);
 
   if (isLoading) {
-    return <div className="h-96 animate-pulse rounded-2xl border border-[#dce7fb] bg-white" aria-busy="true" />;
+    // Shaped like the page it stands in for: header, two panels, then the
+    // workers table — rather than one tall grey block.
+    return (
+      <div role="status" aria-busy="true" className="space-y-4">
+        <span className="sr-only">Loading booking</span>
+        <SkeletonBookingCard />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <SkeletonListRow lines={3} />
+          <SkeletonListRow lines={3} />
+        </div>
+        <SkeletonListRow lines={4} />
+      </div>
+    );
   }
 
   if (isError || !booking) {
@@ -103,7 +117,10 @@ const DashboardBookingDetail = () => {
   const tone = statusTone(booking.status);
   const isPaid = !!booking.transaction_id;
   const awaitingPayment = isAwaitingPayment(booking);
-  const canCancel = booking.status === "pending" || booking.status === "confirmed";
+  // Cancel stays offered once work is under way — the customer may still need
+  // to call it off, and the API replies with how. Matches the bookings list.
+  const canCancel =
+    booking.status === "pending" || booking.status === "confirmed" || booking.status === "in_progress";
 
   const tip = Number(booking.tip || 0);
   const discount = Number(booking.coupon_discounted || 0);
@@ -122,9 +139,8 @@ const DashboardBookingDetail = () => {
     }
   };
 
-  const worksite = [booking.address, booking.city_name, booking.state_name, booking.pincode]
-    .filter(Boolean)
-    .join(", ");
+  // Built by the API from the linked saved address.
+  const worksite = booking.worksite;
 
   return (
     <div className="space-y-4">
@@ -224,7 +240,7 @@ const DashboardBookingDetail = () => {
         </Panel>
 
         <Panel title="Worksite" icon={MapPin}>
-          <Row label="Label" value={booking.address_label || "Worksite"} />
+          <Row label="Label" value={booking.worksite_label || "Worksite"} />
           <Row label="Address" value={<span className="block max-w-[15rem]">{worksite || "—"}</span>} />
           {booking.instruction && (
             <Row label="Instructions" value={<span className="block max-w-[15rem]">{booking.instruction}</span>} />
@@ -306,6 +322,9 @@ const DashboardBookingDetail = () => {
         />
         {booking.transaction_id && <Row label="Transaction ID" value={booking.transaction_id} />}
       </Panel>
+
+      {/* Only present on a cancelled booking that had money against it. */}
+      <RefundSummary refund={booking.refund} />
 
       {awaitingPayment && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[#fff8ef] px-4 py-3.5">

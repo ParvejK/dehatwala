@@ -10,16 +10,24 @@ export interface BookedService {
   /** Bare filename — build the URL as `${VITE_IMAGE_PATH_URL}/service/${name}`. */
   service_image?: string | null;
   display_title?: string;
-  address: string;
-  address_label?: string;
+  /**
+   * The full worksite line, built by the API from the linked address.
+   *
+   * `book_services` no longer stores the address itself — only `address_id`
+   * into `user_addresses` — so the individual address/city/state/pincode
+   * columns are gone and this is the only place the address is exposed.
+   */
+  worksite?: string | null;
+  /** The customer's own name for that address, e.g. "Office". */
+  worksite_label?: string | null;
+  /** Only on cancelled bookings that had money against them. */
+  refund?: BookingRefund | null;
   /** Row in `user_addresses`; null when the booking was made signed-out. */
   address_id?: number | null;
   instruction?: string;
-  city_id: number;
-  state_id: number;
-  city_name?: string;
-  state_name?: string;
-  pincode: number;
+  // city_id / state_id / city_name / state_name / pincode / address were
+  // dropped from `book_services` when the worksite was normalised into
+  // `user_addresses`. Use `worksite` above.
   meta_title: string | null;
   meta_keyword: string | null;
   meta_description: string | null;
@@ -42,6 +50,26 @@ export interface BookedService {
   deleted_at: string | null;
   created_at: string; // ISO date format
   updated_at: string; // ISO date format
+}
+
+/**
+ * What was refunded when a booking was cancelled.
+ *
+ * Present only on cancelled bookings that had money against them; the API
+ * omits it entirely otherwise.
+ */
+export interface BookingRefund {
+  id: number;
+  booking_amount: string;
+  cancellation_charge: string;
+  refund_amount: string;
+  charge_percent: string;
+  /** pending → the money is on its way; processed → it has left. */
+  status: "pending" | "processed" | "failed" | "not_applicable";
+  reason: string;
+  /** Customer-facing wording, built by the API. */
+  reason_label: string;
+  processed_at: string | null;
 }
 
 /** Mirrors `BookService::STATUSES` in the API. */

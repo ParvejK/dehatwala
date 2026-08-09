@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 import Modal from "./modal";
+import RefundSummary from "./refund-summary";
 import { BookedService } from "../../react-query/booking-type";
 import { readServiceWorkerObj } from "../booking/service-worker-obj";
 import { isAwaitingPayment, statusTone } from "./booking-status";
@@ -55,9 +56,9 @@ const BookingDetailsModal = ({
   // total — a ₹1,950 + ₹100 − ₹205 breakdown showing ₹1,882.
   const convenienceFee = Math.max(0, Math.round((total - (workers.workers_total + tip - discount)) * 100) / 100);
 
-  const worksite = [booking.address, booking.city_name, booking.state_name, booking.pincode]
-    .filter(Boolean)
-    .join(", ");
+  // Built by the API from the linked saved address; the booking row no longer
+  // stores the address itself.
+  const worksite = booking.worksite;
 
   return (
     <Modal
@@ -126,6 +127,11 @@ const BookingDetailsModal = ({
         <Row label="Payment Mode" value={booking.payment_mode === "offline" ? "Pay after service" : "Online"} />
         {booking.transaction_id && <Row label="Transaction ID" value={booking.transaction_id} />}
       </Group>
+
+      {/* Only present on a cancelled booking that had money against it. */}
+      <div className="mt-4">
+        <RefundSummary refund={booking.refund} />
+      </div>
     </Modal>
   );
 };

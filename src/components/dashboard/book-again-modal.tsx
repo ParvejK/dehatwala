@@ -25,7 +25,9 @@ const BookAgainModal = ({ booking, onClose }: { booking: BookedService; onClose:
 
   const destination = booking.service_slug ? `/service/detail/${booking.service_slug}` : "/services/all";
 
-  const worksite = [booking.address, booking.city_name, booking.state_name].filter(Boolean).join(", ");
+  // Built by the API from the linked saved address; the booking row no longer
+  // stores the address itself.
+  const worksite = booking.worksite;
 
   return (
     <Modal

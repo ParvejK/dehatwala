@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { Building2, Home, MapPin, Pencil, Plus, ShieldCheck, Trash2 } from "lucide-react";
 
 import SectionHeader from "../../components/dashboard/section-header";
+import { SkeletonList, SkeletonListRow } from "../../components/skeleton/skeleton";
 import {
   deleteUserAddress,
   getCities,
@@ -270,11 +271,9 @@ const DashboardAddresses = () => {
       )}
 
       {isLoading ? (
-        <div className="space-y-3" aria-busy="true">
-          {[0, 1].map((item) => (
-            <div key={item} className="h-24 animate-pulse rounded-2xl border border-[#dce7fb] bg-white" />
-          ))}
-        </div>
+        <SkeletonList count={2} label="Loading your saved addresses">
+          {(index) => <SkeletonListRow key={index} lines={2} />}
+        </SkeletonList>
       ) : isError ? (
         <div className="rounded-2xl border border-[#f3d6b8] bg-[#fff8ef] p-8 text-center" role="alert">
           <h3 className="text-sm font-extrabold text-[#7a5a1f]">We could not load your addresses</h3>

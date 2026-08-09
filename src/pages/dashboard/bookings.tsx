@@ -22,6 +22,11 @@ import { BookedService, BookingStatus } from "../../react-query/booking-type";
 import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
 import SectionHeader from "../../components/dashboard/section-header";
 import StatTile from "../../components/dashboard/stat-tile";
+import {
+  SkeletonBookingCard,
+  SkeletonList,
+  SkeletonStatTiles,
+} from "../../components/skeleton/skeleton";
 import { readServiceWorkerObj, totalWorkerCount } from "../../components/booking/service-worker-obj";
 import { isAwaitingPayment, STAGES, STATUS_FILTERS, statusTone } from "../../components/dashboard/booking-status";
 import BookingDetailsModal from "../../components/dashboard/booking-details-modal";
@@ -172,6 +177,11 @@ const DashboardBookings = () => {
         </div>
       )}
 
+      {/* Skeleton rather than the real tiles: those would read "0 Total
+          Bookings" to a customer who has plenty, until the data lands. */}
+      {isLoading ? (
+        <SkeletonStatTiles />
+      ) : (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile icon={CalendarDays} value={String(totalBookings)} label="Total Bookings" tone="brand" />
         <StatTile icon={CheckCircle2} value={String(completedCount)} label="Completed" tone="success" />
@@ -189,6 +199,7 @@ const DashboardBookings = () => {
           }
         />
       </div>
+      )}
 
       {pendingTotal > 0 && (
         <div className="flex flex-col gap-3 rounded-2xl border border-[#f3d6b8] bg-[#fff8ef] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
@@ -244,11 +255,9 @@ const DashboardBookings = () => {
       )}
 
       {isLoading ? (
-        <div className="space-y-4" aria-busy="true">
-          {[0, 1].map((item) => (
-            <div key={item} className="h-52 animate-pulse rounded-2xl border border-[#dce7fb] bg-white" />
-          ))}
-        </div>
+        <SkeletonList count={3} label="Loading your bookings">
+          {(index) => <SkeletonBookingCard key={index} />}
+        </SkeletonList>
       ) : isError ? (
         <div className="rounded-2xl border border-[#f3d6b8] bg-[#fff8ef] p-8 text-center" role="alert">
           <h3 className="text-sm font-extrabold text-[#7a5a1f]">We could not load your bookings</h3>
@@ -304,15 +313,19 @@ const DashboardBookings = () => {
             const tone = statusTone(booking.status);
             const isPaid = !!booking.transaction_id;
             const awaitingPayment = isAwaitingPayment(booking);
-            // Actionable only before work starts — the API refuses otherwise.
-            const canCancel = booking.status === "pending" || booking.status === "confirmed";
-            // Still worth showing (disabled) while a job is under way; a
-            // finished or cancelled booking has nothing left to change.
-            const isChangeable = canCancel || booking.status === "in_progress";
+            const isPending = booking.status === "pending" || booking.status === "confirmed";
+            const inProgress = booking.status === "in_progress";
+
+            // Cancel stays available once work is under way — the customer may
+            // still need to call it off, and the API answers with how.
+            // Rescheduling does not: a crew already on site cannot be moved to
+            // another date from here.
+            const showCancel = isPending || inProgress;
+            const showReschedule = isPending;
             const canReview = booking.status === "completed";
             // The API sums this from the snapshot; fall back for legacy rows.
             const workers = booking.worker_count ?? totalWorkerCount(readServiceWorkerObj(booking.service_worker_obj));
-            const location = [booking.city_name, booking.state_name].filter(Boolean).join(", ") || booking.address;
+            const location = booking.worksite;
 
             return (
               <li key={booking.id} className="rounded-2xl border border-[#dce7fb] bg-white p-4 sm:p-5">
@@ -410,18 +423,20 @@ const DashboardBookings = () => {
                               >
                                 Book Again
                               </button>
-                              {canCancel && (
+                              {showReschedule && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setRescheduleFor(booking);
+                                    setOpenMenu(null);
+                                  }}
+                                  className="block w-full px-3.5 py-2 text-left text-[11px] font-bold text-[#40517b] transition hover:bg-[#f1f6ff]"
+                                >
+                                  Reschedule
+                                </button>
+                              )}
+                              {showCancel && (
                                 <>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setRescheduleFor(booking);
-                                      setOpenMenu(null);
-                                    }}
-                                    className="block w-full px-3.5 py-2 text-left text-[11px] font-bold text-[#40517b] transition hover:bg-[#f1f6ff]"
-                                  >
-                                    Reschedule
-                                  </button>
                                   <button
                                     type="button"
                                     onClick={() => {
@@ -540,32 +555,25 @@ const DashboardBookings = () => {
                         <Repeat2 size={13} aria-hidden="true" /> Book Again
                       </button>
 
-                      {/* Shown on any booking that has not finished, and
-                          disabled once work is under way rather than removed.
-                          Hiding them made a live booking look unchangeable with
-                          no explanation; the API refuses at this point and says
-                          why, so the reason is surfaced here instead. */}
-                      {isChangeable && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => setRescheduleFor(booking)}
-                            disabled={!canCancel}
-                            title={canCancel ? undefined : WORK_STARTED_HINT}
-                            className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-[#cfe0fb] bg-white px-4 text-[11px] font-extrabold text-[#0b3fc4] transition hover:bg-[#eef4ff] disabled:cursor-not-allowed disabled:border-[#e6edf9] disabled:text-[#a8b6d4] disabled:hover:bg-white"
-                          >
-                            <CalendarClock size={13} aria-hidden="true" /> Reschedule
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setPendingCancel(booking.id)}
-                            disabled={!canCancel}
-                            title={canCancel ? undefined : WORK_STARTED_HINT}
-                            className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-red-200 bg-white px-4 text-[11px] font-extrabold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:border-[#e6edf9] disabled:text-[#a8b6d4] disabled:hover:bg-white"
-                          >
-                            <XCircle size={13} aria-hidden="true" /> Cancel
-                          </button>
-                        </>
+                      {showReschedule && (
+                        <button
+                          type="button"
+                          onClick={() => setRescheduleFor(booking)}
+                          className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-[#cfe0fb] bg-white px-4 text-[11px] font-extrabold text-[#0b3fc4] transition hover:bg-[#eef4ff]"
+                        >
+                          <CalendarClock size={13} aria-hidden="true" /> Reschedule
+                        </button>
+                      )}
+
+                      {showCancel && (
+                        <button
+                          type="button"
+                          onClick={() => setPendingCancel(booking.id)}
+                          title={inProgress ? WORK_STARTED_HINT : undefined}
+                          className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-red-200 bg-white px-4 text-[11px] font-extrabold text-red-600 transition hover:bg-red-50"
+                        >
+                          <XCircle size={13} aria-hidden="true" /> Cancel
+                        </button>
                       )}
                     </div>
                   </div>

@@ -38,9 +38,7 @@ const BookedServicePage = () => {
     "#ID",
     "Service Detail",
     "Mode",
-    "Address",
-    "State",
-    "City",
+    "Worksite",
     "Book date",
     "Time slot",
     "Pick & drop",
@@ -62,9 +60,9 @@ const BookedServicePage = () => {
         service.id,
         service.service_title || "N/A",
         service.mode,
-        service.address,
-        service.state_name || "N/A",
-        service.city_name || "N/A",
+        // One worksite line now: the address, city and state columns were
+        // dropped when the worksite moved into `user_addresses`.
+        service.worksite || "N/A",
         service.book_date,
         service.time_slot,
         service.pick_and_drop ? "Yes" : "No",
