@@ -1,6 +1,4 @@
-import { useMemo, useState } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -15,17 +13,19 @@ import {
   Users,
   XCircle,
 } from "lucide-react";
+import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import { useAuthStore } from "../../store/auth-store";
-import { useBookedService, useCancelBooking } from "../../react-query/auth-booked-service-api";
-import { BookedService } from "../../react-query/booking-type";
 import { readServiceWorkerObj } from "../../components/booking/service-worker-obj";
 import { isAwaitingPayment, STAGES, statusTone } from "../../components/dashboard/booking-status";
+import PaymentHistory from "../../components/dashboard/payment-history";
 import PaymentModal from "../../components/dashboard/payment-modal";
 import RefundSummary from "../../components/dashboard/refund-summary";
-import PaymentHistory from "../../components/dashboard/payment-history";
 import { SkeletonBookingCard, SkeletonListRow } from "../../components/skeleton/skeleton";
+import { useBookedService, useCancelBooking } from "../../react-query/auth-booked-service-api";
+import { BookedService } from "../../react-query/booking-type";
+import { useAuthStore } from "../../store/auth-store";
 
 const formatAmount = (value: number) => `₹${new Intl.NumberFormat("en-IN").format(Math.round(value || 0))}`;
 
@@ -42,15 +42,7 @@ const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
   </div>
 );
 
-const Panel = ({
-  title,
-  icon: Icon,
-  children,
-}: {
-  title: string;
-  icon: typeof MapPin;
-  children: React.ReactNode;
-}) => (
+const Panel = ({ title, icon: Icon, children }: { title: string; icon: typeof MapPin; children: React.ReactNode }) => (
   <section className="rounded-2xl border border-[#dce7fb] bg-white p-4 sm:p-5">
     <h2 className="flex items-center gap-2 text-[13px] font-extrabold text-[#0f1e57]">
       <Icon size={15} className="text-[#0b3fc4]" aria-hidden="true" />
@@ -72,10 +64,7 @@ const DashboardBookingDetail = () => {
 
   // Served from the list query's cache when arriving from the list, so opening a
   // booking is instant and there is one source of truth for its data.
-  const booking = useMemo(
-    () => data?.booked_services?.find((item) => String(item.id) === id),
-    [data, id]
-  );
+  const booking = useMemo(() => data?.booked_services?.find((item) => String(item.id) === id), [data, id]);
 
   const workers = useMemo(() => readServiceWorkerObj(booking?.service_worker_obj), [booking]);
 
@@ -120,8 +109,7 @@ const DashboardBookingDetail = () => {
   const awaitingPayment = isAwaitingPayment(booking);
   // Cancel stays offered once work is under way — the customer may still need
   // to call it off, and the API replies with how. Matches the bookings list.
-  const canCancel =
-    booking.status === "pending" || booking.status === "confirmed" || booking.status === "in_progress";
+  const canCancel = booking.status === "pending" || booking.status === "confirmed" || booking.status === "in_progress";
 
   const tip = Number(booking.tip || 0);
   const discount = Number(booking.coupon_discounted || 0);
@@ -235,7 +223,7 @@ const DashboardBookingDetail = () => {
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="Schedule" icon={Clock3}>
           <Row label="Work date" value={formatDate(booking.book_date)} />
-          <Row label="Time slot" value={booking.time_slot || "—"} />
+          {/* <Row label="Time slot" value={booking.time_slot || "—"} /> */}
           <Row label="Booking type" value={booking.mode === "hour" ? "Hourly" : "Per day"} />
           <Row label="Placed on" value={formatDate(booking.created_at)} />
         </Panel>
@@ -314,11 +302,7 @@ const DashboardBookingDetail = () => {
         <Row
           label="Payment status"
           value={
-            isPaid ? (
-              <span className="text-emerald-700">Paid</span>
-            ) : (
-              <span className="text-amber-700">Pending</span>
-            )
+            isPaid ? <span className="text-emerald-700">Paid</span> : <span className="text-amber-700">Pending</span>
           }
         />
         {booking.transaction_id && <Row label="Transaction ID" value={booking.transaction_id} />}

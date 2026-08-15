@@ -1,6 +1,4 @@
-import { useMemo, useState } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
 import {
   AlertTriangle,
   CalendarClock,
@@ -14,27 +12,25 @@ import {
   Wallet,
   XCircle,
 } from "lucide-react";
+import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
-import { useAuthStore } from "../../store/auth-store";
+import { readServiceWorkerObj, totalWorkerCount } from "../../components/booking/service-worker-obj";
+import BookAgainModal from "../../components/dashboard/book-again-modal";
+import BookingDetailsModal from "../../components/dashboard/booking-details-modal";
+import { isAwaitingPayment, STAGES, STATUS_FILTERS, statusTone } from "../../components/dashboard/booking-status";
+import PaymentModal from "../../components/dashboard/payment-modal";
+import PendingPaymentsModal from "../../components/dashboard/pending-payments-modal";
+import RescheduleModal from "../../components/dashboard/reschedule-modal";
+import SectionHeader from "../../components/dashboard/section-header";
+import StatTile from "../../components/dashboard/stat-tile";
+import WriteReviewModal from "../../components/dashboard/write-review-modal";
+import { SkeletonBookingCard, SkeletonList, SkeletonStatTiles } from "../../components/skeleton/skeleton";
 import { useBookedService, useCancelBooking } from "../../react-query/auth-booked-service-api";
 import { BookedService, BookingStatus } from "../../react-query/booking-type";
 import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
-import SectionHeader from "../../components/dashboard/section-header";
-import StatTile from "../../components/dashboard/stat-tile";
-import {
-  SkeletonBookingCard,
-  SkeletonList,
-  SkeletonStatTiles,
-} from "../../components/skeleton/skeleton";
-import { readServiceWorkerObj, totalWorkerCount } from "../../components/booking/service-worker-obj";
-import { isAwaitingPayment, STAGES, STATUS_FILTERS, statusTone } from "../../components/dashboard/booking-status";
-import BookingDetailsModal from "../../components/dashboard/booking-details-modal";
-import WriteReviewModal from "../../components/dashboard/write-review-modal";
-import BookAgainModal from "../../components/dashboard/book-again-modal";
-import RescheduleModal from "../../components/dashboard/reschedule-modal";
-import PaymentModal from "../../components/dashboard/payment-modal";
-import PendingPaymentsModal from "../../components/dashboard/pending-payments-modal";
+import { useAuthStore } from "../../store/auth-store";
 
 const formatAmount = (value: number) => `₹${new Intl.NumberFormat("en-IN").format(Math.round(value || 0))}`;
 
@@ -84,7 +80,7 @@ const DashboardBookings = () => {
   const allBookings = useMemo(() => data?.booked_services ?? [], [data]);
   const bookings = useMemo(
     () => (filter === "all" ? allBookings : allBookings.filter((booking) => booking.status === filter)),
-    [allBookings, filter]
+    [allBookings, filter],
   );
 
   // Counts come from the API so they describe the whole history rather than
@@ -182,23 +178,23 @@ const DashboardBookings = () => {
       {isLoading ? (
         <SkeletonStatTiles />
       ) : (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile icon={CalendarDays} value={String(totalBookings)} label="Total Bookings" tone="brand" />
-        <StatTile icon={CheckCircle2} value={String(completedCount)} label="Completed" tone="success" />
-        <StatTile icon={XCircle} value={String(cancelledCount)} label="Cancelled" tone="danger" />
-        <StatTile
-          icon={Wallet}
-          value={formatAmount(pendingTotal)}
-          label="Pending Payments"
-          hint={`${pendingPayment.length} ${pendingPayment.length === 1 ? "booking" : "bookings"}`}
-          tone="warning"
-          action={
-            pendingPayment.length > 0
-              ? { label: "View All →", onClick: () => setShowPendingPayments(true) }
-              : undefined
-          }
-        />
-      </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatTile icon={CalendarDays} value={String(totalBookings)} label="Total Bookings" tone="brand" />
+          <StatTile icon={CheckCircle2} value={String(completedCount)} label="Completed" tone="success" />
+          <StatTile icon={XCircle} value={String(cancelledCount)} label="Cancelled" tone="danger" />
+          <StatTile
+            icon={Wallet}
+            value={formatAmount(pendingTotal)}
+            label="Pending Payments"
+            hint={`${pendingPayment.length} ${pendingPayment.length === 1 ? "booking" : "bookings"}`}
+            tone="warning"
+            action={
+              pendingPayment.length > 0
+                ? { label: "View All →", onClick: () => setShowPendingPayments(true) }
+                : undefined
+            }
+          />
+        </div>
       )}
 
       {pendingTotal > 0 && (
@@ -505,9 +501,12 @@ const DashboardBookings = () => {
                     {/* ---------- Payment ---------- */}
                     {awaitingPayment ? (
                       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#fff8ef] px-4 py-3">
-                        <p className="text-[12px] font-extrabold text-[#7a5a1f]">
-                          Payment Pending: {formatAmount(Number(booking.total_amount))}
-                        </p>
+                        <div>
+                          <p className="text-[12px] font-extrabold text-[#7a5a1f]">
+                            Payment Due: {formatAmount(Number(booking.total_amount))}
+                          </p>
+                          <small>Pay after service completion.</small>
+                        </div>
                         <button
                           type="button"
                           onClick={() => setPayingFor(booking)}

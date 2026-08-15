@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 
-import Modal from "./modal";
-import RefundSummary from "./refund-summary";
-import PaymentHistory from "./payment-history";
 import { BookedService } from "../../react-query/booking-type";
 import { readServiceWorkerObj } from "../booking/service-worker-obj";
 import { isAwaitingPayment, statusTone } from "./booking-status";
+import Modal from "./modal";
+import PaymentHistory from "./payment-history";
+import RefundSummary from "./refund-summary";
 
 const formatAmount = (value: number) => `₹${new Intl.NumberFormat("en-IN").format(Math.round(value || 0))}`;
 
@@ -109,7 +109,7 @@ const BookingDetailsModal = ({
 
       <Group title="Booking Information">
         <Row label="Booking Date" value={formatDate(booking.book_date)} />
-        <Row label="Time Slot" value={booking.time_slot || "—"} />
+        {/* <Row label="Time Slot" value={booking.time_slot || "—"} /> */}
         <Row label="Work Location" value={<span className="block max-w-[15rem]">{worksite || "—"}</span>} />
         {booking.instruction && (
           <Row label="Instructions" value={<span className="block max-w-[15rem]">{booking.instruction}</span>} />
@@ -120,9 +120,7 @@ const BookingDetailsModal = ({
       <Group title="Payment Information">
         <Row label="Workers Subtotal" value={formatAmount(workers.workers_total)} />
         {tip > 0 && <Row label="Tip" value={formatAmount(tip)} />}
-        {booking.coupon_code && (
-          <Row label={`Coupon (${booking.coupon_code})`} value={`− ${formatAmount(discount)}`} />
-        )}
+        {booking.coupon_code && <Row label={`Coupon (${booking.coupon_code})`} value={`− ${formatAmount(discount)}`} />}
         {convenienceFee > 0 && <Row label="Cash Convenience Charge" value={formatAmount(convenienceFee)} />}
         <Row label="Total Amount" value={formatAmount(total)} />
         <Row label="Paid Amount" value={formatAmount(paid)} />

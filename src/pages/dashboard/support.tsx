@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import SectionHeader from "../../components/dashboard/section-header";
 
 const SUPPORT_PHONE = "+91 9997982419";
-const SUPPORT_EMAIL = "support@dehatwala.com";
+const SUPPORT_EMAIL = "dehatwalainfo@gmail.com";
 const WHATSAPP_URL = "https://wa.me/919997982419";
 
 const CHANNELS = [
@@ -41,8 +41,20 @@ const CHANNELS = [
 ];
 
 const LINKS = [
-  { icon: CircleHelp, title: "Frequently Asked Questions", copy: "Find answers to common questions.", to: "/faqs", action: "View FAQs" },
-  { icon: ArrowUpRight, title: "Contact Us", copy: "Visit our contact page for more options.", to: "/contact", action: "Open Contact Page" },
+  {
+    icon: CircleHelp,
+    title: "Frequently Asked Questions",
+    copy: "Find answers to common questions.",
+    to: "/faqs",
+    action: "View FAQs",
+  },
+  {
+    icon: ArrowUpRight,
+    title: "Contact Us",
+    copy: "Visit our contact page for more options.",
+    to: "/contact",
+    action: "Open Contact Page",
+  },
 ];
 
 const DashboardSupport = () => (

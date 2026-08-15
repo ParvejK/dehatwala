@@ -1,23 +1,19 @@
+import { BadgeCheck, Bell, ChevronRight, Pencil, Smartphone, Trash2, UserRound } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { BadgeCheck, Bell, ChevronRight, Pencil, Smartphone, Trash2, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import SectionHeader from "../../components/dashboard/section-header";
-import ProfilePhoto from "../../components/dashboard/profile-photo";
+import { ChangeMobileModal, DeleteAccountModal, EditProfileModal } from "../../components/dashboard/account-modals";
 import { formatMobile } from "../../components/dashboard/nav";
-import {
-  ChangeMobileModal,
-  DeleteAccountModal,
-  EditProfileModal,
-} from "../../components/dashboard/account-modals";
-import { useAuthStore } from "../../store/auth-store";
+import ProfilePhoto from "../../components/dashboard/profile-photo";
+import SectionHeader from "../../components/dashboard/section-header";
 import {
   accountErrorMessage,
   NotificationKey,
   useNotificationPrefs,
   useUpdateNotifications,
 } from "../../react-query/account-api";
+import { useAuthStore } from "../../store/auth-store";
 
 const APP_VERSION = "1.0.0";
 
@@ -77,15 +73,18 @@ const DashboardSettings = () => {
     updateNotifications.mutate(
       { [key]: !preferences[key] },
       {
-        onError: (error) =>
-          toast.error(accountErrorMessage(error, "We could not save that. Please try again.")),
-      }
+        onError: (error) => toast.error(accountErrorMessage(error, "We could not save that. Please try again.")),
+      },
     );
   };
 
   return (
     <div className="space-y-5">
-      <SectionHeader title="Account Settings" description="Manage your profile, notifications and account." />
+      <SectionHeader
+        title="Account Settings"
+        description="Manage your personal details, notifications and account preferences.
+"
+      />
 
       {openDialog === "profile" && <EditProfileModal onClose={close} />}
       {openDialog === "mobile" && <ChangeMobileModal onClose={close} />}
