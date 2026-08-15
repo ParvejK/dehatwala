@@ -104,8 +104,8 @@ const ContactUsPage = () => {
         <div className="relative isolate mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-[0_28px_80px_-46px_rgba(15,47,112,0.45)]">
           <img
             src="/images/contact-us-hero.png"
-            alt="Three Dehatwala professionals ready to assist at a construction site"
-            className="absolute inset-y-0 right-0 -z-20 hidden h-full w-[57%] object-cover object-[50%_35%] lg:block"
+            alt="A Dehatwala support agent on a headset helping customers from her desk"
+            className="absolute inset-y-0 right-0 -z-20 hidden h-full w-[57%] object-cover object-right lg:block"
           />
           <div
             className="pointer-events-none absolute inset-0 -z-10 hidden bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.99)_40%,rgba(255,255,255,0.9)_50%,rgba(255,255,255,0.16)_72%,transparent_100%)] lg:block"
@@ -162,8 +162,8 @@ const ContactUsPage = () => {
           <div className="relative border-t border-blue-100 lg:hidden">
             <img
               src="/images/contact-us-hero.png"
-              alt="Three Dehatwala professionals ready to assist at a construction site"
-              className="aspect-[4/3] w-full object-cover object-[50%_32%] sm:aspect-[16/10]"
+              alt="A Dehatwala support agent on a headset helping customers from her desk"
+              className="aspect-[4/3] w-full object-cover object-right sm:aspect-[16/10]"
             />
             <div
               className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/35 to-transparent"

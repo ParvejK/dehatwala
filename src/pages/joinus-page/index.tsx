@@ -62,14 +62,17 @@ const JoinUs = () => (
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-10">
       {/* ---------- Hero ---------- */}
       <section className="relative isolate overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-[0_28px_80px_-46px_rgba(15,47,112,0.45)]">
+        {/* The photo is square, so a full-bleed `inset-0` would centre the
+            workers under the copy's white wash. Pinning it to the right half
+            keeps them clear of the text column (lg:w-[58%]). */}
         <img
-          src="/images/become-worker.png"
-          alt="निर्माण स्थल पर अलग-अलग काम करते देहात वाला के कुशल वर्कर"
-          className="absolute inset-0 -z-20 hidden size-full object-cover object-center lg:block"
+          src="/images/join-us-hero.png"
+          alt="देहात वाला के वर्कर मोबाइल पर लाइव बुकिंग स्टेटस दिखाते हुए"
+          className="absolute inset-y-0 right-0 -z-20 hidden h-full w-1/2 object-cover object-center lg:block"
         />
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 hidden bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.98)_35%,rgba(255,255,255,0.9)_48%,rgba(255,255,255,0.16)_74%,transparent_100%)] lg:block"
+          className="absolute inset-y-0 right-0 -z-10 hidden w-1/2 bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.72)_16%,rgba(255,255,255,0.18)_36%,transparent_54%)] lg:block"
         />
         <div
           aria-hidden="true"
@@ -125,9 +128,9 @@ const JoinUs = () => (
 
         <div className="relative border-t border-blue-100 lg:hidden">
           <img
-            src="/images/become-worker.png"
-            alt="निर्माण स्थल पर अलग-अलग काम करते देहात वाला के कुशल वर्कर"
-            className="aspect-[4/3] w-full object-cover object-[62%_center] sm:aspect-[16/9] sm:object-center"
+            src="/images/join-us-hero.png"
+            alt="देहात वाला के वर्कर मोबाइल पर लाइव बुकिंग स्टेटस दिखाते हुए"
+            className="aspect-[4/3] w-full object-cover object-center sm:aspect-[16/9]"
           />
           <div
             aria-hidden="true"

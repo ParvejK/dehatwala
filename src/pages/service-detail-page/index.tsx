@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { formatPrice, workerRates } from "../../components/services/pricing";
 import { parseBulletList, parseTags } from "../../components/services/content";
+import { formatPrice, workerRates } from "../../components/services/pricing";
 import { VITE_IMAGE_PATH_URL } from "../../react-query/constants";
 import { useServiceDetail } from "../../react-query/hooks";
 import { Review, Service } from "../../types";
@@ -249,7 +249,10 @@ const DetailHero = ({ service }: { service: Service }) => {
 };
 
 const AboutSection = ({ service }: { service: Service }) => (
-  <section aria-labelledby="about-heading" className="rounded-3xl border border-[#dce7fb] bg-[#f6f9ff] p-5 sm:p-7 lg:p-8">
+  <section
+    aria-labelledby="about-heading"
+    className="rounded-3xl border border-[#dce7fb] bg-[#f6f9ff] p-5 sm:p-7 lg:p-8"
+  >
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.5fr)] lg:gap-8">
       <div className="lg:pr-4">
         <h2 id="about-heading" className="text-xl font-extrabold tracking-tight text-[#0f1e57] sm:text-2xl">
@@ -287,15 +290,7 @@ const AboutSection = ({ service }: { service: Service }) => (
   </section>
 );
 
-const BulletCard = ({
-  heading,
-  items,
-  icon: Icon,
-}: {
-  heading: string;
-  items: string[];
-  icon: typeof BadgeCheck;
-}) => (
+const BulletCard = ({ heading, items, icon: Icon }: { heading: string; items: string[]; icon: typeof BadgeCheck }) => (
   <div className="rounded-3xl border border-[#dce7fb] bg-[#f6f9ff] p-5 sm:p-7">
     <SectionHeading>{heading}</SectionHeading>
     <ul className="mt-5 space-y-3.5">
@@ -377,8 +372,11 @@ const PricingSection = ({ service }: { service: Service }) => {
   );
 };
 
-const ReviewsSection =({ reviews, fallbackRole }: { reviews: Review[]; fallbackRole?: string }) => (
-  <section aria-labelledby="reviews-heading" className="rounded-3xl border border-[#dce7fb] bg-[#f6f9ff] p-5 sm:p-7 lg:p-8">
+const ReviewsSection = ({ reviews, fallbackRole }: { reviews: Review[]; fallbackRole?: string }) => (
+  <section
+    aria-labelledby="reviews-heading"
+    className="rounded-3xl border border-[#dce7fb] bg-[#f6f9ff] p-5 sm:p-7 lg:p-8"
+  >
     <h2 id="reviews-heading" className="text-center text-xl font-extrabold tracking-tight text-[#0f1e57] sm:text-2xl">
       What Our Customers Say
     </h2>
@@ -453,7 +451,7 @@ const BookingCallout = ({ service }: { service: Service }) => (
           to={`/book/${service.slug}/select-worker`}
           className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-xl bg-[#0b3fc4] px-6 text-sm font-bold text-white shadow-[0_10px_22px_-12px_rgba(11,63,196,0.85)] transition hover:-translate-y-0.5 hover:bg-[#0932a0] hover:shadow-[0_14px_26px_-12px_rgba(11,63,196,0.75)] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 motion-reduce:transform-none"
         >
-          Choose Workers <ArrowRight size={17} aria-hidden="true" />
+          Book Service <ArrowRight size={17} aria-hidden="true" />
         </Link>
         <p className="mt-2.5 text-center text-[11px] font-medium text-[#7080a4]">No payment on this step</p>
       </div>

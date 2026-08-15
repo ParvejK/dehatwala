@@ -502,9 +502,9 @@ const HomePage = () => {
                   and the top-right radius matches the card's own. */}
               <div className="overflow-hidden rounded-[1.5rem]">
                 <img
-                  src="/images/become-worker-2.png"
-                  alt="Dehatwala workers in blue uniforms and yellow safety helmets on a construction site"
-                  className="worker-photo-angled h-[20rem] w-full object-cover object-[center_25%] sm:h-[24rem] lg:h-[34rem]"
+                  src="/images/join-us-hero.png"
+                  alt="Dehatwala workers in blue uniforms and yellow safety helmets holding a phone with live booking status"
+                  className="worker-photo-angled h-[20rem] w-full object-cover object-center sm:h-[24rem] lg:h-[34rem]"
                 />
               </div>
             </div>
