@@ -234,16 +234,13 @@ const HomePage = () => {
           </div>
 
           {categoriesQuery.isLoading && (
-            <div className="grid gap-4 lg:grid-cols-[1.05fr_1.4fr]" aria-label="Loading service categories">
-              <div className="min-h-[25rem] animate-pulse rounded-[2rem] bg-[var(--home-color-surface-tint)]" />
-              <div className="grid gap-4 sm:grid-cols-2">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="min-h-48 animate-pulse rounded-[1.5rem] bg-[var(--home-color-surface-tint)]"
-                  />
-                ))}
-              </div>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-label="Loading service categories">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="min-h-[26rem] animate-pulse rounded-[1.75rem] bg-[var(--home-color-surface-tint)]"
+                />
+              ))}
             </div>
           )}
           {categoriesQuery.isError && (
@@ -255,71 +252,45 @@ const HomePage = () => {
             </p>
           )}
           {categoriesQuery.data && categoriesQuery.data.categories.length > 0 && (
-            <div className="grid gap-4 lg:grid-cols-[1.05fr_1.4fr]">
-              {categoriesQuery.data.categories.slice(0, 1).map((category) => (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {categoriesQuery.data.categories.slice(0, 6).map((category) => (
                 <Link
                   key={category.id}
                   to={`/services/${category.slug}`}
-                  className="group relative flex min-h-[25rem] overflow-hidden rounded-[2rem] bg-[var(--home-color-brand-deep)] shadow-xl shadow-blue-950/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
+                  className="group flex flex-col overflow-hidden rounded-[1.75rem] border border-[var(--home-color-border)] bg-[var(--home-color-surface)] shadow-sm transition duration-300 hover:-translate-y-1.5 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-950/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
                   aria-label={`Explore ${category.name} services`}
                 >
-                  <RemoteImage
-                    folder="category"
-                    file={category.cat_img}
-                    alt={`${category.name} services`}
-                    className="absolute inset-0 h-full w-full object-cover opacity-75 transition duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--home-color-brand-deep)] via-[var(--home-color-brand-deep)]/35 to-transparent" />
-                  <div className="relative mt-auto p-6 text-white sm:p-8">
-                    <span className="mb-4 inline-flex rounded-full border border-white/25 bg-white/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] backdrop-blur">
-                      Featured category
-                    </span>
-                    <h3 className="text-3xl font-extrabold tracking-tight">{category.name}</h3>
-                    <p className="mt-2 line-clamp-2 max-w-md text-sm leading-6 text-blue-50/85">
-                      {category.description}
-                    </p>
-                    <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold">
+                  {/*
+                    Category photos are full-body worker shots in mixed ratios
+                    (4:3 landscape and 4:5 portrait), so `object-cover` clipped
+                    heads and feet. A fixed frame plus `object-contain` keeps
+                    every subject whole; the tinted backdrop fills the leftover
+                    margin on whichever axis is short.
+                  */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-b from-[var(--home-color-surface-tint)] via-[var(--home-color-surface-soft)] to-[var(--home-color-surface)]">
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,255,255,0.75),transparent_62%)]" />
+                    <RemoteImage
+                      folder="category"
+                      file={category.cat_img}
+                      alt={`${category.name} worker`}
+                      className="absolute inset-0 h-full w-full object-contain p-5 transition duration-500 group-hover:scale-[1.04]"
+                    />
+                  </div>
+
+                  <div className="flex flex-1 flex-col border-t border-[var(--home-color-border)] p-5">
+                    <h3 className="text-xl font-extrabold tracking-tight text-[var(--home-color-ink)] transition group-hover:text-[var(--home-color-brand)]">
+                      {category.name}
+                    </h3>
+                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{category.description}</p>
+                    <span className="mt-auto flex items-center justify-between gap-3 pt-5 text-sm font-bold text-[var(--home-color-brand)]">
                       Explore services
-                      <span className="grid size-8 place-items-center rounded-full bg-white text-[var(--home-color-brand)] transition group-hover:translate-x-1">
+                      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--home-color-surface-tint)] transition group-hover:bg-[var(--home-color-brand)] group-hover:text-white">
                         <ArrowRight size={16} aria-hidden="true" />
                       </span>
                     </span>
                   </div>
                 </Link>
               ))}
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                {categoriesQuery.data.categories.slice(1, 5).map((category) => (
-                  <Link
-                    key={category.id}
-                    to={`/services/${category.slug}`}
-                    className="group flex min-h-48 overflow-hidden rounded-[1.5rem] border border-[var(--home-color-border)] bg-[var(--home-color-surface)] p-3 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-950/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
-                    aria-label={`Explore ${category.name} services`}
-                  >
-                    <div className="flex w-full flex-col">
-                      <div className="relative min-h-28 flex-1 overflow-hidden rounded-[1rem] bg-[var(--home-color-surface-soft)]">
-                        <RemoteImage
-                          folder="category"
-                          file={category.cat_img}
-                          alt=""
-                          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="flex items-center gap-3 px-2 pb-1 pt-4">
-                        <div className="min-w-0 flex-1">
-                          <h3 className="truncate text-lg font-extrabold text-[var(--home-color-ink)] transition group-hover:text-[var(--home-color-brand)]">
-                            {category.name}
-                          </h3>
-                          <p className="mt-1 line-clamp-1 text-xs text-slate-500">{category.description}</p>
-                        </div>
-                        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)] transition group-hover:bg-[var(--home-color-brand)] group-hover:text-white">
-                          <ArrowRight size={16} aria-hidden="true" />
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
             </div>
           )}
           {categoriesQuery.data && categoriesQuery.data.categories.length === 0 && (
