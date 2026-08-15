@@ -3,15 +3,15 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import {
   ArrowRight,
+  CalendarCheck2,
   CheckCircle2,
-  Clock3,
   Headphones,
   Mail,
   MapPin,
   MessageSquareText,
   Phone,
   Send,
-  ShieldCheck,
+  Zap,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -51,6 +51,25 @@ const contactDetails = [
   },
 ] as const;
 
+const supportHighlights = [
+  {
+    icon: Zap,
+    title: "Quick Response",
+  },
+  {
+    icon: Headphones,
+    title: "24×7 Support",
+  },
+  {
+    icon: CalendarCheck2,
+    title: "Booking Assistant",
+  },
+  {
+    icon: MapPin,
+    title: "Local Workforce",
+  },
+] as const;
+
 const inputClassName =
   "mt-2 min-h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-950 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-600 focus:ring-4 focus:ring-blue-100";
 
@@ -81,51 +100,80 @@ const ContactUsPage = () => {
 
   return (
     <main className="overflow-hidden bg-white text-slate-950">
-      <section className="relative isolate overflow-hidden bg-[var(--home-color-brand-deep)] text-white">
-        <div
-          className="pointer-events-none absolute inset-0 -z-10 opacity-[0.075] [background-image:linear-gradient(rgba(255,255,255,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.8)_1px,transparent_1px)] [background-size:64px_64px]"
-          aria-hidden="true"
-        />
-        <div className="relative mx-auto flex max-w-7xl flex-col gap-10 px-5 pb-28 pt-12 sm:px-8 sm:pb-20 lg:min-h-[540px] lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-16">
-          <div className="relative z-10 w-full lg:max-w-xl xl:max-w-2xl">
-            <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.28em] text-blue-300">
-              <span className="h-px w-10 bg-blue-400" aria-hidden="true" />
+      <section className="bg-white px-4 pt-5 sm:px-8 sm:pt-7 lg:px-10">
+        <div className="relative isolate mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-[0_28px_80px_-46px_rgba(15,47,112,0.45)]">
+          <img
+            src="/images/contact-us-hero.png"
+            alt="Three Dehatwala professionals ready to assist at a construction site"
+            className="absolute inset-y-0 right-0 -z-20 hidden h-full w-[57%] object-cover object-[50%_35%] lg:block"
+          />
+          <div
+            className="pointer-events-none absolute inset-0 -z-10 hidden bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.99)_40%,rgba(255,255,255,0.9)_50%,rgba(255,255,255,0.16)_72%,transparent_100%)] lg:block"
+            aria-hidden="true"
+          />
+          <div
+            className="pointer-events-none absolute -left-24 -top-24 -z-10 size-64 rounded-full bg-blue-100/70 blur-3xl"
+            aria-hidden="true"
+          />
+
+          <div className="relative z-10 px-6 py-9 sm:px-10 sm:py-12 lg:flex lg:min-h-[600px] lg:w-[58%] lg:flex-col lg:justify-center lg:px-14 lg:py-16">
+            <div className="max-w-xl">
+            <p className="inline-flex items-center gap-2.5 rounded-full border border-blue-200 bg-white/80 px-4 py-2 text-[0.68rem] font-bold uppercase tracking-[0.22em] text-blue-800 shadow-sm backdrop-blur">
+              <span className="size-1.5 rounded-full bg-yellow-400 ring-4 ring-yellow-100" aria-hidden="true" />
               We are here to help
             </p>
-            <h1 className="mt-7 max-w-3xl text-4xl font-black leading-[1.04] tracking-[-0.04em] sm:text-5xl lg:text-7xl">
-              Let&apos;s start a <span className="text-blue-300">conversation.</span>
+            <h1 className="mt-6 text-4xl font-black leading-[1.04] tracking-[-0.05em] text-[#08255c] sm:text-5xl lg:text-[3.75rem]">
+              How can we
+              <span className="block text-blue-700">help you today?</span>
             </h1>
-            <p className="mt-7 max-w-xl text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
+            <p className="mt-5 max-w-lg text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
               Need help finding a worker, managing a booking, or joining our network? Share a few details and our team
               will point you in the right direction.
             </p>
-            <div className="mt-8 grid max-w-xl grid-cols-2 border-y border-white/15 py-5">
-              <span className="pr-4 text-xs font-bold leading-5 text-slate-300 sm:text-sm">
-                <ShieldCheck size={17} className="mb-2 text-blue-400" aria-hidden="true" />
-                Helpful, human support
-              </span>
-              <span className="border-l border-white/15 pl-4 text-xs font-bold leading-5 text-slate-300 sm:pl-5 sm:text-sm">
-                <Clock3 size={17} className="mb-2 text-blue-400" aria-hidden="true" />
-                Mon–Sat, 9 AM–7 PM
-              </span>
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <a
+                href="#contact-form"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
+              >
+                Send us a message <ArrowRight size={17} aria-hidden="true" />
+              </a>
+              <a
+                href="tel:+919997982419"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white/80 px-5 py-3 text-sm font-bold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
+              >
+                <Phone size={17} aria-hidden="true" /> Call our team
+              </a>
+            </div>
+            </div>
+
+            <div className="mt-9 grid max-w-xl grid-cols-2 gap-x-5 gap-y-5 border-t border-blue-100 pt-6 sm:gap-x-8">
+              {supportHighlights.map(({ icon: Icon, title }) => (
+                <div key={title} className="flex items-center gap-3">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-blue-700 shadow-sm">
+                    <Icon size={17} strokeWidth={2.2} aria-hidden="true" />
+                  </span>
+                  <p className="text-xs font-extrabold leading-4 text-slate-700 sm:text-[13px]">{title}</p>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="relative w-full overflow-hidden rounded-2xl lg:absolute lg:inset-y-0 lg:right-0 lg:w-[56%] lg:rounded-none xl:right-[calc((1280px-100vw)/2)] xl:w-[calc(54%+(100vw-1280px)/2)]">
+          <div className="relative border-t border-blue-100 lg:hidden">
             <img
               src="/images/contact-us-hero.png"
-              alt="Dehatwala construction workers ready to help customers"
-              className="aspect-[16/10] h-full w-full object-cover object-center lg:aspect-auto"
+              alt="Three Dehatwala professionals ready to assist at a construction site"
+              className="aspect-[4/3] w-full object-cover object-[50%_32%] sm:aspect-[16/10]"
             />
             <div
-              className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(90deg,var(--home-color-brand-deep)_0%,rgba(6,43,121,0.88)_18%,rgba(6,43,121,0.2)_48%,transparent_72%)] lg:block"
+              className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/35 to-transparent"
               aria-hidden="true"
             />
           </div>
         </div>
       </section>
 
-      <section className="home-surface-soft py-14 sm:py-18 lg:py-24">
+      <section id="contact-form" className="home-surface-soft scroll-mt-24 py-14 sm:py-18 lg:py-24">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="grid gap-6 md:grid-cols-3">
             {contactDetails.map(({ icon: Icon, label, value, supportingText, href }) => (

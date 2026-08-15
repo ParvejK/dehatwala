@@ -417,34 +417,46 @@ const ReviewsSection =({ reviews, fallbackRole }: { reviews: Review[]; fallbackR
   </section>
 );
 
-const TrustBanner = ({ service }: { service: Service }) => (
+const BookingCallout = ({ service }: { service: Service }) => (
   <section
-    aria-labelledby="trust-banner-heading"
-    className="relative overflow-hidden rounded-3xl bg-[#062b79] px-5 py-7 text-white shadow-[0_20px_50px_-24px_rgba(6,43,121,0.9)] sm:px-8 sm:py-8"
+    aria-labelledby="booking-callout-heading"
+    className="rounded-3xl border border-[#dce7fb] bg-[#f6f9ff] p-5 sm:p-7 lg:p-8"
   >
-    <div aria-hidden="true" className="absolute -right-16 -top-24 size-72 rounded-full bg-blue-500/25 blur-2xl" />
-
-    <div className="relative grid items-center gap-6 lg:grid-cols-[1fr_auto]">
-      <div className="flex items-start gap-4">
-        <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-white/10">
-          <ShieldCheck size={27} className="text-amber-400" aria-hidden="true" />
+    <div className="grid items-center gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] lg:gap-8">
+      <div className="flex flex-col items-start gap-4 sm:flex-row">
+        <span className="grid size-14 shrink-0 place-items-center rounded-2xl border border-[#dbe7fb] bg-white text-[#0b3fc4] shadow-[0_4px_14px_rgba(26,64,135,0.06)]">
+          <ShieldCheck size={27} strokeWidth={1.8} aria-hidden="true" />
         </span>
         <div>
-          <h2 id="trust-banner-heading" className="text-xl font-extrabold tracking-tight sm:text-2xl">
-            Verified Workers. Trusted Service.
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#0b3fc4]">Ready when you are</p>
+          <h2
+            id="booking-callout-heading"
+            className="mt-1.5 text-xl font-extrabold tracking-tight text-[#0f1e57] sm:text-2xl"
+          >
+            Book {service.title} in a few simple steps
           </h2>
-          <p className="mt-2 max-w-xl text-sm font-normal leading-6 text-blue-100">
-            Book {service.title.toLowerCase()} with trained and background-checked workers from Dehatwala.
+          <p className="mt-2 max-w-2xl text-sm font-normal leading-6 text-[#5a6a90]">
+            Choose the worker type and quantity you need. You can review the schedule and service details before
+            confirming your booking.
+          </p>
+          <p className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-[#31416e]">
+            <BadgeCheck size={17} className="text-[#0b3fc4]" aria-hidden="true" />
+            Trained and background-checked workers
           </p>
         </div>
       </div>
 
-      <Link
-        to={`/book/${service.slug}/select-worker`}
-        className="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-white px-6 text-sm font-bold text-[#062b79] transition hover:bg-blue-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
-      >
-        Book This Service <ArrowRight size={17} aria-hidden="true" />
-      </Link>
+      <div className="rounded-2xl border border-[#e0eafb] bg-white p-4 shadow-[0_8px_24px_-18px_rgba(20,61,141,0.55)] sm:p-5 lg:justify-self-end">
+        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#5a6a90]">Next step</p>
+        <p className="mt-1 text-sm font-extrabold text-[#0f1e57]">Select workers and quantity</p>
+        <Link
+          to={`/book/${service.slug}/select-worker`}
+          className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-xl bg-[#0b3fc4] px-6 text-sm font-bold text-white shadow-[0_10px_22px_-12px_rgba(11,63,196,0.85)] transition hover:-translate-y-0.5 hover:bg-[#0932a0] hover:shadow-[0_14px_26px_-12px_rgba(11,63,196,0.75)] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 motion-reduce:transform-none"
+        >
+          Choose Workers <ArrowRight size={17} aria-hidden="true" />
+        </Link>
+        <p className="mt-2.5 text-center text-[11px] font-medium text-[#7080a4]">No payment on this step</p>
+      </div>
     </div>
   </section>
 );
@@ -546,7 +558,7 @@ const ServicesDetailsPage = () => {
               {reviews.length > 0 && (
                 <ReviewsSection reviews={reviews} fallbackRole={service.category?.name ?? service.category_name} />
               )}
-              <TrustBanner service={service} />
+              <BookingCallout service={service} />
               <SupportSection />
             </div>
           </>

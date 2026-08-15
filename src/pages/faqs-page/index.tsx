@@ -7,6 +7,7 @@ import {
   CircleHelp,
   CreditCard,
   Headphones,
+  Lightbulb,
   MessageCircle,
   Search,
   ShieldCheck,
@@ -42,15 +43,38 @@ type CategoryTab = CategoryStyle & {
 };
 
 /**
- * Icons are chosen per category `slug` — the API returns `icon: null` on every
- * row, and its ids are not stable enough to key on. An unknown slug falls back
- * to the neutral style rather than being dropped.
+ * The API currently provides no usable icon key, so match both category slug
+ * and name. This tolerates wording such as "Payments & Refunds" while keeping
+ * a neutral fallback for new categories.
  */
-const CATEGORY_STYLES: Record<string, CategoryStyle> = {
-  "booking-services": { icon: CalendarDays, iconClassName: "text-blue-700", iconBackground: "bg-blue-50" },
-  payments: { icon: CreditCard, iconClassName: "text-emerald-700", iconBackground: "bg-emerald-50" },
-  "worker-registration": { icon: UserRoundPlus, iconClassName: "text-violet-700", iconBackground: "bg-violet-50" },
-  "safety-support": { icon: ShieldCheck, iconClassName: "text-amber-700", iconBackground: "bg-amber-50" },
+const BOOKING_STYLE: CategoryStyle = {
+  icon: CalendarDays,
+  iconClassName: "text-blue-700",
+  iconBackground: "bg-blue-50",
+};
+
+const GENERAL_STYLE: CategoryStyle = {
+  icon: Lightbulb,
+  iconClassName: "text-cyan-700",
+  iconBackground: "bg-cyan-50",
+};
+
+const PAYMENT_STYLE: CategoryStyle = {
+  icon: CreditCard,
+  iconClassName: "text-emerald-700",
+  iconBackground: "bg-emerald-50",
+};
+
+const WORKER_STYLE: CategoryStyle = {
+  icon: UserRoundPlus,
+  iconClassName: "text-violet-700",
+  iconBackground: "bg-violet-50",
+};
+
+const SAFETY_STYLE: CategoryStyle = {
+  icon: ShieldCheck,
+  iconClassName: "text-amber-700",
+  iconBackground: "bg-amber-50",
 };
 
 const DEFAULT_STYLE: CategoryStyle = {
@@ -59,19 +83,30 @@ const DEFAULT_STYLE: CategoryStyle = {
   iconBackground: "bg-slate-100",
 };
 
-const styleFor = (slug?: string | null) => (slug && CATEGORY_STYLES[slug]) || DEFAULT_STYLE;
+const styleFor = (slug?: string | null, name?: string | null) => {
+  const categoryKey = `${slug ?? ""} ${name ?? ""}`.toLocaleLowerCase();
+
+  if (categoryKey.includes("book") || categoryKey.includes("service")) return BOOKING_STYLE;
+  if (categoryKey.includes("payment") || categoryKey.includes("refund")) return PAYMENT_STYLE;
+  if (categoryKey.includes("worker") || categoryKey.includes("registration")) return WORKER_STYLE;
+  if (categoryKey.includes("safety") || categoryKey.includes("support")) return SAFETY_STYLE;
+  if (categoryKey.includes("general")) return GENERAL_STYLE;
+
+  return DEFAULT_STYLE;
+};
 
 const stripMarkup = (value: string) => DOMPurify.sanitize(value, { ALLOWED_TAGS: [] }).trim();
+const stripQuestionNumber = (value: string) => value.replace(/^\s*\d+\s*[.)-]\s*/, "");
 
 const FaqHero = ({ search, onSearchChange }: { search: string; onSearchChange: (value: string) => void }) => (
   <section className="relative isolate overflow-hidden bg-[#062b79] text-white">
     <img
       src="/images/faq-hero.png"
       alt=""
-      className="absolute inset-0 h-full w-full object-cover object-[62%_center] sm:object-center"
+      className="absolute inset-0 h-full w-full object-contain object-right-bottom opacity-70 sm:opacity-90 lg:opacity-100"
       aria-hidden="true"
     />
-    <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,26,89,0.96)_0%,rgba(3,38,116,0.88)_38%,rgba(4,54,157,0.35)_66%,rgba(4,54,157,0.08)_100%)]" />
+    <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,26,89,0.98)_0%,rgba(3,38,116,0.94)_38%,rgba(4,54,157,0.35)_68%,rgba(4,54,157,0.03)_100%)]" />
 
     <Container className="relative flex min-h-[460px] items-center pb-24 pt-14 lg:min-h-[500px] lg:pb-28 lg:pt-16">
       <div className="relative z-10 max-w-2xl">
@@ -193,10 +228,15 @@ const FaqList = ({ title, style, faqs }: { title: string; style: CategoryStyle; 
       </div>
 
       <div className="divide-y divide-slate-100">
-        {faqs.map((faq) => (
+        {faqs.map((faq, index) => (
           <details key={faq.id} className="group py-1">
             <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 rounded-xl px-2 py-3 text-sm font-semibold leading-6 text-slate-800 transition hover:bg-blue-50 hover:text-blue-800 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100 [&::-webkit-details-marker]:hidden">
-              <span>{faq.question}</span>
+              <span className="flex min-w-0 items-start gap-2">
+                <span className="min-w-6 shrink-0 text-right font-bold text-blue-700">
+                  {index + 1}.
+                </span>
+                <span>{stripQuestionNumber(faq.question)}</span>
+              </span>
               <ChevronDown
                 className="shrink-0 text-slate-400 transition-transform duration-200 group-open:rotate-180 group-open:text-blue-700"
                 size={18}
@@ -292,7 +332,7 @@ const FaqsPage = () => {
         id: String(category.id),
         label: category.name,
         count: counts.get(String(category.id)) ?? 0,
-        ...styleFor(category.slug),
+        ...styleFor(category.slug, category.name),
       }))
       .filter((tab) => tab.count > 0);
   }, [categoriesQuery.data, allFaqs]);

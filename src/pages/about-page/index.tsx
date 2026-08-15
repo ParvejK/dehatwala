@@ -4,8 +4,10 @@ import {
   CalendarClock,
   Check,
   CircleHelp,
+  ClipboardCheck,
   Clock3,
   Handshake,
+  HardHat,
   Headphones,
   IndianRupee,
   MapPin,
@@ -40,6 +42,29 @@ const differences = [
     icon: Network,
     title: "Independent Worker Network",
     copy: "We support independent skilled and general workers across multiple service categories.",
+  },
+];
+
+const supportedJourneyPrinciples = [
+  {
+    icon: BadgeCheck,
+    title: "One supported journey",
+    copy: "From requirement to assignment.",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Requirement First",
+    copy: "Every booking starts with the actual work requirement.",
+  },
+  {
+    icon: HardHat,
+    title: "Built for Ground Reality",
+    copy: "Designed around real job-site needs, not generic hiring.",
+  },
+  {
+    icon: Sparkles,
+    title: "Simple by Design",
+    copy: "Less complexity. Clearer workforce access.",
   },
 ];
 
@@ -135,60 +160,60 @@ const ProblemColumn = ({ column, index }: { column: JourneyColumn; index: number
 const AboutPage = () => {
   return (
     <main className="overflow-hidden bg-white text-slate-950">
-      <section className="home-surface-soft relative isolate">
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_20%,rgba(37,99,235,0.13),transparent_28%),radial-gradient(circle_at_82%_74%,rgba(245,158,11,0.12),transparent_24%)]" />
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-14 sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-20">
+      <section className="relative isolate overflow-hidden border-b border-slate-100 bg-[linear-gradient(135deg,#ffffff_0%,#f8faff_58%,#eef4ff_100%)]">
+        <div className="pointer-events-none absolute -left-40 top-8 -z-10 size-[28rem] rounded-full bg-blue-100/70 blur-3xl" />
+        <div className="pointer-events-none absolute -right-40 bottom-0 -z-10 size-[32rem] rounded-full bg-amber-100/55 blur-3xl" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 py-16 sm:px-8 sm:py-20 lg:min-h-[44rem] lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:px-10 lg:py-24">
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-700 shadow-sm">
-              <Sparkles size={14} aria-hidden="true" /> About Dehatwala
+            <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-blue-700">
+              <span className="h-px w-8 bg-blue-600" aria-hidden="true" /> About Dehatwala
             </p>
-            <h1 className="mt-6 text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 max-w-xl text-4xl font-black leading-[1.02] tracking-[-0.04em] sm:text-5xl lg:text-7xl">
               Who <span className="text-blue-700">we are.</span>
             </h1>
-            <div className="mt-6 max-w-2xl space-y-4 text-base leading-7 text-slate-600">
-              <p>
-                Dehatwala is a technology-enabled workforce platform that helps customers connect with independent
-                skilled and general workers through a simple, assisted booking experience.
-              </p>
-              <p>
-                From understanding customer requirements to matching suitable workers, assignment coordination, and
-                booking support, Dehatwala provides an end-to-end assisted workforce experience designed to make hiring
-                simpler, faster, and more reliable.
-              </p>
-              <p>
-                Our mission is to make workforce hiring easier for customers while creating more consistent earning
-                opportunities for independent workers.
+            <p className="mt-6 max-w-xl text-lg font-medium leading-8 text-slate-700 sm:text-xl">
+              Dehatwala is a technology-enabled workforce platform connecting customers with independent skilled and
+              general workers through a simple, assisted booking experience.
+            </p>
+            <p className="mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+              From understanding requirements to worker matching, assignment coordination, and booking support, we
+              make workforce hiring simpler, faster, and more reliable.
+            </p>
+            <div className="mt-7 max-w-xl border-l-2 border-amber-400 pl-5">
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-slate-900">Our mission</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Make workforce hiring easier for customers while creating more consistent earning opportunities for
+                independent workers.
               </p>
             </div>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 to="/#book-a-worker"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-700 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
+                className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-700 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-200"
               >
-                Book a worker <ArrowRight size={18} aria-hidden="true" />
+                Book a worker
+                <ArrowRight className="transition-transform group-hover:translate-x-0.5" size={18} aria-hidden="true" />
               </Link>
               <Link
                 to="/become-a-part-of-dehatwala"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white/80 px-6 py-3 text-sm font-bold text-slate-800 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-white hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100"
               >
                 Become a worker
               </Link>
             </div>
           </div>
 
-          <div className="relative min-h-[26rem] sm:min-h-[32rem] lg:min-h-[39rem]">
-            <div className="absolute inset-4 rounded-[2.5rem] bg-blue-700 sm:inset-7" />
-            <img
-              src="/images/about/about-hero-workers.png"
-              alt="Two Dehatwala workers wearing safety helmets"
-              className="absolute inset-0 h-full w-full rounded-[2.5rem] object-cover object-center shadow-2xl [clip-path:polygon(8%_0,100%_0,100%_92%,0_100%,0_10%)]"
-            />
-            <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-2xl border border-white/20 bg-[var(--home-color-brand-deep)]/90 p-4 text-white shadow-xl backdrop-blur sm:left-8 sm:right-auto sm:w-72">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/10 text-amber-400">
-                <BadgeCheck size={21} aria-hidden="true" />
-              </span>
-              <span className="text-xs font-semibold leading-5">Technology with a human support layer.</span>
+          <div className="relative mx-auto w-full max-w-[39rem] lg:max-w-none">
+            <div className="pointer-events-none absolute -inset-3 translate-x-3 translate-y-3 rounded-[2.5rem] bg-blue-700/10 sm:-inset-4 sm:translate-x-4 sm:translate-y-4" />
+            <div className="pointer-events-none absolute -right-8 -top-8 size-32 rounded-full bg-amber-300/30 blur-2xl" />
+            <div className="relative overflow-hidden rounded-[2.25rem] border border-white/80 bg-white p-2 shadow-[0_32px_80px_-32px_rgba(30,64,175,0.5)] sm:p-3">
+              <img
+                src="/images/about/about-hero-workers.png"
+                alt="Two Dehatwala workers wearing safety helmets"
+                className="aspect-square w-full rounded-[1.75rem] object-cover object-center"
+              />
             </div>
+            <div className="pointer-events-none absolute -bottom-5 -left-5 hidden size-28 rounded-bl-[2rem] border-b-2 border-l-2 border-blue-700/25 sm:block" />
           </div>
         </div>
       </section>
@@ -205,17 +230,22 @@ const AboutPage = () => {
               Why we’re built <span className="text-blue-700">differently.</span>
             </h2>
             <p className="mt-5 max-w-md text-base leading-7 text-slate-600">
-              Technology makes the process faster. Human support makes it dependable. We bring both together at every
-              step.
+              Technology makes the process faster. On-ground coordination makes it dependable. We bring both together at
+              every step.
             </p>
-            <div className="mt-8 flex max-w-md items-center gap-4 border-t border-slate-200 pt-6">
-              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-emerald-50 text-emerald-700">
-                <BadgeCheck size={21} aria-hidden="true" />
-              </span>
-              <p className="text-sm font-semibold leading-6 text-slate-700">
-                One supported journey—from requirement to assignment.
-              </p>
-            </div>
+            <ul className="mt-8 max-w-md space-y-4 border-t border-slate-200 pt-6">
+              {supportedJourneyPrinciples.map(({ icon: Icon, title, copy }) => (
+                <li key={title} className="group flex items-start gap-3.5">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full border border-emerald-100 bg-emerald-50 text-emerald-700 transition-colors duration-200 group-hover:border-emerald-200 group-hover:bg-emerald-100">
+                    <Icon size={18} strokeWidth={2.25} aria-hidden="true" />
+                  </span>
+                  <div className="pt-0.5">
+                    <h3 className="text-sm font-extrabold leading-5 text-slate-900">{title}</h3>
+                    <p className="mt-0.5 text-[13px] leading-5 text-slate-600">{copy}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -288,7 +318,10 @@ const AboutPage = () => {
                 Why we started <span className="text-blue-700">Dehatwala</span>
               </h2>
               <div className="mt-6 space-y-4 text-base leading-7 text-slate-600">
-                <p>Every day, customers need reliable workers, and independent workers look for better work opportunities.</p>
+                <p>
+                  Every day, customers need reliable workers, and independent workers look for better work
+                  opportunities.
+                </p>
                 <p>
                   Dehatwala was created to make workforce access simpler through technology and assisted support. By
                   using smart matching, location-based assignment, and a streamlined booking experience, we help

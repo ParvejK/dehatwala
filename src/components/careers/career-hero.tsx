@@ -46,10 +46,10 @@ const CareerHero = ({ showCta = false }: CareerHeroProps) => (
 
       <div className="relative">
         <img
-          src="/images/about/about-hero-workers.png"
+          src="/images/career-home.png"
           alt="Two Dehatwala team members in branded uniform and safety helmets"
           loading="eager"
-          className="h-52 w-full rounded-2xl object-cover object-top shadow-[0_28px_60px_-40px_rgba(11,63,196,0.85)] sm:h-64 lg:h-[300px]"
+          className="h-52 w-full rounded-2xl object-cover object-bottom shadow-[0_28px_60px_-40px_rgba(11,63,196,0.85)] sm:h-64 lg:h-[300px]"
         />
       </div>
     </div>

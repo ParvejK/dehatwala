@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { ArrowRight, ChevronRight, Clock3, HardHat, Home, Minus, Plus, ShieldCheck, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import BookingSteps from "../../../components/booking/booking-steps";
 import { bookingPath } from "../../../components/booking/steps";
@@ -262,11 +262,11 @@ const SelectWorkerPage = () => {
               className="rounded-3xl border border-[#dce7fb] bg-white p-5 shadow-[0_8px_30px_-22px_rgba(20,61,141,0.45)] sm:p-7"
             >
               <h2 id="workers-heading" className="text-xl font-extrabold text-[#0f1e57]">
-                Select workers
+                Choose Workers
               </h2>
               <p className="mt-1 text-xs font-normal text-[#63739a]">
                 {isBookable
-                  ? "Choose how many workers you need per day."
+                  ? "Select how many workers you need for the job."
                   : "This service does not have published rates yet."}
               </p>
 

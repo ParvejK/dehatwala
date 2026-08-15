@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   ArrowRight,
   BadgeCheck,
@@ -13,6 +12,7 @@ import {
   TrendingUp,
   Workflow,
 } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -531,7 +531,7 @@ const HomePage = () => {
                   and the top-right radius matches the card's own. */}
               <div className="overflow-hidden rounded-[1.5rem]">
                 <img
-                  src="/images/dehatwala-worker-join.png"
+                  src="/images/become-worker-2.png"
                   alt="Dehatwala workers in blue uniforms and yellow safety helmets on a construction site"
                   className="worker-photo-angled h-[20rem] w-full object-cover object-[center_25%] sm:h-[24rem] lg:h-[34rem]"
                 />
@@ -559,9 +559,10 @@ const HomePage = () => {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-300 to-transparent" />
         <div className="relative mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 lg:px-10">
           <div>
-            {/* The "Recognised by" eyebrow is gone: it repeated the heading
-                directly beneath it. */}
-            <h2 className="text-3xl font-extrabold tracking-tight text-[var(--home-color-ink)] sm:text-4xl lg:text-5xl">
+            <p className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-blue-700">
+              <BadgeCheck size={13} aria-hidden="true" /> Built On Trust
+            </p>
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--home-color-ink)] sm:text-4xl lg:text-5xl">
               Trust and <span className="text-[var(--home-color-brand)]">Recognised</span>
             </h2>
             <p className="mt-5 max-w-md text-base leading-7 text-slate-600">

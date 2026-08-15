@@ -3,6 +3,7 @@ import {
   ArrowRight,
   BadgeIndianRupee,
   Bolt,
+  CalendarCheck2,
   CreditCard,
   Headphones,
   Heart,
@@ -11,6 +12,7 @@ import {
   Star,
   Truck,
   UserRoundCheck,
+  UsersRound,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { formatPrice, primaryWorkerRate } from "../../components/services/pricing";
@@ -41,6 +43,13 @@ const proofPoints = [
   { icon: BadgeIndianRupee, title: "Transparent Pricing", copy: "No Hidden Charges" },
 ];
 
+const allServicesBenefits = [
+  { icon: UsersRound, title: "20+ Services", copy: "One place for every workforce need" },
+  { icon: UserRoundCheck, title: "Skilled & General Workers", copy: "Choose the right worker for the job" },
+  { icon: CalendarCheck2, title: "One Simple Booking", copy: "Find, book & get workers at your site" },
+  { icon: MapPin, title: "Nearby Worker Matching", copy: "Find available workers in your area" },
+];
+
 const categoryImage = (category: Category) =>
   category.cat_img ? `${VITE_IMAGE_PATH_URL}/category/${category.cat_img}` : FALLBACK_HERO_IMAGE;
 
@@ -63,6 +72,54 @@ const ALL_SLUG = "all";
 
 const ALL_DESCRIPTION =
   "Every skilled and general workforce service on Dehatwala in one place. Pick a category to narrow it down, or browse the full list below.";
+
+const AllServicesHero = () => (
+  <section className="relative isolate overflow-hidden bg-[#f8fafc]" aria-labelledby="all-services-title">
+    <div className="grid lg:min-h-[440px] lg:grid-cols-[42%_58%]">
+      <div className="relative z-10 flex flex-col justify-center px-6 py-10 sm:px-10 sm:py-12 lg:px-12 lg:py-10 xl:pl-14">
+        <h1
+          id="all-services-title"
+          className="text-[38px] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#0a1d56] sm:text-[46px] lg:text-[52px]"
+        >
+          All Services
+        </h1>
+        <p className="mt-3 max-w-[390px] text-base font-bold leading-6 text-[#1548d8] sm:text-lg">
+          Skilled &amp; general workers for every job — all in one place.
+        </p>
+        <p className="mt-4 max-w-[430px] text-[13px] leading-5 text-[#283553] sm:text-sm sm:leading-6">
+          From masonry and painting to material handling, general helpers, carpenters, bar benders and more —
+          find the right worker for your job, all through Dehatwala.
+        </p>
+
+        <ul className="mt-7 grid max-w-[460px] gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:gap-[18px]">
+          {allServicesBenefits.map(({ icon: Icon, title, copy }) => (
+            <li key={title} className="flex items-center gap-3.5">
+              <span className="grid size-11 shrink-0 place-items-center rounded-full border border-[#c7d6ff] bg-white text-[#1749dc] shadow-[0_4px_14px_rgba(20,72,216,0.08)]">
+                <Icon size={21} strokeWidth={1.7} aria-hidden="true" />
+              </span>
+              <span className="leading-tight">
+                <strong className="block text-[13px] font-extrabold text-[#0a1d56] sm:text-sm">{title}</strong>
+                <span className="mt-0.5 block text-[11px] leading-4 text-[#344365] sm:text-xs">{copy}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="relative min-h-[320px] overflow-hidden sm:min-h-[410px] lg:min-h-full">
+        <img
+          src="/images/become-worker.png"
+          alt="Dehatwala workers providing construction and material-handling services"
+          className="absolute inset-0 size-full object-cover object-center"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[linear-gradient(to_bottom,#f8fafc_0%,rgba(248,250,252,0)_18%)] lg:bg-[linear-gradient(to_right,#f8fafc_0%,rgba(248,250,252,0.82)_10%,rgba(248,250,252,0)_29%)]"
+        />
+      </div>
+    </div>
+  </section>
+);
 
 const ServiceHero = ({ category }: { category?: Category }) => (
   <section className="relative overflow-hidden rounded-3xl border border-[#dce7fb] bg-[#f2f6fe] shadow-[0_18px_50px_-24px_rgba(20,61,141,0.45)]">
@@ -150,7 +207,7 @@ const SubCategoryFilter = ({
 const CategoryFilter = ({ categories }: { categories: Category[] }) => (
   <nav aria-label="Filter by category" className="mb-6 flex flex-wrap gap-2.5">
     <span aria-current="page" className={`${baseChip} ${activeChip}`}>
-      All Services
+      All
     </span>
     {categories.map((category) => (
       <Link key={category.id} to={`/services/${category.slug}`} className={`${baseChip} ${idleChip}`}>
@@ -382,7 +439,7 @@ const ServiceListingPage = () => {
 
         {!isLoading && !isError && hasListing && (
           <>
-            <ServiceHero category={category} />
+            {isAllCategories ? <AllServicesHero /> : <ServiceHero category={category} />}
 
             <section aria-labelledby="services-heading" className="py-10 sm:py-12">
               <div className="mb-4">
@@ -390,7 +447,7 @@ const ServiceListingPage = () => {
                   id="services-heading"
                   className="text-2xl font-extrabold capitalize tracking-tight text-[#0f1e57] sm:text-[30px]"
                 >
-                  {activeSubCategory ? activeSubCategory.name : category ? `${category.name} Services` : "All Services"}
+                  {activeSubCategory ? activeSubCategory.name : category ? `${category.name} Services` : "Browse Services"}
                 </h2>
                 <p className="mt-1 text-xs font-normal text-[#5a6a90] sm:text-sm">
                   {/* The API's total, not the number loaded so far — otherwise

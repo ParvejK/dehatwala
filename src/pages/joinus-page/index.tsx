@@ -1,4 +1,5 @@
 import {
+  ArrowRight,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
@@ -60,42 +61,78 @@ const JoinUs = () => (
   <main className="bg-white pb-10 pt-5 sm:pt-7">
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-10">
       {/* ---------- Hero ---------- */}
-      <section className="relative overflow-hidden rounded-3xl bg-[linear-gradient(105deg,#0a3a95_0%,#0d47b4_46%,rgba(13,71,180,0.55)_66%,rgba(13,71,180,0.15)_100%)]">
+      <section className="relative isolate overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-[0_28px_80px_-46px_rgba(15,47,112,0.45)]">
         <img
-          src="/images/dehatwala-worker-join.png"
-          alt="देहात वाला का वर्कर"
-          className="absolute inset-y-0 right-0 hidden h-full w-1/2 object-cover object-center md:block"
+          src="/images/become-worker.png"
+          alt="निर्माण स्थल पर अलग-अलग काम करते देहात वाला के कुशल वर्कर"
+          className="absolute inset-0 -z-20 hidden size-full object-cover object-center lg:block"
         />
         <div
           aria-hidden="true"
-          className="absolute inset-0 hidden bg-[linear-gradient(90deg,#0a3a95_0%,#0d47b4_38%,rgba(13,71,180,0.72)_54%,transparent_82%)] md:block"
+          className="absolute inset-0 -z-10 hidden bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.98)_35%,rgba(255,255,255,0.9)_48%,rgba(255,255,255,0.16)_74%,transparent_100%)] lg:block"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -left-24 -top-24 -z-10 size-64 rounded-full bg-blue-100/70 blur-3xl"
         />
 
-        <div className="relative px-6 py-9 sm:px-9 sm:py-11">
-          <div className="md:max-w-[58%]">
-            <h1 className="inline-block text-[26px] font-extrabold leading-tight tracking-tight text-white sm:text-[36px]">
-              देहात वाला के साथ जुड़ें
-              <span aria-hidden="true" className="mt-2 block h-1 w-28 rounded-full bg-amber-400 sm:w-36" />
-            </h1>
-            <p className="mt-4 text-sm leading-7 text-blue-100 sm:text-base">
-              अपने हुनर से कमाएँ और अपने सपनों को पूरा करें।
+        <div className="relative z-10 px-6 py-9 sm:px-10 sm:py-12 lg:flex lg:min-h-[600px] lg:w-[58%] lg:flex-col lg:justify-center lg:px-14 lg:py-16">
+          <div className="max-w-xl">
+            <p className="inline-flex items-center gap-2.5 rounded-full border border-blue-200 bg-blue-50/90 px-4 py-2 text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-[#0b3fc4] shadow-sm">
+              <span className="size-1.5 rounded-full bg-amber-400 ring-4 ring-amber-100" aria-hidden="true" />
+              वर्कर पार्टनर बनें
             </p>
+            <h1 className="mt-6 text-[2.15rem] font-black leading-[1.12] tracking-[-0.035em] text-[#0f1e57] sm:text-5xl sm:leading-[1.08]">
+              देहात वाला के साथ
+              <span className="block text-[#0b3fc4]">जुड़ें और आगे बढ़ें</span>
+            </h1>
+            <p className="mt-5 max-w-lg text-sm leading-7 text-[#526483] sm:text-base sm:leading-8">
+              अपने हुनर से कमाएँ, नज़दीक के काम पाएं और अपने सपनों को पूरा करने की ओर अगला कदम बढ़ाएं।
+            </p>
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <a
+                href="#registration-heading"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#0b3fc4] px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-[#08359f] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
+              >
+                अभी रजिस्टर करें <ArrowRight size={17} aria-hidden="true" />
+              </a>
+              <a
+                href={`tel:${SUPPORT_PHONE}`}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-blue-200 bg-white/90 px-5 py-3 text-sm font-bold text-[#0f1e57] shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-blue-300 hover:text-[#0b3fc4] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
+              >
+                <Headphones size={17} aria-hidden="true" /> सपोर्ट से बात करें
+              </a>
+            </div>
           </div>
 
-          <ul className="relative mt-7 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-4 xl:max-w-[78%]">
+          <ul className="relative mt-9 grid grid-cols-2 gap-x-5 gap-y-5 border-t border-blue-100 pt-6 sm:gap-x-8 lg:max-w-xl">
             {HERO_HIGHLIGHTS.map(({ icon: Icon, title, copy }) => (
-              <li
-                key={title}
-                className="rounded-2xl border border-white/60 bg-white px-3 py-4 text-center shadow-lg shadow-blue-950/20 sm:px-4"
-              >
-                <span className="mx-auto grid size-11 place-items-center rounded-full bg-[#0b3fc4] text-white">
-                  <Icon size={19} aria-hidden="true" />
+              <li key={title} className="flex items-start gap-3">
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-[#0b3fc4] shadow-sm">
+                  <Icon size={17} strokeWidth={2.2} aria-hidden="true" />
                 </span>
-                <strong className="mt-3 block text-[13px] font-extrabold leading-tight text-[#0f1e57]">{title}</strong>
-                <span className="mt-1.5 block text-[11px] font-normal leading-4 text-[#63739a]">{copy}</span>
+                <span className="min-w-0">
+                  <strong className="block text-[12px] font-extrabold leading-5 text-[#0f1e57] sm:text-[13px]">
+                    {title}
+                  </strong>
+                  <span className="mt-0.5 hidden text-[10px] leading-4 text-[#63739a] sm:block">{copy}</span>
+                </span>
               </li>
             ))}
           </ul>
+        </div>
+
+        <div className="relative border-t border-blue-100 lg:hidden">
+          <img
+            src="/images/become-worker.png"
+            alt="निर्माण स्थल पर अलग-अलग काम करते देहात वाला के कुशल वर्कर"
+            className="aspect-[4/3] w-full object-cover object-[62%_center] sm:aspect-[16/9] sm:object-center"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/35 to-transparent"
+          />
         </div>
       </section>
 
@@ -116,7 +153,10 @@ const JoinUs = () => (
         </ol>
       </nav>
 
-      <h2 className="mt-5 text-[26px] font-extrabold tracking-tight text-[#0f1e57] sm:text-[32px]">
+      <h2
+        id="registration-heading"
+        className="mt-5 scroll-mt-24 text-[26px] font-extrabold tracking-tight text-[#0f1e57] sm:text-[32px]"
+      >
         अपना पंजीकरण करें
       </h2>
       <p className="mt-1.5 text-sm text-[#63739a]">हमारे साथ जुड़ें और नज़दीक के काम पाएं</p>

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { Search } from "lucide-react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 import { API_URL } from "../../react-query/constants";
@@ -60,7 +60,7 @@ const ServiceSearch = ({ onResults }: ServiceSearchProps) => {
           type="search"
           value={keyword}
           onChange={(event) => setKeyword(event.target.value)}
-          placeholder="Search by service title…"
+          placeholder="Search by service, e.g., tile, brick, plaster work"
           className="min-w-0 flex-1 bg-transparent py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 md:text-base"
         />
         <button

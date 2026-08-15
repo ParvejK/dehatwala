@@ -73,7 +73,7 @@ const WorkerTestimonials = () => {
                   {(testimonial.post || testimonial.location) && (
                     <p className="mt-1 flex items-center gap-1 truncate text-[11px] font-semibold text-[#63739a]">
                       <MapPin size={11} className="shrink-0 text-[#0b3fc4]" aria-hidden="true" />
-                      <span className="truncate">
+                      <span className="text-[#010102]">
                         {[testimonial.post, testimonial.location].filter(Boolean).join(" • ")}
                       </span>
                     </p>
@@ -82,7 +82,7 @@ const WorkerTestimonials = () => {
               </div>
 
               {testimonial.description && (
-                <blockquote className="mt-3 pr-6 text-[11px] leading-5 text-[#40517b]">
+                <blockquote className="mt-3 pr-6 text-[12px] leading-5 text-[#010102]">
                   {/* Some rows end with a stray closing quote. Stripping both
                     straight and curly forms keeps the pair we add balanced.
                     Escapes rather than literals, so the class cannot silently
@@ -93,7 +93,7 @@ const WorkerTestimonials = () => {
 
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute -bottom-3 right-2 select-none font-serif text-[56px] font-black leading-none text-[#0b3fc4]/25"
+                className="pointer-events-none absolute -bottom-3 right-2 select-none font-serif text-[56px] font-black leading-none text-[#0b3fc4]"
               >
                 &rdquo;
               </span>

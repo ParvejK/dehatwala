@@ -62,7 +62,7 @@ const MediaNewsPage = () => {
           <img
             src="/images/media-news-hero.png"
             alt="Dehatwala workers with a media crew at a construction site"
-            className="absolute inset-0 size-full object-cover object-[70%_center] lg:object-center"
+            className="absolute inset-0 size-full object-cover object-[70%_center] lg:object-[center_24%]"
           />
           <div
             aria-hidden="true"
