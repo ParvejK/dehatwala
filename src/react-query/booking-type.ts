@@ -108,12 +108,31 @@ export interface BookingBilling {
   payments: BookingPayment[];
 }
 
-/** Mirrors `BookService::STATUSES` in the API. */
-export type BookingStatus = "pending" | "confirmed" | "in_progress" | "completed" | "cancelled" | "rejected";
+/**
+ * Mirrors `BookService::STATUSES` in the API.
+ *
+ * `worker_assigned` / `on_the_way` / `work_started` are the finer-grained
+ * operations states the dashboard shows on its progress rail. The API does not
+ * send them yet — it collapses all three into `in_progress` — but they are
+ * declared here so the rail lights up correctly the moment it starts to.
+ */
+export type BookingStatus =
+  | "pending"
+  | "confirmed"
+  | "worker_assigned"
+  | "on_the_way"
+  | "work_started"
+  | "in_progress"
+  | "completed"
+  | "cancelled"
+  | "rejected";
 
 export const BOOKING_STATUSES: BookingStatus[] = [
   "pending",
   "confirmed",
+  "worker_assigned",
+  "on_the_way",
+  "work_started",
   "in_progress",
   "completed",
   "cancelled",

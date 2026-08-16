@@ -309,16 +309,20 @@ const DashboardBookings = () => {
             const tone = statusTone(booking.status);
             const isPaid = booking.billing ? booking.billing.amount_due <= 0 : !!booking.transaction_id;
             const awaitingPayment = isAwaitingPayment(booking);
-            const isPending = booking.status === "pending" || booking.status === "confirmed";
-            const inProgress = booking.status === "in_progress";
+            const isCompleted = booking.status === "completed";
+            const workUnderway = booking.status === "in_progress" || booking.status === "work_started";
 
             // Cancel stays available once work is under way — the customer may
             // still need to call it off, and the API answers with how.
-            // Rescheduling does not: a crew already on site cannot be moved to
-            // another date from here.
-            const showCancel = isPending || inProgress;
-            const showReschedule = isPending;
-            const canReview = booking.status === "completed";
+            // Rescheduling does not: a crew already assigned and moving cannot
+            // be pushed to another date from here, so it stops once the workers
+            // are on their way (rail stage 3).
+            const showCancel = !tone.stopped && !isCompleted;
+            const showReschedule = showCancel && tone.stage <= 2;
+            const canReview = isCompleted;
+            // Re-booking is only offered on a finished job — the same service,
+            // priced at whatever it costs today.
+            const canRebook = isCompleted;
             // The API sums this from the snapshot; fall back for legacy rows.
             const workers = booking.worker_count ?? totalWorkerCount(readServiceWorkerObj(booking.service_worker_obj));
             const location = booking.worksite;
@@ -409,16 +413,18 @@ const DashboardBookings = () => {
                                   Write Review
                                 </button>
                               )}
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setRebookFor(booking);
-                                  setOpenMenu(null);
-                                }}
-                                className="block w-full px-3.5 py-2 text-left text-[11px] font-bold text-[#40517b] transition hover:bg-[#f1f6ff]"
-                              >
-                                Book Again
-                              </button>
+                              {canRebook && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setRebookFor(booking);
+                                    setOpenMenu(null);
+                                  }}
+                                  className="block w-full px-3.5 py-2 text-left text-[11px] font-bold text-[#40517b] transition hover:bg-[#f1f6ff]"
+                                >
+                                  Book Again
+                                </button>
+                              )}
                               {showReschedule && (
                                 <button
                                   type="button"
@@ -519,7 +525,12 @@ const DashboardBookings = () => {
                       isPaid && (
                         <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-extrabold text-emerald-700">
                           <CheckCircle2 size={13} aria-hidden="true" />
-                          Payment Status: Paid · ₹0 Pending — All Cleared
+                          {/* Worker availability is only still in question
+                              before the booking is confirmed; afterwards the
+                              same line would contradict the status badge. */}
+                          {booking.status === "pending"
+                            ? "Payment Received. We're confirming worker availability."
+                            : "Payment Received."}
                         </p>
                       )
                     )}
@@ -546,13 +557,15 @@ const DashboardBookings = () => {
                           <Star size={13} aria-hidden="true" /> Write Review
                         </button>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => setRebookFor(booking)}
-                        className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-[#0b3fc4] px-4 text-[11px] font-extrabold text-white transition hover:bg-[#0932a0]"
-                      >
-                        <Repeat2 size={13} aria-hidden="true" /> Book Again
-                      </button>
+                      {canRebook && (
+                        <button
+                          type="button"
+                          onClick={() => setRebookFor(booking)}
+                          className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-[#0b3fc4] px-4 text-[11px] font-extrabold text-white transition hover:bg-[#0932a0]"
+                        >
+                          <Repeat2 size={13} aria-hidden="true" /> Book Again
+                        </button>
+                      )}
 
                       {showReschedule && (
                         <button
@@ -568,10 +581,10 @@ const DashboardBookings = () => {
                         <button
                           type="button"
                           onClick={() => setPendingCancel(booking.id)}
-                          title={inProgress ? WORK_STARTED_HINT : undefined}
+                          title={workUnderway ? WORK_STARTED_HINT : undefined}
                           className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-red-200 bg-white px-4 text-[11px] font-extrabold text-red-600 transition hover:bg-red-50"
                         >
-                          <XCircle size={13} aria-hidden="true" /> Cancel
+                          <XCircle size={13} aria-hidden="true" /> Cancel Booking
                         </button>
                       )}
                     </div>

@@ -107,9 +107,10 @@ const DashboardBookingDetail = () => {
   const tone = statusTone(booking.status);
   const isPaid = booking.billing ? booking.billing.amount_due <= 0 : !!booking.transaction_id;
   const awaitingPayment = isAwaitingPayment(booking);
+  const isCompleted = booking.status === "completed";
   // Cancel stays offered once work is under way — the customer may still need
   // to call it off, and the API replies with how. Matches the bookings list.
-  const canCancel = booking.status === "pending" || booking.status === "confirmed" || booking.status === "in_progress";
+  const canCancel = !tone.stopped && !isCompleted;
 
   const tip = Number(booking.tip || 0);
   const discount = Number(booking.coupon_discounted || 0);
@@ -328,13 +329,16 @@ const DashboardBookingDetail = () => {
       )}
 
       <div className="flex flex-wrap gap-2.5">
-        <Link
-          to={booking.service_slug ? `/service/detail/${booking.service_slug}` : "/services/all"}
-          className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-[#0b3fc4] px-4 text-[11px] font-extrabold text-white transition hover:bg-[#0932a0]"
-        >
-          <Repeat2 size={13} aria-hidden="true" /> Book Again
-        </Link>
-        {booking.status === "completed" && (
+        {/* Re-booking is only offered on a finished job, matching the list. */}
+        {isCompleted && (
+          <Link
+            to={booking.service_slug ? `/service/detail/${booking.service_slug}` : "/services/all"}
+            className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-[#0b3fc4] px-4 text-[11px] font-extrabold text-white transition hover:bg-[#0932a0]"
+          >
+            <Repeat2 size={13} aria-hidden="true" /> Book Again
+          </Link>
+        )}
+        {isCompleted && (
           <Link
             to={`/service-reviews/${booking.id}/${booking.service_id}`}
             className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-[#cfe0fb] bg-white px-4 text-[11px] font-extrabold text-[#0b3fc4] transition hover:bg-[#eef4ff]"
