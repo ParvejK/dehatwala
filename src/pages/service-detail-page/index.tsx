@@ -453,7 +453,7 @@ const BookingCallout = ({ service }: { service: Service }) => (
         >
           Book Service <ArrowRight size={17} aria-hidden="true" />
         </Link>
-        <p className="mt-2.5 text-center text-[11px] font-medium text-[#7080a4]">No payment on this step</p>
+        <p className="mt-2.5 hidden text-center text-[11px] font-medium text-[#7080a4]">No payment on this step</p>
       </div>
     </div>
   </section>
