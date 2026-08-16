@@ -93,17 +93,6 @@ html {
   clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
 }
 
-/* Angled left edge on the "Become a Worker" photo.
-   Written here rather than as `lg:[clip-path:…]` — Tailwind parses an
-   arbitrary value containing commas as one literal class name, so the `lg:`
-   variant is dropped and the diagonal would apply on mobile too, where the
-   wedge cuts into the photo. */
-@media (min-width: 1024px) {
-  .worker-photo-angled {
-    clip-path: polygon(11% 0, 100% 0, 100% 100%, 0 100%);
-  }
-}
-
 /* Blog Pages */
 
 .blog-content {

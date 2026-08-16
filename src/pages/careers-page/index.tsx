@@ -216,17 +216,19 @@ const CareersPage = () => (
       {/* ---------- Worker note ---------- */}
       <section
         aria-labelledby="worker-note-heading"
-        className="mt-6 overflow-hidden rounded-3xl border border-[#dce7fb] bg-[#f2f6fe]"
+        className="mt-6 rounded-3xl border border-[#dce7fb] bg-[#f2f6fe] p-5 sm:p-6"
       >
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
+        <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:gap-6 sm:text-left">
           <img
-            src="/images/dehatwala-worker-join.png"
-            alt="A Dehatwala worker in uniform on a construction site"
+            src="/images/careers-worker-note.jpg"
+            alt="Two Dehatwala workers in branded uniforms and safety helmets"
             loading="lazy"
-            className="h-40 w-full object-cover object-top sm:h-[136px] sm:w-40 sm:shrink-0"
+            width={800}
+            height={800}
+            className="aspect-square w-32 shrink-0 rounded-2xl object-contain sm:w-28 lg:w-32"
           />
 
-          <div className="min-w-0 flex-1 px-5 pb-5 sm:px-0 sm:py-5">
+          <div className="min-w-0 flex-1">
             <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#0b3fc4]">Important Note</p>
             <h2 id="worker-note-heading" className="mt-1.5 text-sm font-extrabold leading-6 text-[#0f1e57] sm:text-base">
               Looking for work opportunities as a skilled or general worker?
@@ -234,7 +236,7 @@ const CareersPage = () => (
             <p className="mt-1.5 text-xs leading-5 text-[#63739a]">Join the Dehatwala Worker Network.</p>
           </div>
 
-          <div className="px-5 pb-5 sm:px-0 sm:pb-0 sm:pr-6">
+          <div className="w-full sm:w-auto sm:shrink-0">
             <Link
               to={WORKER_JOIN_PATH}
               className="group inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#0b3fc4] px-5 text-[11px] font-extrabold uppercase tracking-[0.08em] text-white transition hover:bg-[#0932a0] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 sm:w-auto"

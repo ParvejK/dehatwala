@@ -426,15 +426,10 @@ const HomePage = () => {
           {/* Roomier padding: the reference leaves a clear margin before
               "Become a" rather than sitting tight to the card edge. */}
           <div className="overflow-hidden rounded-[2rem] bg-[#f7f7f5] p-5 sm:p-7 lg:p-9">
-            {/* No column gap on desktop: the photo's diagonal edge is the
-                transition, and a gutter on top of it left a dead strip
-                between the copy and the image. */}
             {/* Top-aligned, not centred: "Become a" is level with the top of
-                the photo in the reference. Centring against a 31rem image
+                the photo in the reference. Centring against a square image
                 pushed the heading down and opened a gap above it. */}
-            {/* ~46/54 split, measured off the reference where the photo's
-                left edge falls a little past the halfway point. */}
-            <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.18fr)] lg:gap-0">
+            <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-10">
               <div className="lg:pr-6">
                 {/* "Worker" is set larger than "Become a" in the reference,
                     not the same size. */}
@@ -494,17 +489,13 @@ const HomePage = () => {
                 </ul>
               </div>
 
-              {/* Rounded corners come from this wrapper and the diagonal from
-                  the image's own clip-path — a clip-path alone would discard
-                  the radius. The exposed wedge shows the card behind. */}
-              {/* Negative margins cancel the card's own padding so the photo
-                  reaches the card's top and right edges, as in the reference,
-                  and the top-right radius matches the card's own. */}
-              <div className="overflow-hidden rounded-[1.5rem]">
+              {/* Square frame — the rounded corners come from this wrapper so
+                  the image can fill it edge to edge. */}
+              <div className="aspect-square overflow-hidden rounded-[1.5rem]">
                 <img
                   src="/images/join-us-hero.png"
                   alt="Dehatwala workers in blue uniforms and yellow safety helmets holding a phone with live booking status"
-                  className="worker-photo-angled h-[20rem] w-full object-cover object-center sm:h-[24rem] lg:h-[34rem]"
+                  className="h-full w-full object-cover object-center"
                 />
               </div>
             </div>
