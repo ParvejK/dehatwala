@@ -596,7 +596,7 @@ const HomePage = () => {
               Customer stories are temporarily unavailable.
             </p>
           )}
-          {clientsQuery.data && clientsQuery.data.clients.length > 0 && (
+          {clientsQuery.data && clientsQuery.data.customer_story.length > 0 && (
             <Swiper
               modules={[Pagination]}
               pagination={{ clickable: true }}
@@ -613,7 +613,7 @@ const HomePage = () => {
             >
               {/* No slice: it is a carousel, so every story the API returns is
                   reachable. Capping at 3 silently dropped the rest. */}
-              {clientsQuery.data.clients.map((client, clientIndex) => (
+              {clientsQuery.data.customer_story.map((client, clientIndex) => (
                 <SwiperSlide key={client.id}>
                   <figure
                     className={`flex min-h-72 h-full flex-col rounded-[1.75rem] border p-6 sm:p-7 ${clientIndex === 1 ? "border-[var(--home-color-brand-deep)] bg-[var(--home-color-brand-deep)] text-white shadow-xl shadow-blue-950/15" : "border-[var(--home-color-border)] bg-white text-[var(--home-color-ink)] shadow-sm"}`}
@@ -621,7 +621,13 @@ const HomePage = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex gap-1 text-amber-400" aria-label="5 out of 5 stars">
                         {Array.from({ length: 5 }).map((_, index) => (
-                          <Star key={index} size={16} fill="currentColor" aria-hidden="true" />
+                          <Star
+                            key={index}
+                            size={16}
+                            fill={index < client.rating ? "currentColor" : "none"}
+                            className={index < client.rating ? "" : "text-gray-300"}
+                            aria-hidden="true"
+                          />
                         ))}
                       </div>
                       <MessageCircleMore
@@ -643,7 +649,7 @@ const HomePage = () => {
                     >
                       <RemoteAvatar
                         folder="client"
-                        file={client.client_image}
+                        file={client.customer_image}
                         name={client.name}
                         className="size-11 rounded-full object-cover ring-2 ring-white/30"
                         fallbackClassName={`grid size-11 shrink-0 place-items-center rounded-full font-black ${clientIndex === 1 ? "bg-white/10 text-white" : "bg-[var(--home-color-surface-tint)] text-[var(--home-color-brand)]"}`}
@@ -651,7 +657,7 @@ const HomePage = () => {
                       <span>
                         <strong className="block text-sm">{client.name}</strong>
                         <span className={`text-xs ${clientIndex === 1 ? "text-slate-400" : "text-slate-500"}`}>
-                          {client.company || client.designation || "Customer"}
+                          {client.profession || client.location || "Customer"}
                         </span>
                       </span>
                     </figcaption>
@@ -660,7 +666,7 @@ const HomePage = () => {
               ))}
             </Swiper>
           )}
-          {clientsQuery.data && clientsQuery.data.clients.length === 0 && (
+          {clientsQuery.data && clientsQuery.data.customer_story.length === 0 && (
             <p className="rounded-2xl border border-[var(--home-color-border)] bg-[var(--home-color-surface-soft)] p-8 text-center font-medium text-slate-600">
               Customer stories will appear here soon.
             </p>

@@ -68,6 +68,7 @@ export const STATUS_FILTERS: { key: BookingStatus | "all"; label: string }[] = [
   { key: "work_started", label: "Work Started" },
   { key: "in_progress", label: "In Progress" },
   { key: "completed", label: "Completed" },
+  { key: "rejected", label: "Rejected" },
   { key: "cancelled", label: "Cancelled" },
 ];
 

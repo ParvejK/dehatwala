@@ -402,11 +402,11 @@ const SelectWorkerPage = () => {
               />
               <span>
                 I have read and agree to the{" "}
-                <Link to="/terms-and-conditions" className="font-bold text-[#0b3fc4] hover:underline">
+                <Link to="/terms-and-conditions" className="font-bold text-[#0b3fc4] hover:underline" target="_blank">
                   Terms &amp; Conditions
                 </Link>{" "}
                 and the{" "}
-                <Link to="/cancellation-and-refund" className="font-bold text-[#0b3fc4] hover:underline">
+                <Link to="/cancellation-and-refund" className="font-bold text-[#0b3fc4] hover:underline" target="_blank">
                   Cancellation &amp; Refund Policy
                 </Link>
                 .

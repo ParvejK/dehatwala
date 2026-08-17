@@ -157,7 +157,7 @@ export function useFetchFaqs() {
 // Clients
 export function useFetchClients() {
   return useQuery<ClientsApiResponse, Error>({
-    queryKey: ["clients"],
+    queryKey: ["customer_story"],
     queryFn: getClients,
     // staleTime: Infinity,
   });

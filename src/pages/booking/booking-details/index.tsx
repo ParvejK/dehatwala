@@ -7,12 +7,12 @@ import {
   ChevronRight,
   Clock3,
   Home,
-  LocateFixed,
+  // LocateFixed,
   MapPin,
   ShieldCheck,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import BookingSteps from "../../../components/booking/booking-steps";
 import { bookingPath } from "../../../components/booking/steps";
 import { checkAvailability, getCities, getStates, saveUserAddress } from "../../../react-query/apis";
@@ -61,7 +61,7 @@ const BookingDetailsPage = () => {
   const [instructions, setInstructions] = useState(booking.instructions);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLocating, setIsLocating] = useState(false);
+  // const [_isLocating, setIsLocating] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   /**
    * Why Save & Continue did not go through, shown beneath the button.
@@ -121,44 +121,44 @@ const BookingDetailsPage = () => {
     }
   }, [booking.serviceSlug, slug, navigate]);
 
-  const fetchLocation = () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser.");
-      return;
-    }
+  // const _fetchLocation = () => {
+  //   if (!navigator.geolocation) {
+  //     toast.error("Geolocation is not supported by your browser.");
+  //     return;
+  //   }
 
-    setIsLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=${latitude}&lon=${longitude}`,
-            { headers: { "Accept-Language": "en" } }
-          );
-          const data = await response.json();
+  //   setIsLocating(true);
+  //   navigator.geolocation.getCurrentPosition(
+  //     async (position) => {
+  //       const { latitude, longitude } = position.coords;
+  //       try {
+  //         const response = await fetch(
+  //           `https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=${latitude}&lon=${longitude}`,
+  //           { headers: { "Accept-Language": "en" } }
+  //         );
+  //         const data = await response.json();
 
-          if (data?.display_name) setAddress(data.display_name);
-          if (data?.address?.postcode) setPincode(String(data.address.postcode));
-          toast.success("Location fetched.");
-        } catch (error) {
-          console.error("Reverse geocoding error:", error);
-          toast.error("Unable to fetch address.");
-        } finally {
-          setIsLocating(false);
-        }
-      },
-      (error) => {
-        toast.error(
-          error.code === error.PERMISSION_DENIED
-            ? "Location permission denied. Please allow access in your browser."
-            : "Unable to retrieve your location."
-        );
-        setIsLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-  };
+  //         if (data?.display_name) setAddress(data.display_name);
+  //         if (data?.address?.postcode) setPincode(String(data.address.postcode));
+  //         toast.success("Location fetched.");
+  //       } catch (error) {
+  //         console.error("Reverse geocoding error:", error);
+  //         toast.error("Unable to fetch address.");
+  //       } finally {
+  //         setIsLocating(false);
+  //       }
+  //     },
+  //     (error) => {
+  //       toast.error(
+  //         error.code === error.PERMISSION_DENIED
+  //           ? "Location permission denied. Please allow access in your browser."
+  //           : "Unable to retrieve your location."
+  //       );
+  //       setIsLocating(false);
+  //     },
+  //     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  //   );
+  // };
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
@@ -369,7 +369,7 @@ const BookingDetailsPage = () => {
                 </h2>
               </div>
 
-              <button
+              {/* <button
                 type="button"
                 onClick={fetchLocation}
                 disabled={isLocating}
@@ -377,7 +377,7 @@ const BookingDetailsPage = () => {
               >
                 <LocateFixed size={15} aria-hidden="true" />
                 {isLocating ? "Fetching…" : "Get Current Location"}
-              </button>
+              </button> */}
             </div>
 
             <div className="mt-5 space-y-4">
@@ -593,6 +593,7 @@ const BookingDetailsPage = () => {
                     key={to}
                     to={to}
                     className="group flex min-h-11 items-center justify-between gap-3 rounded-xl border border-[#dce7fb] bg-white px-4 text-[13px] font-bold text-[#0f1e57] transition hover:border-[#bfd5fb] hover:text-[#0b3fc4] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
+                    target="_blank"
                   >
                     {label}
                     <ChevronRight

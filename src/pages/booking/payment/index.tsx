@@ -767,15 +767,15 @@ const PaymentPage = () => {
           <ShieldCheck size={15} className="mt-0.5 shrink-0 text-[#0b3fc4]" aria-hidden="true" />
           <span>
             By continuing, you agree to our{" "}
-            <Link to="/terms-and-conditions" className="font-bold text-[#0b3fc4] hover:underline">
+            <Link to="/terms-and-conditions" className="font-bold text-[#0b3fc4] hover:underline" target="_blank">
               Terms &amp; Conditions
             </Link>
             ,{" "}
-            <Link to="/cancellation-policy" className="font-bold text-[#0b3fc4] hover:underline">
+            <Link to="/cancellation-policy" className="font-bold text-[#0b3fc4] hover:underline" target="_blank">
               Cancellation Policy
             </Link>{" "}
             and{" "}
-            <Link to="/privacy-policy" className="font-bold text-[#0b3fc4] hover:underline">
+            <Link to="/privacy-policy" className="font-bold text-[#0b3fc4] hover:underline" target="_blank">
               Privacy Policy
             </Link>
             .

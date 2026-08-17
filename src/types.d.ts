@@ -304,21 +304,22 @@ interface FaqCategoriesApiResponse {
 
 
 // Clients
-interface Client {
+interface CustomerStory {
   id: number;
   user_id: number | null;
   name: string;
-  company: string;
-  designation: string;
+  profession: string;
+  location: string;
   content: string;
-  client_image: string;
+  customer_image: string;
+  rating: number | null,
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
 interface ClientsApiResponse {
-  clients: Client[];
+  customer_story: CustomerStory[];
 }
 
 // Partners

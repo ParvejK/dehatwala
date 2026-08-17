@@ -181,7 +181,7 @@ const DashboardBookings = () => {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatTile icon={CalendarDays} value={String(totalBookings)} label="Total Bookings" tone="brand" />
           <StatTile icon={CheckCircle2} value={String(completedCount)} label="Completed" tone="success" />
-          <StatTile icon={XCircle} value={String(cancelledCount)} label="Cancelled" tone="danger" />
+          <StatTile icon={XCircle} value={String(cancelledCount)} label="Cancelled & Rejected" tone="danger" />
           <StatTile
             icon={Wallet}
             value={formatAmount(pendingTotal)}

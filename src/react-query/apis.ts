@@ -116,7 +116,7 @@ export const getFaqCategories = async () => {
  */
 
 export const getClients = async () => {
-  const response = await axios.get<ClientsApiResponse>(`${API_URL}/get-client-says`);
+  const response = await axios.get<ClientsApiResponse>(`${API_URL}/get-customer-story`);
   return response.data;
 };
 
