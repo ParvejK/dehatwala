@@ -32,7 +32,7 @@ const fetchServiceReview = async (userId: number, token: string) => {
 
 export const useServiceReview = (userId: number, token: string) => {
   return useQuery<ServiceReviewsApiResponse, Error>({
-    queryKey: ["serviceReview", userId],
+    queryKey: ["serviceReview", userId, token],
     queryFn: () => fetchServiceReview(userId, token),
     enabled: !!userId && !!token, // Only run if userId and token are available
   });

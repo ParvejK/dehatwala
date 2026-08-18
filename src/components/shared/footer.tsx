@@ -1,135 +1,42 @@
-import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
-import { IoLogoYoutube } from "react-icons/io";
+import { ArrowUpRight, Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
-import Logo from "../../assets/WhiteLogo.png";
 
-const Footer = () => {
-  return (
-    <footer className="bg-accent/90">
-      <div className="mx-auto w-full max-w-screen-xl">
-        <div className="grid grid-cols-2 gap-8 px-4 py-6 lg:py-8 md:grid-cols-5">
-           {/* 🔥 LOGO BLOCK */}
-          <div>
-            <Link to="/">
-              <img
-                src={Logo}
-                alt="Dehatwala"
-                className="w-40 mb-4"  // Adjust width as needed
-              />
-            </Link>
-            <p className="text-primary/60 text-sm">
-              Smart Manpower solutions for modern construction industry
-            </p>
-          </div>
-          <div>
-            <h2 className="mb-6 text-sm font-semibold text-primary/90 uppercase">Company</h2>
-            <ul className="text-primary/60 font-normal">
-              <li className="mb-4">
-                <Link to="/about-us" className=" hover:underline">
-                  About Us
-                </Link>
-              </li>
-              <li className="mb-4">
-                <Link to="/faqs" className="hover:underline">
-                  FAQs
-                </Link>
-              </li>
-              <li className="mb-4">
-                <Link to="/blog" className="hover:underline">
-                  Blog
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h2 className="mb-6 text-sm font-semibold text-primary/90 uppercase">Help center</h2>
-            <ul className="text-primary/60">
-              <li className="mb-4">
-                <Link to="https://x.com/dehatwalepvt?s=21" className="hover:underline">
-                  Twitter
-                </Link>
-              </li>
-              <li className="mb-4">
-                <Link to="https://www.facebook.com/share/1V7jqB3BXD/?mibextid=wwXIfr" className="hover:underline">
-                  Facebook
-                </Link>
-              </li>
-              <li className="mb-4">
-                <Link to="https://www.instagram.com/dehatwala1?igsh=MTBtb2t4dHdxZWpzOA==" className="hover:underline">
-                  Instagram
-                </Link>
-              </li>
-              <li className="mb-4">
-                <Link to="/contact" className="hover:underline">
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h2 className="mb-6 text-sm font-semibold text-primary/90 uppercase">Legal</h2>
-            <ul className="text-primary/60">
-              <li className="mb-4">
-                <Link to="/privacy-policy" className="hover:underline">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li className="mb-4">
-                <Link to="/cancellation-policy" className="hover:underline">
-                  Cancellation Policy
-                </Link>
-              </li>
-              <li className="mb-4">
-                <Link to="/refund-policy" className="hover:underline">
-                  Refund Policy
-                </Link>
-              </li>
-              <li className="mb-4">
-                <Link to="/terms-and-conditions" className="hover:underline">
-                  Terms And Conditions
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h2 className="mb-6 text-sm font-semibold text-primary/90 uppercase">Careers</h2>
-            <ul className="text-primary/60">
-              <li className="mb-4">
-                <Link to="/jobs" className="hover:underline">
-                  Jobs
-                </Link>
-              </li>
-            </ul>
+const linkGroups = [
+  { title: "Company", links: [["About us", "/about-us"], ["Contact us", "/contact"], ["Media & news", "/media-news"], ["Careers", "/careers"], ["Blog", "/blog"]] },
+  { title: "Legal", links: [["Privacy policy", "/privacy-policy"], ["Terms & conditions", "/terms-and-conditions"], ["Cancellation policy", "/cancellation-policy"], ["Refund policy", "/refund-policy"]] },
+  { title: "For workers", links: [["Join Dehatwala", "/become-a-part-of-dehatwala"], ["Worker Agreement", "/terms-and-conditions"], ["Worker FAQs", "/faqs"], ["Find work opportunities", "/careers/open-positions"]] },
+  // "Book a worker" goes to the service listing, matching the header button.
+  // "Explore services" keeps the home search panel, so the two are not the
+  // same destination twice. The `#` links rely on the hash scrolling wired up
+  // in layout.tsx.
+  { title: "For customers", links: [["Book a worker", "/services/all"], ["Explore services", "/#book-a-worker"], ["How it works", "/#how-it-works"], ["Customer FAQs", "/faqs"], ["Contact support", "/contact"]] },
+];
+
+const Footer = () => (
+  <footer className="bg-gradient-to-br from-blue-950 via-blue-900 to-blue-700 text-white">
+    <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10">
+      <div className="grid gap-12 border-b border-white/15 pb-12 lg:grid-cols-[1.3fr_3fr]">
+        <div>
+          <Link to="/" aria-label="Dehatwala home">
+            <img src="/logo/white-logo.png" alt="Dehatwala" className="h-auto w-[200px] max-w-full object-contain sm:w-[224px]" />
+          </Link>
+          <h2 className="mt-5 text-lg font-bold">India’s Trusted Workforce Platform</h2>
+          <p className="mt-3 max-w-sm text-sm leading-6 text-blue-100/75">Connecting customers with verified independent blue-collar workers through a smarter workforce platform.</p>
+          <p className="mt-7 text-xs font-black uppercase tracking-[0.18em] text-amber-300">Connect with us</p>
+          <div className="mt-4 flex gap-2">
+            {[[Instagram, "Instagram", "https://www.instagram.com/dehatwala1"], [Facebook, "Facebook", "https://www.facebook.com"], [Linkedin, "LinkedIn", "https://www.linkedin.com"], [Youtube, "YouTube", "https://www.youtube.com/@DehatwalaPvt"]].map(([Icon, label, href]) => { const SocialIcon = Icon as typeof Instagram; return <a key={label as string} href={href as string} target="_blank" rel="noreferrer" aria-label={label as string} className="grid size-10 place-items-center rounded-full bg-white/10 transition hover:bg-white hover:text-blue-800"><SocialIcon size={18} /></a>; })}
           </div>
         </div>
-      </div>
-      <div className="px-4 py-6 bg-secondary md:flex md:items-center md:justify-between">
-        <div className="mx-auto w-full max-w-screen-xl">
-          <span className="text-sm text-accent dark:text-gray-300 sm:text-center">
-            © 2023 <a href="https://flowbite.com/">Dehatwala™</a>. All Rights Reserved.
-          </span>
-          <div className="flex mt-4 sm:justify-center md:mt-0 space-x-5 rtl:space-x-reverse">
-            <Link to="https://www.facebook.com/share/1V7jqB3BXD/?mibextid=wwXIfr" className="text-accent hover:text-accent/50 dark:hover:text-white">
-              <FaFacebookF size={18} /> <span className="cursor-pointer" />
-              <span className="sr-only">Facebook</span>
-            </Link>
-            <Link to="https://www.instagram.com/dehatwala1?igsh=MTBtb2t4dHdxZWpzOA==" className="text-accent hover:text-accent/50 dark:hover:text-white">
-              <FaInstagram size={18} /> <span className="cursor-pointer" />
-              <span className="sr-only">Instagram</span>
-            </Link>
-            <Link to="https://x.com/dehatwalepvt?s=21" className="text-accent hover:text-accent/50 dark:hover:text-white">
-              <FaTwitter size={14} /> <span className="cursor-pointer"/>
-              <span className="sr-only">Twitter</span>
-            </Link>
-            <Link to="https://www.youtube.com/@DehatwalaPvt" className="text-accent hover:text-accent/50 dark:hover:text-white">
-              <IoLogoYoutube size={18} /> <span className="cursor-pointer" />
-              <span className="sr-only">YouTube</span>
-            </Link>
-          </div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+          {linkGroups.map((group) => <div key={group.title}><h2 className="text-sm font-extrabold text-white">{group.title}</h2><ul className="mt-5 space-y-3">{group.links.map(([label, to]) => <li key={`${group.title}-${label}`}><Link to={to} className="group inline-flex items-center gap-1 text-sm text-blue-100/70 transition hover:text-white">{label}<ArrowUpRight size={12} className="opacity-0 transition group-hover:opacity-100" /></Link></li>)}</ul></div>)}
         </div>
       </div>
-    </footer>
-  );
-};
+      <div className="flex flex-col gap-3 pt-7 text-xs text-blue-100/65 md:flex-row md:items-center md:justify-between">
+        <p>© 2026 Dehatwala Manpower Services Pvt. Ltd. All rights reserved.</p>
+        <p>Supporting local workers. Building a better India · Make in India 🇮🇳</p>
+      </div>
+    </div>
+  </footer>
+);
 
 export default Footer;

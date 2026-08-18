@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(echo \"LINT_EXIT:$?\")",
+      "Bash(echo \"TSC:$?\")",
+      "Bash(echo \"LINT:$?\")",
+      "Bash(node -e ' *)",
+      "Bash(node \"C:/Users/parve/AppData/Local/Temp/claude/d--Dehat-dehatwala/204aea09-05ce-41aa-a762-53f031a7d6b0/scratchpad/orphans.cjs\")",
+      "Bash(grep -n \"^// export function useFetchServices\\\\|^// Clients$\" src/react-query/hooks.ts)",
+      "Bash(npx vite *)",
+      "Bash(echo \"BUILD:$?\")"
+    ]
+  }
+}

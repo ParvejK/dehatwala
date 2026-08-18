@@ -6,6 +6,8 @@ interface User {
   name: string;
   email: string | null;
   mobile_no: string;
+  /** Bare filename under the `user` storage folder; null when none is set. */
+  profile_img?: string | null;
   is_type: string;
   status: string;
   created_at: string;
