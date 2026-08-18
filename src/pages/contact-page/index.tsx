@@ -101,50 +101,36 @@ const ContactUsPage = () => {
   return (
     <main className="overflow-hidden bg-white text-slate-950">
       <section className="bg-white px-4 pt-5 sm:px-8 sm:pt-7 lg:px-10">
-        <div className="relative isolate mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-[0_28px_80px_-46px_rgba(15,47,112,0.45)]">
-          <img
-            src="/images/contact-us-hero.png"
-            alt="A Dehatwala support agent on a headset helping customers from her desk"
-            className="absolute inset-y-0 right-0 -z-20 hidden h-full w-[57%] object-cover object-right lg:block"
-          />
-          <div
-            className="pointer-events-none absolute inset-0 -z-10 hidden bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.99)_40%,rgba(255,255,255,0.9)_50%,rgba(255,255,255,0.16)_72%,transparent_100%)] lg:block"
-            aria-hidden="true"
-          />
-          <div
-            className="pointer-events-none absolute -left-24 -top-24 -z-10 size-64 rounded-full bg-blue-100/70 blur-3xl"
-            aria-hidden="true"
-          />
-
-          <div className="relative z-10 px-6 py-9 sm:px-10 sm:py-12 lg:flex lg:min-h-[600px] lg:w-[58%] lg:flex-col lg:justify-center lg:px-14 lg:py-16">
+        <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-[0_28px_80px_-46px_rgba(15,47,112,0.45)] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div className="px-6 py-9 sm:px-10 sm:py-12 lg:flex lg:min-h-[560px] lg:flex-col lg:justify-center lg:px-12 lg:py-14">
             <div className="max-w-xl">
-            <p className="inline-flex items-center gap-2.5 rounded-full border border-blue-200 bg-white/80 px-4 py-2 text-[0.68rem] font-bold uppercase tracking-[0.22em] text-blue-800 shadow-sm backdrop-blur">
-              <span className="size-1.5 rounded-full bg-yellow-400 ring-4 ring-yellow-100" aria-hidden="true" />
-              We are here to help
-            </p>
-            <h1 className="mt-6 text-4xl font-black leading-[1.04] tracking-[-0.05em] text-[#08255c] sm:text-5xl lg:text-[3.75rem]">
-              How can we
-              <span className="block text-blue-700">help you today?</span>
-            </h1>
-            <p className="mt-5 max-w-lg text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
-              Need help finding a worker, managing a booking, or joining our network? Share a few details and our team
-              will point you in the right direction.
-            </p>
+              <p className="inline-flex items-center gap-2.5 rounded-full border border-blue-200 bg-white px-4 py-2 text-[0.68rem] font-bold uppercase tracking-[0.22em] text-blue-800 shadow-sm">
+                <span className="size-1.5 rounded-full bg-yellow-400 ring-4 ring-yellow-100" aria-hidden="true" />
+                We are here to help
+              </p>
+              <h1 className="mt-6 text-4xl font-black leading-[1.04] tracking-[-0.05em] text-[#08255c] sm:text-5xl lg:text-[3.5rem]">
+                How can we
+                <span className="block text-blue-700">help you today?</span>
+              </h1>
+              <p className="mt-5 max-w-lg text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
+                Need help finding a worker, managing a booking, or joining our network? Share a few details and our
+                team will point you in the right direction.
+              </p>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="#contact-form"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
-              >
-                Send us a message <ArrowRight size={17} aria-hidden="true" />
-              </a>
-              <a
-                href="tel:+919997982419"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white/80 px-5 py-3 text-sm font-bold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
-              >
-                <Phone size={17} aria-hidden="true" /> Call our team
-              </a>
-            </div>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <a
+                  href="#contact-form"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
+                >
+                  Send us a message <ArrowRight size={17} aria-hidden="true" />
+                </a>
+                <a
+                  href="tel:+919997982419"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200"
+                >
+                  <Phone size={17} aria-hidden="true" /> Call our team
+                </a>
+              </div>
             </div>
 
             <div className="mt-9 grid max-w-xl grid-cols-2 gap-x-5 gap-y-5 border-t border-blue-100 pt-6 sm:gap-x-8">
@@ -159,17 +145,15 @@ const ContactUsPage = () => {
             </div>
           </div>
 
-          <div className="relative border-t border-blue-100 lg:hidden">
-            <img
-              src="/images/contact-us-hero.png"
-              alt="A Dehatwala support agent on a headset helping customers from her desk"
-              className="aspect-[4/3] w-full object-cover object-right sm:aspect-[16/10]"
-            />
-            <div
-              className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/35 to-transparent"
-              aria-hidden="true"
-            />
-          </div>
+          <img
+            src="/images/contact-us-hero.png"
+            alt="A Dehatwala support agent on a headset helping customers from her desk"
+            width={1673}
+            height={941}
+            fetchPriority="high"
+            decoding="async"
+            className="block h-auto w-full border-t border-blue-100 object-contain lg:h-full lg:min-h-[560px] lg:border-l lg:border-t-0 lg:object-cover lg:object-right"
+          />
         </div>
       </section>
 

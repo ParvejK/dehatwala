@@ -61,35 +61,27 @@ const JoinUs = () => (
   <main className="bg-white pb-10 pt-5 sm:pt-7">
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-10">
       {/* ---------- Hero ---------- */}
-      <section className="relative isolate overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-[0_28px_80px_-46px_rgba(15,47,112,0.45)]">
-        {/* The photo is square, so a full-bleed `inset-0` would centre the
-            workers under the copy's white wash. Pinning it to the right half
-            keeps them clear of the text column (lg:w-[58%]). */}
-        <img
-          src="/images/join-us-hero.png"
-          alt="देहात वाला के वर्कर मोबाइल पर लाइव बुकिंग स्टेटस दिखाते हुए"
-          className="absolute inset-y-0 right-0 -z-20 hidden h-full w-1/2 object-cover object-center lg:block"
+      <section className="relative isolate grid overflow-hidden rounded-[1.75rem] border border-[#d8e5fb] bg-[linear-gradient(135deg,#ffffff_0%,#f8fbff_48%,#edf4ff_100%)] shadow-[0_32px_90px_-52px_rgba(15,47,112,0.5)] sm:rounded-[2.25rem] lg:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-24 -top-24 -z-10 size-72 rounded-full bg-blue-100/80 blur-3xl"
         />
         <div
           aria-hidden="true"
-          className="absolute inset-y-0 right-0 -z-10 hidden w-1/2 bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.72)_16%,rgba(255,255,255,0.18)_36%,transparent_54%)] lg:block"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -left-24 -top-24 -z-10 size-64 rounded-full bg-blue-100/70 blur-3xl"
+          className="pointer-events-none absolute bottom-10 left-[44%] -z-10 hidden size-40 rounded-full bg-amber-100/70 blur-3xl lg:block"
         />
 
-        <div className="relative z-10 px-6 py-9 sm:px-10 sm:py-12 lg:flex lg:min-h-[600px] lg:w-[58%] lg:flex-col lg:justify-center lg:px-14 lg:py-16">
+        <div className="relative z-10 px-6 py-9 sm:px-10 sm:py-12 lg:flex lg:min-h-[620px] lg:flex-col lg:justify-center lg:px-12 lg:py-14 xl:px-14">
           <div className="max-w-xl">
-            <p className="inline-flex items-center gap-2.5 rounded-full border border-blue-200 bg-blue-50/90 px-4 py-2 text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-[#0b3fc4] shadow-sm">
+            <p className="inline-flex items-center gap-2.5 rounded-full border border-blue-200 bg-white/85 px-4 py-2 text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-[#0b3fc4] shadow-sm backdrop-blur">
               <span className="size-1.5 rounded-full bg-amber-400 ring-4 ring-amber-100" aria-hidden="true" />
               वर्कर पार्टनर बनें
             </p>
-            <h1 className="mt-6 text-[2.15rem] font-black leading-[1.12] tracking-[-0.035em] text-[#0f1e57] sm:text-5xl sm:leading-[1.08]">
+            <h1 className="mt-6 text-[2.15rem] font-black leading-[1.12] tracking-[-0.04em] text-[#0f1e57] sm:text-5xl sm:leading-[1.08] xl:text-[3.35rem]">
               देहात वाला के साथ
               <span className="block text-[#0b3fc4]">जुड़ें और आगे बढ़ें</span>
             </h1>
-            <p className="mt-5 max-w-lg text-sm leading-7 text-[#526483] sm:text-base sm:leading-8">
+            <p className="mt-5 max-w-lg text-sm font-medium leading-7 text-[#526483] sm:text-base sm:leading-8">
               अपने हुनर से कमाएँ, नज़दीक के काम पाएं और अपने सपनों को पूरा करने की ओर अगला कदम बढ़ाएं।
             </p>
 
@@ -109,10 +101,13 @@ const JoinUs = () => (
             </div>
           </div>
 
-          <ul className="relative mt-9 grid grid-cols-2 gap-x-5 gap-y-5 border-t border-blue-100 pt-6 sm:gap-x-8 lg:max-w-xl">
+          <ul className="relative mt-9 grid grid-cols-2 gap-3 border-t border-blue-100 pt-6 lg:max-w-xl">
             {HERO_HIGHLIGHTS.map(({ icon: Icon, title, copy }) => (
-              <li key={title} className="flex items-start gap-3">
-                <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-[#0b3fc4] shadow-sm">
+              <li
+                key={title}
+                className="flex min-w-0 items-start gap-2.5 rounded-2xl border border-white/80 bg-white/70 p-3 shadow-[0_10px_30px_-24px_rgba(11,63,196,0.5)] backdrop-blur sm:gap-3 sm:p-3.5"
+              >
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-[#0b3fc4] shadow-sm sm:size-10">
                   <Icon size={17} strokeWidth={2.2} aria-hidden="true" />
                 </span>
                 <span className="min-w-0">
@@ -126,17 +121,28 @@ const JoinUs = () => (
           </ul>
         </div>
 
-        <div className="relative border-t border-blue-100 lg:hidden">
-          <img
-            src="/images/join-us-hero.png"
-            alt="देहात वाला के वर्कर मोबाइल पर लाइव बुकिंग स्टेटस दिखाते हुए"
-            className="aspect-[4/3] w-full object-cover object-center sm:aspect-[16/9]"
+        <figure className="relative min-w-0 border-t border-blue-100 bg-[linear-gradient(145deg,#dceaff_0%,#eef5ff_42%,#d8e7ff_100%)] p-3 sm:p-5 lg:border-l lg:border-t-0 lg:p-6">
+          <div
+            aria-hidden="true"
+            className="absolute right-5 top-5 size-24 rounded-full border border-white/80 sm:right-10 sm:top-10 sm:size-36"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/35 to-transparent"
+            className="absolute bottom-8 left-5 size-16 rounded-full bg-amber-300/45 blur-2xl sm:bottom-12 sm:left-10 sm:size-24"
           />
-        </div>
+          <div className="relative flex h-full min-h-0 items-center justify-center overflow-hidden rounded-[1.35rem] border border-white/90 bg-[#dceaff] shadow-[0_24px_60px_-32px_rgba(8,53,159,0.65)] sm:rounded-[1.75rem]">
+            <img
+              src="/images/join-us-hero.png"
+              alt="देहात वाला के तीन वर्कर सुरक्षा हेलमेट में मोबाइल पर लाइव बुकिंग स्टेटस दिखाते हुए"
+              width={1254}
+              height={1254}
+              sizes="(min-width: 1024px) 53vw, 100vw"
+              fetchPriority="high"
+              decoding="async"
+              className="block aspect-square w-full object-contain object-center lg:h-full lg:aspect-auto"
+            />
+          </div>
+        </figure>
       </section>
 
       {/* ---------- Breadcrumb ---------- */}

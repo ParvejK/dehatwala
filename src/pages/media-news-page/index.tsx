@@ -58,18 +58,8 @@ const MediaNewsPage = () => {
         </nav>
 
         {/* ---------- Hero ---------- */}
-        <section className="relative overflow-hidden rounded-2xl bg-[#0a2a6b]">
-          <img
-            src="/images/media-news-hero.png"
-            alt="Dehatwala workers with a media crew at a construction site"
-            className="absolute inset-0 size-full object-cover object-[70%_center] lg:object-[center_24%]"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-[linear-gradient(90deg,#0a2a6b_0%,rgba(10,42,107,0.92)_34%,rgba(10,42,107,0.55)_56%,rgba(10,42,107,0.1)_100%)]"
-          />
-
-          <div className="relative max-w-xl px-6 py-9 sm:px-9 sm:py-12">
+        <section className="grid overflow-hidden rounded-2xl bg-[#0a2a6b] shadow-[0_22px_55px_-38px_rgba(10,42,107,0.7)] lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
+          <div className="px-6 py-8 sm:px-9 sm:py-10 lg:flex lg:min-h-[420px] lg:flex-col lg:justify-center lg:px-12 lg:py-12">
             <h1 className="text-[30px] font-extrabold leading-[1.1] tracking-tight text-white sm:text-[40px]">
               Dehatwala
               <br />
@@ -81,11 +71,22 @@ const MediaNewsPage = () => {
             </p>
             <a
               href="#coverage"
-              className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/70 px-5 text-[13px] font-bold text-white transition hover:bg-white hover:text-[#0a2a6b] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
+              className="group mt-5 inline-flex min-h-10 w-fit items-center gap-2 rounded-xl bg-amber-400 px-4 text-xs font-extrabold text-[#0a2a6b] shadow-[0_10px_24px_-14px_rgba(251,191,36,0.9)] transition hover:-translate-y-0.5 hover:bg-amber-300 focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-200"
             >
-              View Media Coverage <ArrowRight size={15} aria-hidden="true" />
+              View Media Coverage
+              <ArrowRight size={14} className="transition group-hover:translate-x-0.5" aria-hidden="true" />
             </a>
           </div>
+
+          <img
+            src="/images/media-news-hero.png"
+            alt="Dehatwala workers with a media crew at a construction site"
+            width={1673}
+            height={941}
+            fetchPriority="high"
+            decoding="async"
+            className="block h-auto w-full border-t border-white/10 object-contain lg:h-full lg:min-h-[420px] lg:border-l lg:border-t-0 lg:object-cover lg:object-right"
+          />
         </section>
 
         {/* ---------- Featured in ---------- */}

@@ -86,12 +86,14 @@ const CategoryStrip = ({ categories, counts }: { categories: BlogCategory[]; cou
             <Link
               to={`/blog/category/${category.id}`}
               title={category.description}
-              className={`flex h-full w-full flex-col items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-2 py-4 text-center text-blue-900 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 ${
+              className={`group flex h-full w-full flex-col items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-2 py-4 text-center text-blue-900 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 ${
                 count === 0 ? "opacity-60" : ""
               }`}
             >
-              <span className={`grid size-11 place-items-center rounded-xl ${category.iconClassName}`}>
-                <Icon size={22} aria-hidden="true" />
+              <span
+                className={`grid size-11 place-items-center rounded-xl ring-1 ring-inset ring-blue-100 transition-colors duration-200 group-hover:bg-blue-700 group-hover:text-white group-hover:ring-blue-700 ${category.iconClassName}`}
+              >
+                <Icon size={22} strokeWidth={1.9} aria-hidden="true" />
               </span>
               <span className="text-xs font-bold leading-4 sm:text-[13px]">{category.label}</span>
               <span className="text-[11px] font-normal text-slate-500">

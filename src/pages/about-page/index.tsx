@@ -210,7 +210,11 @@ const AboutPage = () => {
               <img
                 src="/images/about/about-hero-workers.png"
                 alt="Two Dehatwala workers wearing safety helmets"
-                className="aspect-square w-full rounded-[1.75rem] object-cover object-center"
+                width={1402}
+                height={1122}
+                fetchPriority="high"
+                decoding="async"
+                className="h-auto w-full rounded-[1.75rem] bg-blue-700 object-contain object-center"
               />
             </div>
             <div className="pointer-events-none absolute -bottom-5 -left-5 hidden size-28 rounded-bl-[2rem] border-b-2 border-l-2 border-blue-700/25 sm:block" />

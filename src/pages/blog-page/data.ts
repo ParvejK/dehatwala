@@ -1,5 +1,17 @@
 import DOMPurify from "dompurify";
-import { BrickWall, HardHat, Home, LucideIcon, Megaphone, Newspaper, ShieldCheck, TrendingUp, UserRound } from "lucide-react";
+import {
+  BookOpenCheck,
+  BookOpenText,
+  BrickWall,
+  Home,
+  LucideIcon,
+  Megaphone,
+  Newspaper,
+  ShieldCheck,
+  TrendingUp,
+  UserRound,
+  UserRoundSearch,
+} from "lucide-react";
 import { Blog, BlogCardCategory, BlogCategoryApi } from "../../types";
 
 export type BlogCategory = {
@@ -17,6 +29,8 @@ export type BlogCategory = {
 
 type CategoryStyle = Pick<BlogCategory, "icon" | "badgeClassName" | "iconClassName">;
 
+const BLUE_ICON_TILE = "bg-blue-50 text-blue-700";
+
 /**
  * Icons and colours are chosen per category `slug`. The API does expose an
  * `icon_link`, but it is an absolute URL on a different host to the configured
@@ -24,47 +38,73 @@ type CategoryStyle = Pick<BlogCategory, "icon" | "badgeClassName" | "iconClassNa
  * falls back to the neutral style rather than being dropped.
  */
 const CATEGORY_STYLES: Record<string, CategoryStyle> = {
-  "hiring-workers": {
-    icon: HardHat,
+  "blog-category": {
+    icon: BookOpenText,
     badgeClassName: "bg-blue-50 text-blue-700 ring-blue-100",
-    iconClassName: "bg-blue-50 text-blue-700",
+    iconClassName: BLUE_ICON_TILE,
+  },
+  "hiring-workers": {
+    icon: UserRoundSearch,
+    badgeClassName: "bg-blue-50 text-blue-700 ring-blue-100",
+    iconClassName: BLUE_ICON_TILE,
   },
   "construction-services": {
     icon: BrickWall,
     badgeClassName: "bg-amber-50 text-amber-700 ring-amber-100",
-    iconClassName: "bg-amber-50 text-amber-700",
+    iconClassName: BLUE_ICON_TILE,
   },
+  "dehatwala-update": {
+    icon: Megaphone,
+    badgeClassName: "bg-rose-50 text-rose-700 ring-rose-100",
+    iconClassName: BLUE_ICON_TILE,
+  },
+  "safety-awareness": {
+    icon: ShieldCheck,
+    badgeClassName: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+    iconClassName: BLUE_ICON_TILE,
+  },
+  "worker-guide": {
+    icon: BookOpenCheck,
+    badgeClassName: "bg-violet-50 text-violet-700 ring-violet-100",
+    iconClassName: BLUE_ICON_TILE,
+  },
+  "workforce-insights": {
+    icon: TrendingUp,
+    badgeClassName: "bg-sky-50 text-sky-700 ring-sky-100",
+    iconClassName: BLUE_ICON_TILE,
+  },
+  // Legacy aliases are retained in case older categories are restored.
   "worker-stories": {
     icon: UserRound,
     badgeClassName: "bg-violet-50 text-violet-700 ring-violet-100",
-    iconClassName: "bg-violet-50 text-violet-700",
+    iconClassName: BLUE_ICON_TILE,
   },
   "safety-compliance": {
     icon: ShieldCheck,
     badgeClassName: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-    iconClassName: "bg-emerald-50 text-emerald-700",
+    iconClassName: BLUE_ICON_TILE,
   },
   "industry-trends": {
     icon: TrendingUp,
     badgeClassName: "bg-sky-50 text-sky-700 ring-sky-100",
-    iconClassName: "bg-sky-50 text-sky-700",
+    iconClassName: BLUE_ICON_TILE,
   },
   announcements: {
     icon: Megaphone,
     badgeClassName: "bg-rose-50 text-rose-700 ring-rose-100",
-    iconClassName: "bg-rose-50 text-rose-700",
+    iconClassName: BLUE_ICON_TILE,
   },
   "home-services": {
     icon: Home,
     badgeClassName: "bg-teal-50 text-teal-700 ring-teal-100",
-    iconClassName: "bg-teal-50 text-teal-700",
+    iconClassName: BLUE_ICON_TILE,
   },
 };
 
 const DEFAULT_STYLE: CategoryStyle = {
   icon: Newspaper,
-  badgeClassName: "bg-slate-100 text-slate-700 ring-slate-200",
-  iconClassName: "bg-slate-100 text-slate-700",
+  badgeClassName: "bg-blue-50 text-blue-700 ring-blue-100",
+  iconClassName: BLUE_ICON_TILE,
 };
 
 /** Shown when a blog row carries no category at all. */
