@@ -20,6 +20,7 @@ import { readServiceWorkerObj, totalWorkerCount } from "../../components/booking
 import BookAgainModal from "../../components/dashboard/book-again-modal";
 import BookingDetailsModal from "../../components/dashboard/booking-details-modal";
 import { isAwaitingPayment, STAGES, STATUS_FILTERS, statusTone } from "../../components/dashboard/booking-status";
+import CancelBookingModal from "../../components/dashboard/cancel-booking-modal";
 import PaymentModal from "../../components/dashboard/payment-modal";
 import PendingPaymentsModal from "../../components/dashboard/pending-payments-modal";
 import RescheduleModal from "../../components/dashboard/reschedule-modal";
@@ -61,11 +62,11 @@ const DashboardBookings = () => {
   /** Id of the row whose ⋮ menu is open. */
   const [openMenu, setOpenMenu] = useState<number | null>(null);
 
-  const confirmCancel = async () => {
+  const confirmCancel = async (reasonIds: Array<number | string>) => {
     if (pendingCancel === null) return;
 
     try {
-      await cancelBooking.mutateAsync(pendingCancel);
+      await cancelBooking.mutateAsync({ bookingId: pendingCancel, reasonIds });
       toast.success("Booking cancelled.");
       setPendingCancel(null);
     } catch (error) {
@@ -78,6 +79,12 @@ const DashboardBookings = () => {
   };
 
   const allBookings = useMemo(() => data?.booked_services ?? [], [data]);
+  const cancellationReasons =
+    data?.cancel_reasons ??
+    data?.cancellation_reasons ??
+    data?.meta?.cancel_reasons ??
+    data?.meta?.cancellation_reasons ??
+    [];
   const bookings = useMemo(
     () => (filter === "all" ? allBookings : allBookings.filter((booking) => booking.status === filter)),
     [allBookings, filter],
@@ -135,42 +142,13 @@ const DashboardBookings = () => {
       )}
 
       {pendingCancel !== null && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="cancel-booking-title"
-          className="fixed inset-0 z-[100] grid place-items-center bg-[#0f1e57]/70 p-4"
-        >
-          <div className="w-full max-w-sm rounded-2xl border border-[#dce7fb] bg-white p-6 text-center">
-            <span className="mx-auto grid size-12 place-items-center rounded-full bg-red-50 text-red-600">
-              <AlertTriangle size={22} aria-hidden="true" />
-            </span>
-            <h3 id="cancel-booking-title" className="mt-4 text-sm font-extrabold text-[#0f1e57]">
-              Cancel this booking?
-            </h3>
-            <p className="mt-2 text-xs leading-6 text-[#63739a]">
-              DW-{pendingCancel} will be cancelled. This cannot be undone, and cancellation charges may apply.
-            </p>
-            <div className="mt-5 flex gap-2.5">
-              <button
-                type="button"
-                onClick={() => setPendingCancel(null)}
-                disabled={cancelBooking.isPending}
-                className="inline-flex min-h-10 flex-1 items-center justify-center rounded-lg border border-[#dce7fb] bg-white px-4 text-[11px] font-extrabold text-[#40517b] transition hover:bg-[#f1f6ff] disabled:opacity-60"
-              >
-                Keep booking
-              </button>
-              <button
-                type="button"
-                onClick={confirmCancel}
-                disabled={cancelBooking.isPending}
-                className="inline-flex min-h-10 flex-1 items-center justify-center rounded-lg bg-red-600 px-4 text-[11px] font-extrabold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {cancelBooking.isPending ? "Cancelling…" : "Yes, cancel"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <CancelBookingModal
+          bookingId={pendingCancel}
+          reasons={cancellationReasons}
+          isPending={cancelBooking.isPending}
+          onClose={() => setPendingCancel(null)}
+          onConfirm={confirmCancel}
+        />
       )}
 
       {/* Skeleton rather than the real tiles: those would read "0 Total

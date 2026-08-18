@@ -108,6 +108,16 @@ export interface BookingBilling {
   payments: BookingPayment[];
 }
 
+/** A customer-facing reason offered by the booking API before cancellation. */
+export interface BookingCancellationReason {
+  id: number | string;
+  /** API versions have used different display keys; `label` is preferred. */
+  label?: string;
+  name?: string;
+  reason?: string;
+  title?: string;
+}
+
 /**
  * Mirrors `BookService::STATUSES` in the API.
  *
@@ -142,8 +152,14 @@ export const BOOKING_STATUSES: BookingStatus[] = [
 // Type for the entire API response
 export interface BookedServicesResponse {
   booked_services: BookedService[];
+  /** Choices to send back as `cancel_reason_ids` when cancelling. */
+  cancel_reasons?: BookingCancellationReason[];
+  /** Backwards-compatible response key used by some API deployments. */
+  cancellation_reasons?: BookingCancellationReason[];
   meta?: {
     total: number;
+    cancel_reasons?: BookingCancellationReason[];
+    cancellation_reasons?: BookingCancellationReason[];
     /** Counts across the customer's whole history, not just the page shown. */
     status_counts: Record<BookingStatus, number>;
     pending_payment_total: number;

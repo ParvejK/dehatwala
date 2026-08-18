@@ -36,10 +36,10 @@ export const useCancelBooking = (token: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (bookingId: number) => {
+    mutationFn: async (input: { bookingId: number; reasonIds: Array<number | string> }) => {
       const response = await axios.post(
         `${API_URL}/cancel-booked-service`,
-        { booking_id: bookingId },
+        { booking_id: input.bookingId, cancel_reason_ids: input.reasonIds },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data;
