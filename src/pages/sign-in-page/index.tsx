@@ -1,9 +1,14 @@
 import SignIn from "../../components/auth/sign-in";
+import AuthLayout from "../../components/auth/auth-layout";
 
 export default function SignInPage() {
   return (
-    <div className="min-h-[80vh] py-10 bg-base-200 flex items-center justify-center">
+    <AuthLayout
+      eyebrow="Welcome back"
+      title="Sign in to your account"
+      description="Enter your mobile number and we’ll send you a one-time password to sign in securely."
+    >
       <SignIn />
-    </div>
+    </AuthLayout>
   );
 }

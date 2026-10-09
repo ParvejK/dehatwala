@@ -10,7 +10,7 @@ const PolicyPage = () => {
     return (
       <div className="container mx-auto p-14 min-h-[60vh] bg-gray-100 my-[60px] rounded-md flex flex-col gap-2 justify-center items-center">
         <div className="text-3xl font-bold">No data available...</div>
-        <Link to="/" className="btn btn-primary">
+        <Link to="/" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#0b3fc4] px-6 text-[13px] font-bold text-white transition hover:bg-[#0932a0]">
           Back to home{" "}
         </Link>
       </div>
