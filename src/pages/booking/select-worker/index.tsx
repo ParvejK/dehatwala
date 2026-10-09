@@ -186,7 +186,7 @@ const SelectWorkerPage = () => {
   const hasHelper = helperRate > 0;
   const hasMasonOvertime = hasMason && MasonOvertimeRate > 0;
   const hasHelperOvertime = hasHelper && helperOvertimeRate > 0;
-  const isBookable = hasMason || hasHelper;
+  const isBookable = (MasonDayCount > 0 || helperDayCount > 0) && (hasMason || hasHelper);
 
   const summaryRows: [string, string, number][] = [];
 
@@ -270,7 +270,7 @@ const SelectWorkerPage = () => {
                   : "This service does not have published rates yet."}
               </p>
 
-              {isBookable ? (
+              {(isBookable || hasMason || hasHelper) ? (
                 <div className="mt-5 space-y-3">
                   {hasMason && (
                     <CounterRow
@@ -278,6 +278,7 @@ const SelectWorkerPage = () => {
                       rate={MasonRate}
                       unit="day"
                       value={MasonDayCount}
+                      allowZero
                       icon={HardHat}
                       onDecrease={decrementMasonDay}
                       onIncrease={incrementMasonDay}
@@ -289,6 +290,7 @@ const SelectWorkerPage = () => {
                       rate={helperRate}
                       unit="day"
                       value={helperDayCount}
+                      allowZero
                       icon={UserRound}
                       onDecrease={decrementHelperDay}
                       onIncrease={incrementHelperDay}

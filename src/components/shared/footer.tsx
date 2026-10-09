@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const linkGroups = [
   { title: "Company", links: [["About us", "/about-us"], ["Contact us", "/contact"], ["Media & news", "/media-news"], ["Careers", "/careers"], ["Blog", "/blog"]] },
   { title: "Legal", links: [["Privacy policy", "/privacy-policy"], ["Terms & conditions", "/terms-and-conditions"], ["Cancellation policy", "/cancellation-policy"], ["Refund policy", "/refund-policy"]] },
-  { title: "For workers", links: [["Join Dehatwala", "/become-a-part-of-dehatwala"], ["Worker Agreement", "/terms-and-conditions"], ["Worker FAQs", "/faqs"], ["Find work opportunities", "/careers/open-positions"]] },
+  { title: "For workers", links: [["Join Dehatwala", "/become-a-part-of-dehatwala"], ["Worker Agreement", "/worker-agreement-policy"], ["Worker FAQs", "/faqs"], ["Find work opportunities", "/careers/open-positions"]] },
   // "Book a worker" goes to the service listing, matching the header button.
   // "Explore services" keeps the home search panel, so the two are not the
   // same destination twice. The `#` links rely on the hash scrolling wired up
@@ -33,7 +33,7 @@ const Footer = () => (
       </div>
       <div className="flex flex-col gap-3 pt-7 text-xs text-blue-100/65 md:flex-row md:items-center md:justify-between">
         <p>© 2026 Dehatwala Manpower Services Pvt. Ltd. All rights reserved.</p>
-        <p>Supporting local workers. Building a better India · Make in India 🇮🇳</p>
+        <p>Empowering local workers. Building a better India · Make in India 🇮🇳</p>
       </div>
     </div>
   </footer>

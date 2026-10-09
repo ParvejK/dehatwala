@@ -84,7 +84,16 @@ const DashboardBookings = () => {
     data?.cancellation_reasons ??
     data?.meta?.cancel_reasons ??
     data?.meta?.cancellation_reasons ??
-    [];
+    [{ id: "My plans have changed", value: "My plans have changed" },
+  { id: "I need the worker on a different date/time", value: "I need the worker on a different date/time" },
+  { id: "I no longer need the service", value: "I no longer need the service" },
+  { id: "The price is higher than expected", value: "The price is higher than expected" },
+  { id: "I found another option", value: "I found another option" },
+  { id: "I booked the wrong service", value: "I booked the wrong service" },
+  { id: "I entered incorrect booking details", value: "I entered incorrect booking details" },
+  { id: "I need to change the number of workers", value: "I need to change the number of workers" },
+  { id: "I'm not satisfied with the booking details", value: "I'm not satisfied with the booking details" }];
+    //{ id: "Other", value: "Other"}
   const bookings = useMemo(
     () => (filter === "all" ? allBookings : allBookings.filter((booking) => booking.status === filter)),
     [allBookings, filter],

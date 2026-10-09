@@ -19,7 +19,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import ServiceCard from "../../components/services/service-card";
 import ServiceSearch from "../../components/services/service-search";
 import ServiceSearchResults from "../../components/services/service-search-results";
-import TawkMessenger from "../../components/shared/TawkMessenger";
+// import TawkMessenger from "../../components/shared/TawkMessenger";
 import RemoteAvatar from "../../components/shared/remote-avatar";
 import RemoteImage from "../../components/shared/remote-image";
 import {
@@ -100,7 +100,7 @@ const HomePage = () => {
                 to="/become-a-part-of-dehatwala"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-bold text-slate-800 transition hover:border-blue-300 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100"
               >
-                Become a worker
+                Become a worker Partner
               </Link>
             </div>
           </div>
@@ -435,7 +435,7 @@ const HomePage = () => {
                     not the same size. */}
                 <h2 className="font-black leading-[0.98] tracking-tight text-[var(--home-color-ink)]">
                   <span className="block text-[32px] sm:text-[40px]">Become a</span>
-                  <span className="block text-[40px] text-[var(--home-color-brand)] sm:text-[52px]">Worker</span>
+                  <span className="block text-[40px] text-[var(--home-color-brand)] sm:text-[52px]">Worker Partner</span>
                 </h2>
 
                 {/* The gold rule sits under the opening words, not the whole
@@ -648,7 +648,7 @@ const HomePage = () => {
                       className={`mt-7 flex items-center gap-3 border-t pt-5 ${clientIndex === 1 ? "border-white/10" : "border-slate-100"}`}
                     >
                       <RemoteAvatar
-                        folder="client"
+                        folder="customer"
                         file={client.customer_image}
                         name={client.name}
                         className="size-11 rounded-full object-cover ring-2 ring-white/30"
@@ -673,7 +673,7 @@ const HomePage = () => {
           )}
         </div>
       </section>
-      <TawkMessenger />
+      {/* <TawkMessenger /> */}
     </main>
   );
 };

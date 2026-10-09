@@ -73,8 +73,8 @@ interface RateState {
 const initialState = {
   serviceId: null,
 
-  MasonDayCount: 1,
-  helperDayCount: 1,
+  MasonDayCount: 0,
+  helperDayCount: 0,
 
   MasonRate: 800, // Default rates
   helperRate: 600,
@@ -253,7 +253,7 @@ export const useDayRateStore = create(
 
       decrementMasonDay: () =>
         set((state) => {
-          const newMasonDayCount = Math.max(1, state.MasonDayCount - 1);
+          const newMasonDayCount = Math.max(0, state.MasonDayCount - 1);
           const newTotalMasonDayRate = newMasonDayCount * state.MasonRate;
           return {
             MasonDayCount: newMasonDayCount,
@@ -285,7 +285,7 @@ export const useDayRateStore = create(
 
       decrementHelperDay: () =>
         set((state) => {
-          const newHelperDayCount = Math.max(1, state.helperDayCount - 1);
+          const newHelperDayCount = Math.max(0, state.helperDayCount - 1);
           const newTotalHelperDayRate = newHelperDayCount * state.helperRate;
           return {
             helperDayCount: newHelperDayCount,
