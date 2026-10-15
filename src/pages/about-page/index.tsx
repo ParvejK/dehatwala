@@ -198,7 +198,7 @@ const AboutPage = () => {
                 to="/become-a-part-of-dehatwala"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white/80 px-6 py-3 text-sm font-bold text-slate-800 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-white hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100"
               >
-                Become a worker
+                Become a worker partner
               </Link>
             </div>
           </div>
