@@ -14,7 +14,7 @@ type CancelBookingModalProps = {
 
 const reasonLabel = (reason: BookingCancellationReason) => {
   const label = [reason.label, reason.name, reason.reason, reason.title].find((value) => value?.trim());
-  return label?.trim() ?? `Reason ${reason.id}`;
+  return label?.trim() ?? `${reason.id}`;
 };
 
 const CancelBookingModal = ({
