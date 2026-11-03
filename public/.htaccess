@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Serve the sitemap from the Laravel backend via the proxy script
+    RewriteRule ^sitemap\.xml$ sitemap-proxy.php [L]
+
+    # Do not rewrite existing files or directories
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Send React frontend routes to the app entry point
+    RewriteRule ^ index.html [L]
+</IfModule>
