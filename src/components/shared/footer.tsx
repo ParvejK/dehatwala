@@ -2,7 +2,7 @@ import { ArrowUpRight, Facebook, Instagram, Linkedin, Youtube } from "lucide-rea
 import { Link } from "react-router-dom";
 
 const linkGroups = [
-  { title: "Company", links: [["About us", "/about-us"], ["Contact us", "/contact"], ["Media & news", "/media-news"], ["Careers", "/careers"], ["Blog", "/blog"]] },
+  { title: "Company", links: [["About us", "/about-us"], ["Contact us", "/contact"], ["Media & news", "/media-news"], ["Careers", "/careers"], ["Blogs", "/blogs"]] },
   { title: "Legal", links: [["Privacy policy", "/privacy-policy"], ["Terms & conditions", "/terms-and-conditions"], ["Cancellation policy", "/cancellation-policy"], ["Refund policy", "/refund-policy"]] },
   { title: "For workers", links: [["Join Dehatwala", "/become-a-part-of-dehatwala"], ["Worker Agreement", "/worker-agreement-policy"], ["Worker FAQs", "/faqs"], ["Find work opportunities", "/careers/open-positions"]] },
   // "Book a worker" goes to the service listing, matching the header button.
